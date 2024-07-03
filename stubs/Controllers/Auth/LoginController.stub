@@ -2,23 +2,11 @@
 
 namespace App\Http\Controllers\{{studlyAuthName}}\Auth;
 
-use Illuminate\Contracts\Auth\StatefulGuard;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use Javaabu\Auth\User as UserContract;
 
 class LoginController extends \Javaabu\Auth\Http\Controllers\Auth\LoginController
 {
-    public function applyMiddlewares(): void
-    {
-        $this->middleware('guest:web_{{singularSnake}}')->except('logout');
-    }
-
-    public function getGuard(): StatefulGuard
-    {
-        return Auth::guard('web_{{singularSnake}}');
-    }
-
     public function getLoginForm(): View
     {
         return view('{{kebabAuthName}}.auth.login');

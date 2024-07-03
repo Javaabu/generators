@@ -3,8 +3,6 @@
 namespace App\Http\Controllers\Customer\Auth;
 
 use App\Models\Customer;
-use Illuminate\Contracts\Auth\StatefulGuard;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Javaabu\Auth\Enums\UserStatuses;
 use Illuminate\Validation\Rules\Password;
@@ -15,21 +13,6 @@ class RegisterController extends \Javaabu\Auth\Http\Controllers\Auth\RegisterCon
     public function determinePathForRedirectUsing(): \Javaabu\Auth\User
     {
         return new Customer();
-    }
-
-    public function applyMiddlewares(): void
-    {
-        $this->middleware('guest:web_customer');
-    }
-
-    public function getGuard(): StatefulGuard
-    {
-        return Auth::guard('web_customer');
-    }
-
-    public function userClass(): string
-    {
-        return Customer::class;
     }
 
     public function showRegistrationForm()

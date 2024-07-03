@@ -7,15 +7,6 @@ use Javaabu\Auth\User as UserContract;
 
 class ConfirmPasswordController extends \Javaabu\Auth\Http\Controllers\Auth\ConfirmPasswordController
 {
-    /**
-     * Apply middlewares for the controller. Used in the constructor.
-     * Helps with applying/changing applied middlewares for the controller.
-     */
-    public function applyMiddlewares(): void
-    {
-        $this->middleware('auth:web_customer');
-    }
-
     #[\Override]
     public function getConfirmForm(): View
     {

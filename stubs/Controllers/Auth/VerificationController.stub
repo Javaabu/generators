@@ -6,15 +6,6 @@ use Javaabu\Auth\User as UserContract;
 
 class VerificationController extends \Javaabu\Auth\Http\Controllers\Auth\VerificationController
 {
-    public function applyMiddlewares(): void
-    {
-        $this->middleware('auth:web_{{singularSnake}}');
-        $this->middleware('inactive:web_{{singularSnake}}')->except('verify');
-        $this->middleware('signed')->only('verify');
-        $this->middleware('throttle:6,1')->only('verify', 'resend');
-        $this->middleware('needs-verification')->except('show');
-    }
-
     #[\Override]
     public function getEmailVerificationView()
     {

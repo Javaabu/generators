@@ -3,8 +3,6 @@
 namespace App\Http\Controllers\{{studlyAuthName}}\Auth;
 
 use App\Models\{{singularStudly}};
-use Illuminate\Contracts\Auth\StatefulGuard;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Javaabu\Auth\Enums\UserStatuses;
 use Illuminate\Validation\Rules\Password;
@@ -15,21 +13,6 @@ class RegisterController extends \Javaabu\Auth\Http\Controllers\Auth\RegisterCon
     public function determinePathForRedirectUsing(): \Javaabu\Auth\User
     {
         return new {{singularStudly}}();
-    }
-
-    public function applyMiddlewares(): void
-    {
-        $this->middleware('guest:web_{{singularSnake}}');
-    }
-
-    public function getGuard(): StatefulGuard
-    {
-        return Auth::guard('web_{{singularSnake}}');
-    }
-
-    public function userClass(): string
-    {
-        return {{singularStudly}}::class;
     }
 
     public function showRegistrationForm()
