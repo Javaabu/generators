@@ -226,6 +226,11 @@ abstract class Field
         return $this->getName();
     }
 
+    public function formatFactoryDbValue(string $value): string
+    {
+        return $value;
+    }
+
     public function generateWrongDbValue(): string
     {
         return $this->generateWrongValue();

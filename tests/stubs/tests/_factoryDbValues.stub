@@ -5,7 +5,7 @@
             'price' => $product->price,
             'stock' => $product->stock,
             'on_sale' => $product->on_sale,
-            'features' => json_encode($product->features),
+            'features' => is_null($product->features) ? null : json_encode($product->features),
             'published_at' => $product->published_at,
             'expire_at' => $product->expire_at,
             'released_on' => $product->released_on,

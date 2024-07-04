@@ -15,6 +15,11 @@ class JsonField extends Field
         return 'passThrough(fake()->words())';
     }
 
+    public function formatFactoryDbValue(string $value): string
+    {
+        return "is_null($value) ? null : json_encode($value)";
+    }
+
     public function generateValidationRules(): array
     {
         return ['array'];

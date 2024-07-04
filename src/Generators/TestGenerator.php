@@ -250,9 +250,7 @@ class TestGenerator extends BaseGenerator
 
             $generated_value = $value_prefix . $value;
 
-            if ($field instanceof JsonField) {
-                $generated_value = "json_encode($generated_value)";
-            }
+            $generated_value = $field->formatFactoryDbValue($generated_value);
 
             $values .= $renderer->addIndentation("'$key' => $generated_value,\n", $tabs);
         }
