@@ -1,11 +1,11 @@
 <x-forms::card>
-    <x-forms::text name="order_no" maxlength="4" required inline />
+    <x-forms::text name="order_no" maxlength="4" required inline show-placeholder />
 
-    <x-forms::select2 name="category" :options="\App\Models\Category::query()" relation required inline />
+    <x-forms::select2 name="category" :options="\App\Models\Category::query()" relation required inline show-placeholder />
 
-    <x-forms::select2 name="product_slug" :options="\App\Models\Product::query()" relation required inline />
+    <x-forms::select2 name="product_slug" :options="\App\Models\Product::query()" relation required inline show-placeholder />
 
-    <x-forms::select2 name="status" :options="\Javaabu\Generators\Tests\TestSupport\Enums\OrderStatuses::getLabels()" required inline />
+    <x-forms::select2 name="status" :options="\Javaabu\Generators\Tests\TestSupport\Enums\OrderStatuses::getLabels()" required inline show-placeholder />
 
     <x-forms::button-group inline>
         <x-forms::submit color="success" class="btn--icon-text btn--raised">

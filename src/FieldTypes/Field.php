@@ -124,6 +124,11 @@ abstract class Field
         return true;
     }
 
+    public function shouldRenderInputPlaceholder(): bool
+    {
+        return true;
+    }
+
     public function shouldRenderEntryInline(): bool
     {
         return true;
@@ -153,6 +158,10 @@ abstract class Field
         }
 
         $attributes['inline'] = $this->shouldRenderInputInline();
+
+        if ($this->shouldRenderInputPlaceholder()) {
+            $attributes['show-placeholder'] = true;
+        }
 
         return $this->renderComponentAttributes($attributes);
     }

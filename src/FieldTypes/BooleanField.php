@@ -24,6 +24,11 @@ class BooleanField extends Field
         );
     }
 
+    public function shouldRenderInputPlaceholder(): bool
+    {
+        return false;
+    }
+
     public function generateFactoryStatement(): string
     {
         return 'boolean()';

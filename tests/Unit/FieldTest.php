@@ -29,12 +29,12 @@ class FieldTest extends TestCase
     /** @test */
     public function it_can_render_field_attributes(): void
     {
-        $this->assertEquals('maxlength="255" required :inline="false"', (new FakeStringField('slug'))->renderFormComponentAttributes());
+        $this->assertEquals('maxlength="255" required :inline="false" show-placeholder', (new FakeStringField('slug'))->renderFormComponentAttributes());
     }
 
     /** @test */
     public function it_can_render_a_component(): void
     {
-        $this->assertEquals('<x-forms::text name="slug" maxlength="255" required :inline="false" />', (new FakeStringField('slug'))->renderFormComponent());
+        $this->assertEquals('<x-forms::text name="slug" maxlength="255" required :inline="false" show-placeholder />', (new FakeStringField('slug'))->renderFormComponent());
     }
 }
