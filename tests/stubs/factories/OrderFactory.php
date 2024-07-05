@@ -31,7 +31,7 @@ class OrderFactory extends Factory
         });
     }
 
-    public function withProduct(): OrderFactory
+    public function withProductSlug(): OrderFactory
     {
         return $this->state(function (array $attributes) {
             return [

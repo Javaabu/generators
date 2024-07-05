@@ -1,4 +1,4 @@
-    public function with{{singularStudly}}(): {{factoryName}}
+    public function with{{relationName}}(): {{factoryName}}
     {
         return $this->state(function (array $attributes) {
             return [

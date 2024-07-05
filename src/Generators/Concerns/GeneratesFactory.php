@@ -181,6 +181,11 @@ trait GeneratesFactory
                 'search' => "{{factoryName}}",
                 'keep_search' => false,
                 'content' => $this->getFactoryName(),
+            ],
+            [
+                'search' => "{{relationName}}",
+                'keep_search' => false,
+                'content' => Str::ucfirst($field->getRelationName()),
             ]
         ], $template);
     }
