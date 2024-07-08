@@ -175,17 +175,17 @@ class CustomersController extends Controller
                     break;
 
                 case 'approve':
-                    $this->authorize('publish', Prompter::class);
+                    $this->authorize('approve', Prompter::class);
                     $customer->approve();
                     break;
 
                 case 'ban':
-                    $this->authorize('publish', Prompter::class);
+                    $this->authorize('approve', Prompter::class);
                     $customer->ban();
                     break;
 
                 case 'mark_pending':
-                    $this->authorize('publish', Prompter::class);
+                    $this->authorize('approve', Prompter::class);
                     $customer->markAsPending();
                     break;
 
