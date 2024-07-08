@@ -159,17 +159,17 @@ class {{pluralStudly}}Controller extends Controller
                     break;
 
                 case 'approve':
-                    $this->authorize('approve', Prompter::class);
+                    $this->authorize('approve', {{singularStudly}}::class);
                     ${{singularSnake}}->approve();
                     break;
 
                 case 'ban':
-                    $this->authorize('approve', Prompter::class);
+                    $this->authorize('approve', {{singularStudly}}::class);
                     ${{singularSnake}}->ban();
                     break;
 
                 case 'mark_pending':
-                    $this->authorize('approve', Prompter::class);
+                    $this->authorize('approve', {{singularStudly}}::class);
                     ${{singularSnake}}->markAsPending();
                     break;
 
