@@ -1,5 +1,6 @@
 ---
 title: Supported Field Types
+sidebar_position: 2
 ---
 
 This package works by mapping database schema column types to a custom `Field` class. The supported field types and their corresponding database column types are given below.

@@ -1,5 +1,6 @@
 ---
 title: Customising stubs
+sidebar_position: 1
 ---
 
 You can customise the stubs used by the generators by publishing them:
