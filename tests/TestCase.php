@@ -2,14 +2,18 @@
 
 namespace Javaabu\Generators\Tests;
 
-use Illuminate\Filesystem\Filesystem;
 use Javaabu\Generators\GeneratorsServiceProvider;
+use Javaabu\Generators\Testing\InteractsWithTestFiles;
+use Javaabu\Generators\Testing\InteractsWithTestStubs;
 use Javaabu\Generators\Tests\TestSupport\Providers\TestServiceProvider;
 use Javaabu\Schema\SchemaServiceProvider;
 use Orchestra\Testbench\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase
 {
+    use InteractsWithTestStubs;
+    use InteractsWithTestFiles;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -30,6 +34,8 @@ abstract class TestCase extends BaseTestCase
             'prefix'   => '',
         ]);
 
+        $this->loadTestStubsFrom(__DIR__.'/stubs');
+
     }
 
     protected function getPackageProviders($app)
@@ -39,60 +45,5 @@ abstract class TestCase extends BaseTestCase
             GeneratorsServiceProvider::class,
             TestServiceProvider::class
         ];
-    }
-
-    protected function getTestStubContents(string $stub): string
-    {
-        return file_get_contents($this->getTestStubPath($stub));
-    }
-
-    protected function getGeneratedFileContents(string $file): string
-    {
-        return file_get_contents($file);
-    }
-
-    protected function getTestStubPath(string $name): string
-    {
-        return __DIR__ . '/stubs/' . $name;
-    }
-
-    protected function makeDirectory(string $path)
-    {
-        /** @var Filesystem $files */
-        $files = $this->app->make(Filesystem::class);
-
-        if (! $files->isDirectory(dirname($path))) {
-            $files->makeDirectory(dirname($path), 0777, true, true);
-        }
-    }
-
-    /**
-     * Clear directory
-     */
-    protected function deleteDirectory(string $path)
-    {
-        /** @var Filesystem $files */
-        $files = $this->app->make(Filesystem::class);
-        $files->deleteDirectory($path);
-    }
-
-    /**
-     * Delete files
-     */
-    protected function deleteFile(string $path)
-    {
-        /** @var Filesystem $files */
-        $files = $this->app->make(Filesystem::class);
-        $files->delete($path);
-    }
-
-    /**
-     * Clear directory
-     */
-    protected function copyFile(string $from, string $to)
-    {
-        /** @var Filesystem $files */
-        $files = $this->app->make(Filesystem::class);
-        $files->copy($from, $to);
     }
 }

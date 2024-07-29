@@ -5,6 +5,7 @@ namespace Javaabu\Generators\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Filesystem\Filesystem;
+use Javaabu\Generators\Concerns\GeneratesFiles;
 use Javaabu\Generators\Exceptions\ColumnDoesNotExistException;
 use Javaabu\Generators\Exceptions\MultipleTablesSuppliedException;
 use Javaabu\Generators\Exceptions\TableDoesNotExistException;
@@ -15,77 +16,7 @@ use Illuminate\Support\Facades\Schema;
 
 abstract class GenerateCommand extends Command
 {
-    protected Filesystem $files;
-    protected StubRenderer $renderer;
-
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        parent::__construct();
-
-        $files = app(Filesystem::class);
-
-        $this->files = $files;
-        $this->renderer = new StubRenderer($files);
-    }
-
-    protected function getFullFilePath(string $path, string $file_name): string
-    {
-        return rtrim($path, '/') . '/' . $file_name;
-    }
-
-    protected function getPath(string $default, string $path = ''): string
-    {
-        if (! $path) {
-            return $default;
-        }
-
-        return base_path($path);
-    }
-
-    protected function appendContent(string $file_path, array $contents, string $stub = ''): bool
-    {
-        $template = '';
-
-        if ($this->alreadyExists($file_path)) {
-            $template = $this->renderer->getFileContents($file_path);
-        } elseif ($stub) {
-            $template = $this->renderer->loadStub($stub);
-        }
-
-        $template = $this->renderer->appendMultipleContent($contents, $template, skip_existing: true);
-
-        return $this->putContent($file_path, $template, true);
-    }
-
-    protected function putContent(string $file_path, string $content, bool $force = false): bool
-    {
-        if ($this->alreadyExists($file_path) && ! $force) {
-            $this->error($file_path . ' already exists!');
-
-            return false;
-        }
-
-        $this->makeDirectory($file_path);
-
-        $this->files->put($file_path, $content);
-
-        return true;
-    }
-
-    protected function alreadyExists(string $path): bool
-    {
-        return $this->files->exists($path);
-    }
-
-    protected function makeDirectory(string $path)
-    {
-        if (! $this->files->isDirectory(dirname($path))) {
-            $this->files->makeDirectory(dirname($path), 0777, true, true);
-        }
-    }
+    use GeneratesFiles;
 
     /** @return array */
     protected function getArguments()
