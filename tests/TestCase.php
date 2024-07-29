@@ -2,9 +2,9 @@
 
 namespace Javaabu\Generators\Tests;
 
+use Javaabu\GeneratorHelpers\Testing\InteractsWithTestFiles;
+use Javaabu\GeneratorHelpers\Testing\InteractsWithTestStubs;
 use Javaabu\Generators\GeneratorsServiceProvider;
-use Javaabu\Generators\Testing\InteractsWithTestFiles;
-use Javaabu\Generators\Testing\InteractsWithTestStubs;
 use Javaabu\Generators\Tests\TestSupport\Providers\TestServiceProvider;
 use Javaabu\Schema\SchemaServiceProvider;
 use Orchestra\Testbench\TestCase as BaseTestCase;

@@ -3,7 +3,7 @@
 namespace Javaabu\Generators\Commands;
 
 use Javaabu\Generators\Generators\ApiTestGenerator;
-use Javaabu\Generators\Support\StringCaser;
+use Javaabu\GeneratorHelpers\StringCaser;
 
 class GenerateApiTestCommand extends BaseGenerateCommand
 {

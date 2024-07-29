@@ -3,7 +3,7 @@
 namespace Javaabu\Generators\Commands\Auth;
 
 use Javaabu\Generators\Generators\Auth\AuthFactoryGenerator;
-use Javaabu\Generators\Support\StringCaser;
+use Javaabu\GeneratorHelpers\StringCaser;
 
 class GenerateAuthFactoryCommand extends BaseAuthGenerateCommand
 {

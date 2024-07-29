@@ -4,12 +4,10 @@ namespace Javaabu\Generators\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Container\BindingResolutionException;
-use Illuminate\Filesystem\Filesystem;
-use Javaabu\Generators\Concerns\GeneratesFiles;
+use Javaabu\GeneratorHelpers\Concerns\GeneratesFiles;
 use Javaabu\Generators\Exceptions\ColumnDoesNotExistException;
 use Javaabu\Generators\Exceptions\MultipleTablesSuppliedException;
 use Javaabu\Generators\Exceptions\TableDoesNotExistException;
-use Javaabu\Generators\Support\StubRenderer;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Illuminate\Support\Facades\Schema;

@@ -6,7 +6,7 @@ use Illuminate\Support\Str;
 use Javaabu\Generators\FieldTypes\BooleanField;
 use Javaabu\Generators\FieldTypes\Field;
 use Javaabu\Generators\FieldTypes\ForeignKeyField;
-use Javaabu\Generators\Support\StringCaser;
+use Javaabu\GeneratorHelpers\StringCaser;
 
 trait GeneratesController
 {

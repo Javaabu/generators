@@ -4,7 +4,7 @@ namespace Javaabu\Generators\Commands\Auth;
 
 use Javaabu\Generators\Generators\Auth\AuthRequestGenerator;
 use Javaabu\Generators\Generators\Auth\BaseAuthGenerator;
-use Javaabu\Generators\Support\StringCaser;
+use Javaabu\GeneratorHelpers\StringCaser;
 
 class GenerateAuthRequestCommand extends BaseAuthGenerateCommand
 {

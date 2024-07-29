@@ -3,7 +3,7 @@
 namespace Javaabu\Generators\FieldTypes;
 
 use Illuminate\Support\Str;
-use Javaabu\Generators\Support\StringCaser;
+use Javaabu\GeneratorHelpers\StringCaser;
 
 class ForeignKeyField extends Field
 {

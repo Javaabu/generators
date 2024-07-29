@@ -3,7 +3,7 @@
 namespace Javaabu\Generators\Commands;
 
 use Javaabu\Generators\Generators\TestGenerator;
-use Javaabu\Generators\Support\StringCaser;
+use Javaabu\GeneratorHelpers\StringCaser;
 
 class GenerateTestCommand extends BaseGenerateCommand
 {

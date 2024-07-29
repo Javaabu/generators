@@ -2,7 +2,7 @@
 
 namespace Javaabu\Generators\Tests\Unit;
 
-use Javaabu\Generators\Support\StringCaser;
+use Javaabu\GeneratorHelpers\StringCaser;
 use Javaabu\Generators\Tests\TestCase;
 
 class StringCaserTest extends TestCase

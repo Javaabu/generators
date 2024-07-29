@@ -7,8 +7,8 @@ use Javaabu\Generators\FieldTypes\Field;
 use Javaabu\Generators\FieldTypes\ForeignKeyField;
 use Javaabu\Generators\FieldTypes\StringField;
 use Javaabu\Generators\IconProviders\BaseIconProvider;
-use Javaabu\Generators\Support\StringCaser;
-use Javaabu\Generators\Support\StubRenderer;
+use Javaabu\GeneratorHelpers\StringCaser;
+use Javaabu\GeneratorHelpers\StubRenderer;
 use Javaabu\Generators\Support\TableProperties;
 
 abstract class BaseGenerator

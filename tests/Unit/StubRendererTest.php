@@ -2,7 +2,7 @@
 
 namespace Javaabu\Generators\Tests\Unit;
 
-use Javaabu\Generators\Support\StubRenderer;
+use Javaabu\GeneratorHelpers\StubRenderer;
 use Javaabu\Generators\Tests\TestCase;
 
 class StubRendererTest extends TestCase

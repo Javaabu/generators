@@ -3,7 +3,7 @@
 namespace Javaabu\Generators\Commands;
 
 use Javaabu\Generators\Generators\PolicyGenerator;
-use Javaabu\Generators\Support\StringCaser;
+use Javaabu\GeneratorHelpers\StringCaser;
 
 class GeneratePolicyCommand extends BaseGenerateCommand
 {

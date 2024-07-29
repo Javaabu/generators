@@ -5,7 +5,7 @@ namespace Javaabu\Generators\Generators\Concerns;
 use Illuminate\Support\Str;
 use Javaabu\Generators\FieldTypes\EnumField;
 use Javaabu\Generators\FieldTypes\Field;
-use Javaabu\Generators\Support\StringCaser;
+use Javaabu\GeneratorHelpers\StringCaser;
 
 trait GeneratesRequest
 {

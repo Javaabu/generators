@@ -3,7 +3,7 @@
 namespace Javaabu\Generators\Commands;
 
 use Javaabu\Generators\Generators\PermissionsGenerator;
-use Javaabu\Generators\Support\StringCaser;
+use Javaabu\GeneratorHelpers\StringCaser;
 
 class GeneratePermissionsCommand extends BaseGenerateCommand
 {

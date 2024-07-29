@@ -2,7 +2,7 @@
 
 namespace Javaabu\Generators\FieldTypes;
 
-use Javaabu\Generators\Support\StringCaser;
+use Javaabu\GeneratorHelpers\StringCaser;
 
 abstract class Field
 {

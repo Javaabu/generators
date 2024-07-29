@@ -8,7 +8,7 @@ use Javaabu\Generators\FieldTypes\EnumField;
 use Javaabu\Generators\FieldTypes\Field;
 use Javaabu\Generators\FieldTypes\ForeignKeyField;
 use Javaabu\Generators\FieldTypes\JsonField;
-use Javaabu\Generators\Support\StringCaser;
+use Javaabu\GeneratorHelpers\StringCaser;
 
 class TestGenerator extends BaseGenerator
 {

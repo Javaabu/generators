@@ -8,7 +8,7 @@ use Javaabu\Generators\FieldTypes\Field;
 use Javaabu\Generators\FieldTypes\ForeignKeyField;
 use Javaabu\Generators\Generators\BaseGenerator;
 use Javaabu\Generators\Generators\Concerns\GeneratesFactory;
-use Javaabu\Generators\Support\StringCaser;
+use Javaabu\GeneratorHelpers\StringCaser;
 
 class AuthFactoryGenerator extends BaseAuthGenerator
 {

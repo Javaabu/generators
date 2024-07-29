@@ -38,7 +38,7 @@ use Javaabu\Generators\Commands\GenerateViewsCommand;
 use Javaabu\Generators\Contracts\SchemaResolverInterface;
 use Javaabu\Generators\Exceptions\UnsupportedDbDriverException;
 use Javaabu\Generators\Resolvers\SchemaResolverMySql;
-use Javaabu\Generators\Support\StubRenderer;
+use Javaabu\GeneratorHelpers\StubRenderer;
 
 class GeneratorsServiceProvider extends ServiceProvider
 {

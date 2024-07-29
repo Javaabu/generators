@@ -7,7 +7,7 @@ use Javaabu\Generators\FieldTypes\BooleanField;
 use Javaabu\Generators\FieldTypes\Field;
 use Javaabu\Generators\FieldTypes\ForeignKeyField;
 use Javaabu\Generators\Generators\Concerns\GeneratesController;
-use Javaabu\Generators\Support\StringCaser;
+use Javaabu\GeneratorHelpers\StringCaser;
 
 class ControllerGenerator extends BaseGenerator
 {

@@ -3,7 +3,7 @@
 namespace Javaabu\Generators\Generators;
 
 use Javaabu\Generators\FieldTypes\Field;
-use Javaabu\Generators\Support\StringCaser;
+use Javaabu\GeneratorHelpers\StringCaser;
 
 class ViewsGenerator extends BaseGenerator
 {

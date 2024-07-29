@@ -5,7 +5,7 @@ namespace Javaabu\Generators\Generators\Auth;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Schema;
 use Javaabu\Generators\Generators\BaseGenerator;
-use Javaabu\Generators\Support\StringCaser;
+use Javaabu\GeneratorHelpers\StringCaser;
 
 abstract class BaseAuthGenerator extends BaseGenerator
 {

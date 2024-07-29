@@ -3,7 +3,7 @@
 namespace Javaabu\Generators\IconProviders;
 
 use Illuminate\Support\Str;
-use Javaabu\Generators\Support\StringCaser;
+use Javaabu\GeneratorHelpers\StringCaser;
 
 abstract class BaseIconProvider
 {
