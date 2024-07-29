@@ -8,6 +8,7 @@ use Illuminate\Support\Str;
 class StubRenderer
 {
     protected Filesystem $files;
+    protected static array $package_stub_paths = [];
 
     /**
      * Constructor
@@ -15,6 +16,14 @@ class StubRenderer
     public function __construct(Filesystem $files)
     {
         $this->files = $files;
+    }
+
+    /**
+     * Register package stub path
+     */
+    public static function loadStubsFrom(string $path, string $namespace)
+    {
+        static::$package_stub_paths[$namespace] = $path;
     }
 
     public function getFileContents(string $file): string
@@ -44,12 +53,12 @@ class StubRenderer
 
         $custom_path = base_path('stubs/' . $package . '/' . $stub_name);
 
-        return file_exists($custom_path) ? $custom_path : $this->defaultStubPath() . '/' . $stub_name;
+        return file_exists($custom_path) ? $custom_path : $this->defaultStubPath($package) . '/' . $stub_name;
     }
 
-    public function defaultStubPath(): string
+    public function defaultStubPath(string $namespace): string
     {
-        return __DIR__ . '/../../stubs';
+        return static::$package_stub_paths[$namespace] ?? '';
     }
 
     public function appendToStub(string $stub, string $content, string $search, bool $keep_search = true): string

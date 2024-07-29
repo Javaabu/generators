@@ -31,7 +31,7 @@ class GeneratePermissionsCommand extends BaseGenerateCommand
     {
         $path = $this->getPath(database_path('seeders'), $path);
 
-        $stub = 'seeders/PermissionsSeeder.stub';
+        $stub = 'generators::seeders/PermissionsSeeder.stub';
         $file_name = 'PermissionsSeeder.php';
         $file_path = $this->getFullFilePath($path, $file_name);
 

@@ -91,6 +91,8 @@ class GeneratorsServiceProvider extends ServiceProvider
                 GenerateAuthHomeControllerCommand::class,
             ]);
         }
+
+        StubRenderer::loadStubsFrom(__DIR__ . '/../stubs', 'generators');
     }
 
     /**
