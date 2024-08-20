@@ -3,7 +3,6 @@
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/javaabu/generators.svg?style=flat-square)](https://packagist.org/packages/javaabu/generators)
 [![Test Status](../../actions/workflows/run-tests.yml/badge.svg)](../../actions/workflows/run-tests.yml)
 ![Code Coverage Badge](./.github/coverage.svg)
-[![Quality Score](https://img.shields.io/scrutinizer/g/javaabu/generators.svg?style=flat-square)](https://scrutinizer-ci.com/g/javaabu/generators)
 [![Total Downloads](https://img.shields.io/packagist/dt/javaabu/generators.svg?style=flat-square)](https://packagist.org/packages/javaabu/generators)
 
 Laravel generators on steroids
