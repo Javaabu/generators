@@ -6,11 +6,12 @@
 namespace App\Exports;
 
 use App\Models\{{singularStudly}};
+use Javaabu\Exports\ModelExport;
 
 class {{pluralStudly}}Export extends ModelExport
 {
-    /**
-     * @var string
-     */
-    protected $model_class = {{singularStudly}}::class;
+    public function modelClass(): string
+    {
+        return {{singularStudly}}::class;
+    }
 }

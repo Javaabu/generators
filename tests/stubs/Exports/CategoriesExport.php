@@ -6,11 +6,12 @@
 namespace App\Exports;
 
 use App\Models\Category;
+use Javaabu\Exports\ModelExport;
 
 class CategoriesExport extends ModelExport
 {
-    /**
-     * @var string
-     */
-    protected $model_class = Category::class;
+    public function modelClass(): string
+    {
+        return Category::class;
+    }
 }
