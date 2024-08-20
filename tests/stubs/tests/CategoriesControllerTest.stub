@@ -34,12 +34,12 @@ class CategoriesControllerTest extends AdminTestCase
 
         $category = $this->getFactory(Category::class)->create();
 
-        $this->adminGet(add_query_arg([,
+        $this->adminGet(add_query_arg([
             'search' => $category->name,
             'date_field' => 'created_at',
             'date_from' => now()->subDay()->toDateTimeString(),
             'date_to' => now()->addDay()->toDateTimeString(),
-        ], '/categories')
+        ], '/categories'))
             ->assertStatus(200)
             ->assertSee($category->name);
     }
@@ -55,12 +55,10 @@ class CategoriesControllerTest extends AdminTestCase
 
         Excel::fake();
 
-        $this->setFakeSetting('app_name', 'Test App');
-
         $this->adminGet(add_query_arg(['download' => 1], '/categories'))
             ->assertSuccessful();
 
-        Excel::assertDownloaded('test-app-categories.csv', function (CategoriesExport $export) {
+        Excel::assertDownloaded('categories.xlsx', function (CategoriesExport $export) {
             return $export->modelClass() == Category::class;
         });
     }
