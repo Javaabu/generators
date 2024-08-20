@@ -141,13 +141,7 @@ class OrdersController extends Controller
      */
     public function destroy(Order $order, Request $request)
     {
-        if (! $order->delete()) {
-            if ($request->expectsJson()) {
-                return response()->json(false, 500);
-            }
-
-            abort(500);
-        }
+        $order->delete();
 
         if ($request->expectsJson()) {
             return response()->json(true);

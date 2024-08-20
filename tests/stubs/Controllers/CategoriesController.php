@@ -124,13 +124,7 @@ class CategoriesController extends Controller
      */
     public function destroy(Category $category, Request $request)
     {
-        if (! $category->delete()) {
-            if ($request->expectsJson()) {
-                return response()->json(false, 500);
-            }
-
-            abort(500);
-        }
+        $category->delete();
 
         if ($request->expectsJson()) {
             return response()->json(true);

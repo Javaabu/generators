@@ -248,13 +248,7 @@ class CustomersController extends Controller
      */
     public function destroy(Customer $customer, Request $request)
     {
-        if (! $customer->delete()) {
-            if ($request->expectsJson()) {
-                return response()->json(false, 500);
-            }
-
-            abort(500);
-        }
+        $customer->delete();
 
         if ($request->expectsJson()) {
             return response()->json(true);
@@ -285,14 +279,7 @@ class CustomersController extends Controller
 
         $this->authorize('forceDelete', $customer);
 
-        // send error
-        if (! $customer->forceDelete()) {
-            if ($request->expectsJson()) {
-                return response()->json(false, 500);
-            }
-
-            abort(500);
-        }
+        $customer->forceDelete();
 
         if ($request->expectsJson()) {
             return response()->json(true);
@@ -313,14 +300,7 @@ class CustomersController extends Controller
 
         $this->authorize('restore', $customer);
 
-        // send error
-        if (! $customer->restore()) {
-            if ($request->expectsJson()) {
-                return response()->json(false, 500);
-            }
-
-            abort(500);
-        }
+        $customer->restore();
 
         if ($request->expectsJson()) {
             return response()->json(true);

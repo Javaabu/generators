@@ -127,13 +127,7 @@ class {{pluralStudly}}Controller extends Controller
      */
     public function destroy({{singularStudly}} ${{singularSnake}}, Request $request)
     {
-        if (! ${{singularSnake}}->delete()) {
-            if ($request->expectsJson()) {
-                return response()->json(false, 500);
-            }
-
-            abort(500);
-        }
+        ${{singularSnake}}->delete();
 
         if ($request->expectsJson()) {
             return response()->json(true);
@@ -164,14 +158,7 @@ class {{pluralStudly}}Controller extends Controller
 
         $this->authorize('forceDelete', ${{singularSnake}});
 
-        // send error
-        if (! ${{singularSnake}}->forceDelete()) {
-            if ($request->expectsJson()) {
-                return response()->json(false, 500);
-            }
-
-            abort(500);
-        }
+        ${{singularSnake}}->forceDelete();
 
         if ($request->expectsJson()) {
             return response()->json(true);
@@ -192,14 +179,7 @@ class {{pluralStudly}}Controller extends Controller
 
         $this->authorize('restore', ${{singularSnake}});
 
-        // send error
-        if (! ${{singularSnake}}->restore()) {
-            if ($request->expectsJson()) {
-                return response()->json(false, 500);
-            }
-
-            abort(500);
-        }
+        ${{singularSnake}}->restore();
 
         if ($request->expectsJson()) {
             return response()->json(true);

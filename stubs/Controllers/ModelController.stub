@@ -123,13 +123,7 @@ class {{pluralStudly}}Controller extends Controller
      */
     public function destroy({{singularStudly}} ${{singularSnake}}, Request $request)
     {
-        if (! ${{singularSnake}}->delete()) {
-            if ($request->expectsJson()) {
-                return response()->json(false, 500);
-            }
-
-            abort(500);
-        }
+        ${{singularSnake}}->delete();
 
         if ($request->expectsJson()) {
             return response()->json(true);

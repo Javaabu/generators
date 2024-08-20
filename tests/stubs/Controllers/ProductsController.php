@@ -154,13 +154,7 @@ class ProductsController extends Controller
      */
     public function destroy(Product $product, Request $request)
     {
-        if (! $product->delete()) {
-            if ($request->expectsJson()) {
-                return response()->json(false, 500);
-            }
-
-            abort(500);
-        }
+        $product->delete();
 
         if ($request->expectsJson()) {
             return response()->json(true);
@@ -191,14 +185,7 @@ class ProductsController extends Controller
 
         $this->authorize('forceDelete', $product);
 
-        // send error
-        if (! $product->forceDelete()) {
-            if ($request->expectsJson()) {
-                return response()->json(false, 500);
-            }
-
-            abort(500);
-        }
+        $product->forceDelete();
 
         if ($request->expectsJson()) {
             return response()->json(true);
@@ -219,14 +206,7 @@ class ProductsController extends Controller
 
         $this->authorize('restore', $product);
 
-        // send error
-        if (! $product->restore()) {
-            if ($request->expectsJson()) {
-                return response()->json(false, 500);
-            }
-
-            abort(500);
-        }
+        $product->restore();
 
         if ($request->expectsJson()) {
             return response()->json(true);
