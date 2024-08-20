@@ -3,6 +3,8 @@
 namespace Tests\Feature\Controllers\Admin;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Exports\CategoriesExport;
+use Maatwebsite\Excel\Facades\Excel;
 use App\Models\Category;
 
 class CategoriesControllerTest extends AdminTestCase
@@ -21,6 +23,46 @@ class CategoriesControllerTest extends AdminTestCase
         $this->adminGet('/categories')
             ->assertStatus(200)
             ->assertSee($category->name);
+    }
+
+    /** @test */
+    public function it_can_filter_categories()
+    {
+        $this->withoutExceptionHandling();
+
+        $this->actingAsAdmin('view_categories');
+
+        $category = $this->getFactory(Category::class)->create();
+
+        $this->adminGet(add_query_arg([,
+            'search' => $category->name,
+            'date_field' => 'created_at',
+            'date_from' => now()->subDay()->toDateTimeString(),
+            'date_to' => now()->addDay()->toDateTimeString(),
+        ], '/categories')
+            ->assertStatus(200)
+            ->assertSee($category->name);
+    }
+
+    /** @test */
+    public function it_can_export_categories()
+    {
+        $this->withoutExceptionHandling();
+
+        $this->actingAsAdmin('view_categories');
+
+        $category = $this->getFactory(Category::class)->create();
+
+        Excel::fake();
+
+        $this->setFakeSetting('app_name', 'Test App');
+
+        $this->adminGet(add_query_arg(['download' => 1], '/categories'))
+            ->assertSuccessful();
+
+        Excel::assertDownloaded('test-app-categories.csv', function (CategoriesExport $export) {
+            return $export->modelClass() == Category::class;
+        });
     }
 
     /** @test */

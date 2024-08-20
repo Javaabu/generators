@@ -24,6 +24,8 @@ class TestGenerator extends BaseGenerator
         $template = $renderer->replaceStubNames($stub, $this->getTable());
 
         $use_statements = [
+            'use App\\Exports\\' . StringCaser::pluralStudly($this->getTable()) . 'Export;',
+            'use Maatwebsite\\Excel\\Facades\\Excel;',
             'use App\\Models\\' . $this->getModelClass() . ';'
         ];
 

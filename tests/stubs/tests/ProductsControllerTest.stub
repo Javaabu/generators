@@ -3,6 +3,8 @@
 namespace Tests\Feature\Controllers\Admin;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Exports\ProductsExport;
+use Maatwebsite\Excel\Facades\Excel;
 use App\Models\Product;
 use App\Models\Category;
 
@@ -22,6 +24,46 @@ class ProductsControllerTest extends AdminTestCase
         $this->adminGet('/products')
             ->assertStatus(200)
             ->assertSee($product->name);
+    }
+
+    /** @test */
+    public function it_can_filter_products()
+    {
+        $this->withoutExceptionHandling();
+
+        $this->actingAsAdmin('view_products');
+
+        $product = $this->getFactory(Product::class)->create();
+
+        $this->adminGet(add_query_arg([,
+            'search' => $product->name,
+            'date_field' => 'created_at',
+            'date_from' => now()->subDay()->toDateTimeString(),
+            'date_to' => now()->addDay()->toDateTimeString(),
+        ], '/products')
+            ->assertStatus(200)
+            ->assertSee($product->name);
+    }
+
+    /** @test */
+    public function it_can_export_products()
+    {
+        $this->withoutExceptionHandling();
+
+        $this->actingAsAdmin('view_products');
+
+        $product = $this->getFactory(Product::class)->create();
+
+        Excel::fake();
+
+        $this->setFakeSetting('app_name', 'Test App');
+
+        $this->adminGet(add_query_arg(['download' => 1], '/products'))
+            ->assertSuccessful();
+
+        Excel::assertDownloaded('test-app-products.csv', function (ProductsExport $export) {
+            return $export->modelClass() == Product::class;
+        });
     }
 
     /** @test */

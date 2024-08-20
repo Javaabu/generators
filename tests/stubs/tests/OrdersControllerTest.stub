@@ -3,6 +3,8 @@
 namespace Tests\Feature\Controllers\Admin;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Exports\OrdersExport;
+use Maatwebsite\Excel\Facades\Excel;
 use App\Models\Order;
 use App\Models\Category;
 use App\Models\Product;
@@ -24,6 +26,46 @@ class OrdersControllerTest extends AdminTestCase
         $this->adminGet('/orders')
             ->assertStatus(200)
             ->assertSee($order->order_no);
+    }
+
+    /** @test */
+    public function it_can_filter_orders()
+    {
+        $this->withoutExceptionHandling();
+
+        $this->actingAsAdmin('view_orders');
+
+        $order = $this->getFactory(Order::class)->create();
+
+        $this->adminGet(add_query_arg([,
+            'search' => $order->name,
+            'date_field' => 'created_at',
+            'date_from' => now()->subDay()->toDateTimeString(),
+            'date_to' => now()->addDay()->toDateTimeString(),
+        ], '/orders')
+            ->assertStatus(200)
+            ->assertSee($order->name);
+    }
+
+    /** @test */
+    public function it_can_export_orders()
+    {
+        $this->withoutExceptionHandling();
+
+        $this->actingAsAdmin('view_orders');
+
+        $order = $this->getFactory(Order::class)->create();
+
+        Excel::fake();
+
+        $this->setFakeSetting('app_name', 'Test App');
+
+        $this->adminGet(add_query_arg(['download' => 1], '/orders'))
+            ->assertSuccessful();
+
+        Excel::assertDownloaded('test-app-orders.csv', function (OrdersExport $export) {
+            return $export->modelClass() == Order::class;
+        });
     }
 
     /** @test */

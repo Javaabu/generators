@@ -24,6 +24,46 @@ class {{pluralStudly}}ControllerTest extends AdminTestCase
     }
 
     /** @test */
+    public function it_can_filter_{{pluralSnake}}()
+    {
+        $this->withoutExceptionHandling();
+
+        $this->actingAsAdmin('view_{{pluralSnake}}');
+
+        ${{singularSnake}} = $this->getFactory({{singularStudly}}::class)->create();
+
+        $this->adminGet(add_query_arg([,
+            'search' => ${{singularSnake}}->name,
+            'date_field' => 'created_at',
+            'date_from' => now()->subDay()->toDateTimeString(),
+            'date_to' => now()->addDay()->toDateTimeString(),
+        ], '/{{pluralKebab}}')
+            ->assertStatus(200)
+            ->assertSee(${{singularSnake}}->name);
+    }
+
+    /** @test */
+    public function it_can_export_{{pluralSnake}}()
+    {
+        $this->withoutExceptionHandling();
+
+        $this->actingAsAdmin('view_{{pluralSnake}}');
+
+        ${{singularSnake}} = $this->getFactory({{singularStudly}}::class)->create();
+
+        Excel::fake();
+
+        $this->setFakeSetting('app_name', 'Test App');
+
+        $this->adminGet(add_query_arg(['download' => 1], '/{{pluralKebab}}'))
+            ->assertSuccessful();
+
+        Excel::assertDownloaded('test-app-{{pluralKebab}}.csv', function ({{pluralStudly}}Export $export) {
+            return $export->modelClass() == {{singularStudly}}::class;
+        });
+    }
+
+    /** @test */
     public function it_does_not_allow_an_unauthorized_user_to_list_{{pluralSnake}}()
     {
         $this->actingAsAdmin();
