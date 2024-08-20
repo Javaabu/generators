@@ -33,13 +33,13 @@ class {{pluralStudly}}ControllerTest extends AdminTestCase
         ${{singularSnake}} = $this->getFactory({{singularStudly}}::class)->create();
 
         $this->adminGet(add_query_arg([
-            'search' => ${{singularSnake}}->name,
+            'search' => ${{singularSnake}}->{{nameField}},
             'date_field' => 'created_at',
             'date_from' => now()->subDay()->toDateTimeString(),
             'date_to' => now()->addDay()->toDateTimeString(),
         ], '/{{pluralKebab}}'))
             ->assertStatus(200)
-            ->assertSee(${{singularSnake}}->name);
+            ->assertSee(${{singularSnake}}->{{nameField}});
     }
 
     /** @test */
