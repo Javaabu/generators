@@ -41,7 +41,7 @@ php artisan generate:api_test products --create
 # creates app/Http/Controllers/Api/ProductsController.php
 # adds api routes to api.php routes file
 # creates tests/Feature/Controllers/Api/ProductsControllerTest.php
-php artisan generate:api products --create
+php artisan generate:api products --create {--except=<commands to skip>}
 
 # creates tests/Feature/Controllers/Admin/ProductsControllerTest.php
 php artisan generate:test products --create
