@@ -61,5 +61,9 @@ php artisan generate:test products --create
 php artisan generate:views products --create
 
 # creates all files specified above except API controller
-php artisan generate:all products --create
+# To skip a command, give comma separated list of commands
+php artisan generate:all products --create {--except=<commands to skip>}
+
+# To generate all except controllers and tests
+php artisan generate:all products --create --except=controller,test
 ```

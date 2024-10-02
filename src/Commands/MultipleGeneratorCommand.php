@@ -3,12 +3,28 @@
 namespace Javaabu\Generators\Commands;
 
 use Illuminate\Support\Facades\Artisan;
+use Symfony\Component\Console\Input\InputOption;
 
 abstract class MultipleGeneratorCommand extends BaseGenerateCommand
 {
+    /** @return array */
+    protected function getOptions()
+    {
+        $options = parent::getOptions();
+
+        $options[] = ['except', null, InputOption::VALUE_REQUIRED, 'Which commands to skip', ''];
+
+        return $options;
+    }
+
     protected function getCommands(): array
     {
-        return property_exists($this, 'commands') ? $this->commands : [];
+        $defined_commands = property_exists($this, 'commands') ? $this->commands : [];
+
+        // Options
+        $skipped_commands = (array) array_filter(explode(',', $this->option('except')));
+
+        return array_diff($defined_commands, $skipped_commands);
     }
 
     protected function createOutput(string $table, array $columns): void

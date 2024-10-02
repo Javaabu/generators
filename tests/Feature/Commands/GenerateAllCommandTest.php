@@ -36,6 +36,34 @@ class GenerateAllCommandTest extends TestCase
     }
 
     /** @test */
+    public function it_can_skip_commands_for_all(): void
+    {
+        $commands = $this->getCommands();
+
+        foreach ($commands as $command) {
+            // skip test and permissions
+            if ($command == GenerateTestCommand::class || $command == GeneratePermissionsCommand::class) {
+                $fake_command = $this->mock($command . '[createOutput]', function ($mock) {
+                    $mock->shouldAllowMockingProtectedMethods()
+                        ->shouldNotHaveReceived('createOutput');
+                });
+            } else {
+                $fake_command = $this->mock($command . '[createOutput]', function ($mock) {
+                    $mock->shouldAllowMockingProtectedMethods()
+                        ->shouldReceive('createOutput')
+                        ->once()
+                        ->with('categories', []);
+                });
+            }
+
+            $this->app->instance($command, $fake_command);
+        }
+
+        $this->artisan('generate:all', ['table' => 'categories', '--except' => 'test,permissions'])
+            ->assertSuccessful();
+    }
+
+    /** @test */
     public function it_can_generate_all_output(): void
     {
         $commands = $this->getCommands();
