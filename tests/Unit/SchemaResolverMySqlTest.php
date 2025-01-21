@@ -13,6 +13,7 @@ use Javaabu\Generators\FieldTypes\ForeignKeyField;
 use Javaabu\Generators\FieldTypes\IntegerField;
 use Javaabu\Generators\FieldTypes\JsonField;
 use Javaabu\Generators\FieldTypes\StringField;
+use Javaabu\Generators\FieldTypes\TextField;
 use Javaabu\Generators\FieldTypes\TimeField;
 use Javaabu\Generators\FieldTypes\YearField;
 use Javaabu\Generators\Resolvers\SchemaResolverMySql;
@@ -79,6 +80,74 @@ class SchemaResolverMySqlTest extends TestCase
         $fields = $resolver->resolve()->getFields();
 
         $this->assertArrayNotHasKey('id', $fields);
+    }
+
+    /** @test */
+    public function it_can_resolve_text_fields(): void
+    {
+        $resolver = new SchemaResolverMySql('posts');
+        $fields = $resolver->resolve()->getFields();
+
+        $this->assertArrayHasKey('excerpt', $fields);
+
+        $field = $fields['excerpt'];
+        $this->assertInstanceOf(TextField::class, $field);
+        $this->assertEquals('excerpt', $field->getName());
+        $this->assertEquals(65535, $field->getMax());
+        $this->assertFalse($field->isNullable());
+        $this->assertFalse($field->hasDefault());
+        $this->assertFalse($field->isUnique());
+    }
+
+    /** @test */
+    public function it_can_resolve_medium_text_fields(): void
+    {
+        $resolver = new SchemaResolverMySql('posts');
+        $fields = $resolver->resolve()->getFields();
+
+        $this->assertArrayHasKey('medium_content', $fields);
+
+        $field = $fields['medium_content'];
+        $this->assertInstanceOf(TextField::class, $field);
+        $this->assertEquals('medium_content', $field->getName());
+        $this->assertEquals(16777215, $field->getMax());
+        $this->assertTrue($field->isNullable());
+        $this->assertFalse($field->hasDefault());
+        $this->assertFalse($field->isUnique());
+    }
+
+    /** @test */
+    public function it_can_resolve_tiny_text_fields(): void
+    {
+        $resolver = new SchemaResolverMySql('posts');
+        $fields = $resolver->resolve()->getFields();
+
+        $this->assertArrayHasKey('tiny_content', $fields);
+
+        $field = $fields['tiny_content'];
+        $this->assertInstanceOf(TextField::class, $field);
+        $this->assertEquals('tiny_content', $field->getName());
+        $this->assertEquals(255, $field->getMax());
+        $this->assertTrue($field->isNullable());
+        $this->assertFalse($field->hasDefault());
+        $this->assertFalse($field->isUnique());
+    }
+
+    /** @test */
+    public function it_can_resolve_long_text_fields(): void
+    {
+        $resolver = new SchemaResolverMySql('posts');
+        $fields = $resolver->resolve()->getFields();
+
+        $this->assertArrayHasKey('content', $fields);
+
+        $field = $fields['content'];
+        $this->assertInstanceOf(TextField::class, $field);
+        $this->assertEquals('content', $field->getName());
+        $this->assertEquals(4294967295, $field->getMax());
+        $this->assertTrue($field->isNullable());
+        $this->assertFalse($field->hasDefault());
+        $this->assertFalse($field->isUnique());
     }
 
     /** @test */

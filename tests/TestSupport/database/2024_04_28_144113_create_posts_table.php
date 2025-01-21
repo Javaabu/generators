@@ -17,6 +17,10 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->dateTime('published_at')->nullable();
+            $table->text('excerpt');
+            $table->longText('content')->nullable();
+            $table->mediumText('medium_content')->nullable();
+            $table->tinyText('tiny_content')->nullable();
             $table->timestamps();
         });
     }

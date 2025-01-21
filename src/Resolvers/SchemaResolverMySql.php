@@ -45,6 +45,13 @@ class SchemaResolverMySql extends BaseSchemaResolver implements SchemaResolverIn
         ],
     ];
 
+    public static array $textTypes = [
+        'tinytext' => 255,
+        'text' => 65535,
+        'mediumtext' => 16777215,
+        'longtext' => 4294967295,
+    ];
+
     protected function getColumnsDefinitionsFromTable()
     {
         $databaseName = config('database.connections.mysql.database');
@@ -147,11 +154,23 @@ class SchemaResolverMySql extends BaseSchemaResolver implements SchemaResolverIn
                 );
                 break;
 
+            case $type == 'tinytext':
+            case $type == 'mediumtext':
+            case $type == 'longtext':
             case $type == 'text':
+                $text_type = $type->toString();
+
+                if (! array_key_exists($text_type, self::$textTypes)) {
+                    $text_type = 'text';
+                }
+
+                $max = self::$textTypes[$text_type];
+
                 return new TextField(
                     $name,
                     $is_nullable,
                     default: $default,
+                    max: $max,
                     unique: $is_unique
                 );
                 break;
