@@ -4,12 +4,13 @@ namespace Tests\Feature\Controllers\Api;
 
 use App\Models\Category;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\Test;
 
 class CategoriesControllerTest extends ApiTestCase
 {
     use RefreshDatabase;
 
-    /** @test */
+    #[Test]
     public function it_can_list_api_categories_for_public_users(): void
     {
         $this->withoutExceptionHandling();
@@ -26,7 +27,7 @@ class CategoriesControllerTest extends ApiTestCase
 
     }
 
-    /** @test */
+    #[Test]
     public function it_can_show_api_categories_for_public_users(): void
     {
         $this->withoutExceptionHandling();
@@ -42,7 +43,7 @@ class CategoriesControllerTest extends ApiTestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_list_api_categories_for_admin_users(): void
     {
         $this->withoutExceptionHandling();
@@ -59,7 +60,7 @@ class CategoriesControllerTest extends ApiTestCase
 
     }
 
-    /** @test */
+    #[Test]
     public function it_can_show_api_categories_for_admin_users(): void
     {
         $this->withoutExceptionHandling();

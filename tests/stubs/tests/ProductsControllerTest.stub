@@ -3,6 +3,7 @@
 namespace Tests\Feature\Controllers\Admin;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\Test;
 use App\Exports\ProductsExport;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Models\Product;
@@ -12,7 +13,7 @@ class ProductsControllerTest extends AdminTestCase
 {
     use RefreshDatabase;
 
-    /** @test */
+    #[Test]
     public function it_can_list_products()
     {
         $this->withoutExceptionHandling();
@@ -26,7 +27,7 @@ class ProductsControllerTest extends AdminTestCase
             ->assertSee($product->name);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_filter_products()
     {
         $this->withoutExceptionHandling();
@@ -45,7 +46,7 @@ class ProductsControllerTest extends AdminTestCase
             ->assertSee($product->name);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_export_products()
     {
         $this->withoutExceptionHandling();
@@ -64,7 +65,7 @@ class ProductsControllerTest extends AdminTestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_does_not_allow_an_unauthorized_user_to_list_products()
     {
         $this->actingAsAdmin();
@@ -76,7 +77,7 @@ class ProductsControllerTest extends AdminTestCase
             ->assertDontSee($product->name);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_show_the_create_new_product_page()
     {
         $this->withoutExceptionHandling();
@@ -88,7 +89,7 @@ class ProductsControllerTest extends AdminTestCase
             ->assertSee('New Product');
     }
 
-    /** @test */
+    #[Test]
     public function it_does_not_allow_an_unauthorized_user_to_see_the_create_new_product_page()
     {
         $this->actingAsAdmin();
@@ -98,7 +99,7 @@ class ProductsControllerTest extends AdminTestCase
             ->assertDontSee('New Product');
     }
 
-    /** @test */
+    #[Test]
     public function it_can_create_a_new_product()
     {
         $this->withoutExceptionHandling();
@@ -146,7 +147,7 @@ class ProductsControllerTest extends AdminTestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_does_not_allow_an_unauthorized_user_to_add_a_product()
     {
         $this->actingAsAdmin();
@@ -192,7 +193,7 @@ class ProductsControllerTest extends AdminTestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_show_the_edit_product_page()
     {
         $this->withoutExceptionHandling();
@@ -206,7 +207,7 @@ class ProductsControllerTest extends AdminTestCase
             ->assertSee($product->name);
     }
 
-    /** @test */
+    #[Test]
     public function it_does_not_allow_an_unauthorized_user_to_see_the_edit_product_page()
     {
         $this->actingAsAdmin();
@@ -218,7 +219,7 @@ class ProductsControllerTest extends AdminTestCase
             ->assertDontSee($product->name);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_update_a_product()
     {
         $this->withoutExceptionHandling();
@@ -287,7 +288,7 @@ class ProductsControllerTest extends AdminTestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_does_not_allow_an_unauthorized_user_to_update_a_product()
     {
         $this->actingAsAdmin();
@@ -354,7 +355,7 @@ class ProductsControllerTest extends AdminTestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_show_a_product()
     {
         $this->withoutExceptionHandling();
@@ -368,7 +369,7 @@ class ProductsControllerTest extends AdminTestCase
             ->assertSee($product->name);
     }
 
-    /** @test */
+    #[Test]
     public function it_does_not_allow_an_unauthorized_user_to_view_a_product()
     {
         $this->actingAsAdmin();
@@ -380,7 +381,7 @@ class ProductsControllerTest extends AdminTestCase
             ->assertDontSee($product->name);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_soft_delete_a_product()
     {
         $this->withoutExceptionHandling();
@@ -401,7 +402,7 @@ class ProductsControllerTest extends AdminTestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_does_not_allow_an_unauthorized_user_to_soft_delete_a_product()
     {
         $this->actingAsAdmin();
@@ -420,7 +421,7 @@ class ProductsControllerTest extends AdminTestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_force_delete_a_product()
     {
         $this->withoutExceptionHandling();
@@ -443,7 +444,7 @@ class ProductsControllerTest extends AdminTestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_does_not_allow_an_unauthorized_user_to_force_delete_a_product()
     {
         $product = $this->getFactory(Product::class)->create();
@@ -464,7 +465,7 @@ class ProductsControllerTest extends AdminTestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_restore_a_soft_deleted_product()
     {
         $this->withoutExceptionHandling();
@@ -488,7 +489,7 @@ class ProductsControllerTest extends AdminTestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_does_not_allow_an_unauthorized_user_to_restore_a_product()
     {
         $product = $this->getFactory(Product::class)->create();
@@ -509,7 +510,7 @@ class ProductsControllerTest extends AdminTestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_list_soft_deleted_products()
     {
         $this->withoutExceptionHandling();
@@ -529,7 +530,7 @@ class ProductsControllerTest extends AdminTestCase
             ->assertSee($product->name);
     }
 
-    /** @test */
+    #[Test]
     public function it_does_not_allow_an_unauthorized_user_to_list_soft_deleted_products()
     {
         $product = $this->getFactory(Product::class)->create();
@@ -547,7 +548,7 @@ class ProductsControllerTest extends AdminTestCase
             ->assertDontSee($product->name);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_bulk_soft_delete_products()
     {
         $this->withoutExceptionHandling();
@@ -580,7 +581,7 @@ class ProductsControllerTest extends AdminTestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_does_not_allow_unauthorized_users_to_bulk_soft_delete_products()
     {
         $this->actingAsAdmin('view_products');
@@ -611,7 +612,7 @@ class ProductsControllerTest extends AdminTestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_can_validate_product_inputs()
     {
         $this->actingAsAdmin('edit_products');

@@ -3,6 +3,7 @@
 namespace Tests\Feature\Controllers\Admin;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\Test;
 use App\Exports\CategoriesExport;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Models\Category;
@@ -11,7 +12,7 @@ class CategoriesControllerTest extends AdminTestCase
 {
     use RefreshDatabase;
 
-    /** @test */
+    #[Test]
     public function it_can_list_categories()
     {
         $this->withoutExceptionHandling();
@@ -25,7 +26,7 @@ class CategoriesControllerTest extends AdminTestCase
             ->assertSee($category->name);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_filter_categories()
     {
         $this->withoutExceptionHandling();
@@ -44,7 +45,7 @@ class CategoriesControllerTest extends AdminTestCase
             ->assertSee($category->name);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_export_categories()
     {
         $this->withoutExceptionHandling();
@@ -63,7 +64,7 @@ class CategoriesControllerTest extends AdminTestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_does_not_allow_an_unauthorized_user_to_list_categories()
     {
         $this->actingAsAdmin();
@@ -75,7 +76,7 @@ class CategoriesControllerTest extends AdminTestCase
             ->assertDontSee($category->name);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_show_the_create_new_category_page()
     {
         $this->withoutExceptionHandling();
@@ -87,7 +88,7 @@ class CategoriesControllerTest extends AdminTestCase
             ->assertSee('New Category');
     }
 
-    /** @test */
+    #[Test]
     public function it_does_not_allow_an_unauthorized_user_to_see_the_create_new_category_page()
     {
         $this->actingAsAdmin();
@@ -97,7 +98,7 @@ class CategoriesControllerTest extends AdminTestCase
             ->assertDontSee('New Category');
     }
 
-    /** @test */
+    #[Test]
     public function it_can_create_a_new_category()
     {
         $this->withoutExceptionHandling();
@@ -119,7 +120,7 @@ class CategoriesControllerTest extends AdminTestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_does_not_allow_an_unauthorized_user_to_add_a_category()
     {
         $this->actingAsAdmin();
@@ -139,7 +140,7 @@ class CategoriesControllerTest extends AdminTestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_show_the_edit_category_page()
     {
         $this->withoutExceptionHandling();
@@ -153,7 +154,7 @@ class CategoriesControllerTest extends AdminTestCase
             ->assertSee($category->name);
     }
 
-    /** @test */
+    #[Test]
     public function it_does_not_allow_an_unauthorized_user_to_see_the_edit_category_page()
     {
         $this->actingAsAdmin();
@@ -165,7 +166,7 @@ class CategoriesControllerTest extends AdminTestCase
             ->assertDontSee($category->name);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_update_a_category()
     {
         $this->withoutExceptionHandling();
@@ -191,7 +192,7 @@ class CategoriesControllerTest extends AdminTestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_does_not_allow_an_unauthorized_user_to_update_a_category()
     {
         $this->actingAsAdmin();
@@ -215,7 +216,7 @@ class CategoriesControllerTest extends AdminTestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_show_a_category()
     {
         $this->withoutExceptionHandling();
@@ -229,7 +230,7 @@ class CategoriesControllerTest extends AdminTestCase
             ->assertSee($category->name);
     }
 
-    /** @test */
+    #[Test]
     public function it_does_not_allow_an_unauthorized_user_to_view_a_category()
     {
         $this->actingAsAdmin();
@@ -241,7 +242,7 @@ class CategoriesControllerTest extends AdminTestCase
             ->assertDontSee($category->name);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_delete_a_category()
     {
         $this->withoutExceptionHandling();
@@ -262,7 +263,7 @@ class CategoriesControllerTest extends AdminTestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_does_not_allow_an_unauthorized_user_to_delete_a_category()
     {
         $this->actingAsAdmin();
@@ -281,7 +282,7 @@ class CategoriesControllerTest extends AdminTestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_bulk_delete_categories()
     {
         $this->withoutExceptionHandling();
@@ -314,7 +315,7 @@ class CategoriesControllerTest extends AdminTestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_does_not_allow_unauthorized_users_to_bulk_delete_categories()
     {
         $this->actingAsAdmin('view_categories');
@@ -345,7 +346,7 @@ class CategoriesControllerTest extends AdminTestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_can_validate_category_inputs()
     {
         $this->actingAsAdmin('edit_categories');

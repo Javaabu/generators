@@ -3,6 +3,7 @@
 namespace Tests\Feature\Controllers\Admin;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\Test;
 use App\Exports\OrdersExport;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Models\Order;
@@ -14,7 +15,7 @@ class OrdersControllerTest extends AdminTestCase
 {
     use RefreshDatabase;
 
-    /** @test */
+    #[Test]
     public function it_can_list_orders()
     {
         $this->withoutExceptionHandling();
@@ -28,7 +29,7 @@ class OrdersControllerTest extends AdminTestCase
             ->assertSee($order->order_no);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_filter_orders()
     {
         $this->withoutExceptionHandling();
@@ -47,7 +48,7 @@ class OrdersControllerTest extends AdminTestCase
             ->assertSee($order->order_no);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_export_orders()
     {
         $this->withoutExceptionHandling();
@@ -66,7 +67,7 @@ class OrdersControllerTest extends AdminTestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_does_not_allow_an_unauthorized_user_to_list_orders()
     {
         $this->actingAsAdmin();
@@ -78,7 +79,7 @@ class OrdersControllerTest extends AdminTestCase
             ->assertDontSee($order->order_no);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_show_the_create_new_order_page()
     {
         $this->withoutExceptionHandling();
@@ -90,7 +91,7 @@ class OrdersControllerTest extends AdminTestCase
             ->assertSee('New Order');
     }
 
-    /** @test */
+    #[Test]
     public function it_does_not_allow_an_unauthorized_user_to_see_the_create_new_order_page()
     {
         $this->actingAsAdmin();
@@ -100,7 +101,7 @@ class OrdersControllerTest extends AdminTestCase
             ->assertDontSee('New Order');
     }
 
-    /** @test */
+    #[Test]
     public function it_can_create_a_new_order()
     {
         $this->withoutExceptionHandling();
@@ -126,7 +127,7 @@ class OrdersControllerTest extends AdminTestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_does_not_allow_an_unauthorized_user_to_add_a_order()
     {
         $this->actingAsAdmin();
@@ -150,7 +151,7 @@ class OrdersControllerTest extends AdminTestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_show_the_edit_order_page()
     {
         $this->withoutExceptionHandling();
@@ -164,7 +165,7 @@ class OrdersControllerTest extends AdminTestCase
             ->assertSee($order->order_no);
     }
 
-    /** @test */
+    #[Test]
     public function it_does_not_allow_an_unauthorized_user_to_see_the_edit_order_page()
     {
         $this->actingAsAdmin();
@@ -176,7 +177,7 @@ class OrdersControllerTest extends AdminTestCase
             ->assertDontSee($order->order_no);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_update_a_order()
     {
         $this->withoutExceptionHandling();
@@ -214,7 +215,7 @@ class OrdersControllerTest extends AdminTestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_does_not_allow_an_unauthorized_user_to_update_a_order()
     {
         $this->actingAsAdmin();
@@ -250,7 +251,7 @@ class OrdersControllerTest extends AdminTestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_show_a_order()
     {
         $this->withoutExceptionHandling();
@@ -264,7 +265,7 @@ class OrdersControllerTest extends AdminTestCase
             ->assertSee($order->order_no);
     }
 
-    /** @test */
+    #[Test]
     public function it_does_not_allow_an_unauthorized_user_to_view_a_order()
     {
         $this->actingAsAdmin();
@@ -276,7 +277,7 @@ class OrdersControllerTest extends AdminTestCase
             ->assertDontSee($order->order_no);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_delete_a_order()
     {
         $this->withoutExceptionHandling();
@@ -297,7 +298,7 @@ class OrdersControllerTest extends AdminTestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_does_not_allow_an_unauthorized_user_to_delete_a_order()
     {
         $this->actingAsAdmin();
@@ -316,7 +317,7 @@ class OrdersControllerTest extends AdminTestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_bulk_delete_orders()
     {
         $this->withoutExceptionHandling();
@@ -349,7 +350,7 @@ class OrdersControllerTest extends AdminTestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_does_not_allow_unauthorized_users_to_bulk_delete_orders()
     {
         $this->actingAsAdmin('view_orders');
@@ -380,7 +381,7 @@ class OrdersControllerTest extends AdminTestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_can_validate_order_inputs()
     {
         $this->actingAsAdmin('edit_orders');
