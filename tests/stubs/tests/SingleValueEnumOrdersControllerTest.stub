@@ -1,0 +1,410 @@
+<?php
+
+namespace Tests\Feature\Controllers\Admin;
+
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\Test;
+use App\Exports\SingleValueEnumOrdersExport;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Models\SingleValueEnumOrder;
+use App\Models\Category;
+use App\Models\Product;
+use Javaabu\Generators\Tests\TestSupport\Enums\SingleCaseOrderStatuses;
+
+class SingleValueEnumOrdersControllerTest extends AdminTestCase
+{
+    use RefreshDatabase;
+
+    #[Test]
+    public function it_can_list_single_value_enum_orders()
+    {
+        $this->withoutExceptionHandling();
+
+        $this->actingAsAdmin('view_single_value_enum_orders');
+
+        $single_value_enum_order = $this->getFactory(SingleValueEnumOrder::class)->create();
+
+        $this->adminGet('/single-value-enum-orders')
+            ->assertStatus(200)
+            ->assertSee($single_value_enum_order->order_no);
+    }
+
+    #[Test]
+    public function it_can_filter_single_value_enum_orders()
+    {
+        $this->withoutExceptionHandling();
+
+        $this->actingAsAdmin('view_single_value_enum_orders');
+
+        $single_value_enum_order = $this->getFactory(SingleValueEnumOrder::class)->create();
+
+        $this->adminGet(add_query_arg([
+            'search' => $single_value_enum_order->order_no,
+            'date_field' => 'created_at',
+            'date_from' => now()->subDay()->toDateTimeString(),
+            'date_to' => now()->addDay()->toDateTimeString(),
+        ], '/single-value-enum-orders'))
+            ->assertStatus(200)
+            ->assertSee($single_value_enum_order->order_no);
+    }
+
+    #[Test]
+    public function it_can_export_single_value_enum_orders()
+    {
+        $this->withoutExceptionHandling();
+
+        $this->actingAsAdmin('view_single_value_enum_orders');
+
+        $single_value_enum_order = $this->getFactory(SingleValueEnumOrder::class)->create();
+
+        Excel::fake();
+
+        $this->adminGet(add_query_arg(['download' => 1], '/single-value-enum-orders'))
+            ->assertSuccessful();
+
+        Excel::assertDownloaded('single-value-enum-orders.xlsx', function (SingleValueEnumOrdersExport $export) {
+            return $export->modelClass() == SingleValueEnumOrder::class;
+        });
+    }
+
+    #[Test]
+    public function it_does_not_allow_an_unauthorized_user_to_list_single_value_enum_orders()
+    {
+        $this->actingAsAdmin();
+
+        $single_value_enum_order = $this->getFactory(SingleValueEnumOrder::class)->create();
+
+        $this->adminGet('/single-value-enum-orders')
+            ->assertStatus(403)
+            ->assertDontSee($single_value_enum_order->order_no);
+    }
+
+    #[Test]
+    public function it_can_show_the_create_new_single_value_enum_order_page()
+    {
+        $this->withoutExceptionHandling();
+
+        $this->actingAsAdmin('edit_single_value_enum_orders');
+
+        $this->adminGet('/single-value-enum-orders/create')
+            ->assertStatus(200)
+            ->assertSee('New Single Value Enum Order');
+    }
+
+    #[Test]
+    public function it_does_not_allow_an_unauthorized_user_to_see_the_create_new_single_value_enum_order_page()
+    {
+        $this->actingAsAdmin();
+
+        $this->adminGet('/single-value-enum-orders/create')
+            ->assertStatus(403)
+            ->assertDontSee('New Single Value Enum Order');
+    }
+
+    #[Test]
+    public function it_can_create_a_new_single_value_enum_order()
+    {
+        $this->withoutExceptionHandling();
+
+        $this->actingAsAdmin('edit_single_value_enum_orders');
+
+        $single_value_enum_order = $this->getFactory(SingleValueEnumOrder::class)->make();
+
+        $this->adminPost('/single-value-enum-orders', [
+            'order_no' => $single_value_enum_order->order_no,
+            'category' => $single_value_enum_order->category_id,
+            'product_slug' => $single_value_enum_order->product_slug,
+            'status' => $single_value_enum_order->status->value,
+        ])
+            ->assertRedirect()
+            ->assertSessionMissing('errors');
+
+        $this->assertDatabaseHas('single_value_enum_orders', [
+            'order_no' => $single_value_enum_order->order_no,
+            'category_id' => $single_value_enum_order->category_id,
+            'product_slug' => $single_value_enum_order->product_slug,
+            'status' => $single_value_enum_order->status->value,
+        ]);
+    }
+
+    #[Test]
+    public function it_does_not_allow_an_unauthorized_user_to_add_a_single_value_enum_order()
+    {
+        $this->actingAsAdmin();
+
+        $single_value_enum_order = $this->getFactory(SingleValueEnumOrder::class)->make();
+
+        $this->adminPost('/single-value-enum-orders', [
+            'order_no' => $single_value_enum_order->order_no,
+            'category' => $single_value_enum_order->category_id,
+            'product_slug' => $single_value_enum_order->product_slug,
+            'status' => $single_value_enum_order->status->value,
+        ])
+            ->assertSessionMissing('errors')
+            ->assertStatus(403);
+
+        $this->assertDatabaseMissing('single_value_enum_orders', [
+            'order_no' => $single_value_enum_order->order_no,
+            'category_id' => $single_value_enum_order->category_id,
+            'product_slug' => $single_value_enum_order->product_slug,
+            'status' => $single_value_enum_order->status->value,
+        ]);
+    }
+
+    #[Test]
+    public function it_can_show_the_edit_single_value_enum_order_page()
+    {
+        $this->withoutExceptionHandling();
+
+        $this->actingAsAdmin('edit_single_value_enum_orders');
+
+        $single_value_enum_order = $this->getFactory(SingleValueEnumOrder::class)->create();
+
+        $this->adminGet("/single-value-enum-orders/{$single_value_enum_order->id}/edit")
+            ->assertStatus(200)
+            ->assertSee($single_value_enum_order->order_no);
+    }
+
+    #[Test]
+    public function it_does_not_allow_an_unauthorized_user_to_see_the_edit_single_value_enum_order_page()
+    {
+        $this->actingAsAdmin();
+
+        $single_value_enum_order = $this->getFactory(SingleValueEnumOrder::class)->create();
+
+        $this->adminGet("/single-value-enum-orders/{$single_value_enum_order->id}/edit")
+            ->assertStatus(403)
+            ->assertDontSee($single_value_enum_order->order_no);
+    }
+
+    #[Test]
+    public function it_can_update_a_single_value_enum_order()
+    {
+        $this->withoutExceptionHandling();
+
+        $this->actingAsAdmin('edit_single_value_enum_orders');
+
+        $old_category = $this->getFactory(Category::class)->create();
+        $old_product_slug = $this->getFactory(Product::class)->create();
+
+        $single_value_enum_order = SingleValueEnumOrder::factory()->create([
+            'order_no' => 'foo',
+            'category_id' => $old_category->id,
+            'product_slug' => $old_product_slug->slug,
+            'status' => SingleCaseOrderStatuses::Pending->value,
+        ]);
+
+        $new_category = $this->getFactory(Category::class)->create();
+        $new_product_slug = $this->getFactory(Product::class)->create();
+
+        $this->adminPatch("/single-value-enum-orders/{$single_value_enum_order->id}", [
+            'order_no' => 'bar',
+            'category' => $new_category->id,
+            'product_slug' => $new_product_slug->slug,
+            'status' => SingleCaseOrderStatuses::Pending->value,
+        ])
+            ->assertRedirect()
+            ->assertSessionMissing('errors');
+
+        $this->assertDatabaseHas('single_value_enum_orders', [
+            'id' => $single_value_enum_order->id,
+            'order_no' => 'bar',
+            'category_id' => $new_category->id,
+            'product_slug' => $new_product_slug->slug,
+            'status' => SingleCaseOrderStatuses::Pending->value,
+        ]);
+    }
+
+    #[Test]
+    public function it_does_not_allow_an_unauthorized_user_to_update_a_single_value_enum_order()
+    {
+        $this->actingAsAdmin();
+
+        $old_category = $this->getFactory(Category::class)->create();
+        $old_product_slug = $this->getFactory(Product::class)->create();
+
+        $single_value_enum_order = SingleValueEnumOrder::factory()->create([
+            'order_no' => 'foo',
+            'category_id' => $old_category->id,
+            'product_slug' => $old_product_slug->slug,
+            'status' => SingleCaseOrderStatuses::Pending->value,
+        ]);
+
+        $new_category = $this->getFactory(Category::class)->create();
+        $new_product_slug = $this->getFactory(Product::class)->create();
+
+        $this->adminPatch("/single-value-enum-orders/{$single_value_enum_order->id}", [
+            'order_no' => 'bar',
+            'category' => $new_category->id,
+            'product_slug' => $new_product_slug->slug,
+            'status' => SingleCaseOrderStatuses::Pending->value,
+        ])
+            ->assertSessionMissing('errors')
+            ->assertStatus(403);
+
+        $this->assertDatabaseHas('single_value_enum_orders', [
+            'id' => $single_value_enum_order->id,
+            'order_no' => 'foo',
+            'category_id' => $old_category->id,
+            'product_slug' => $old_product_slug->slug,
+            'status' => SingleCaseOrderStatuses::Pending->value,
+        ]);
+    }
+
+    #[Test]
+    public function it_can_show_a_single_value_enum_order()
+    {
+        $this->withoutExceptionHandling();
+
+        $this->actingAsAdmin('view_single_value_enum_orders');
+
+        $single_value_enum_order = $this->getFactory(SingleValueEnumOrder::class)->create();
+
+        $this->adminGet("/single-value-enum-orders/{$single_value_enum_order->id}")
+            ->assertStatus(200)
+            ->assertSee($single_value_enum_order->order_no);
+    }
+
+    #[Test]
+    public function it_does_not_allow_an_unauthorized_user_to_view_a_single_value_enum_order()
+    {
+        $this->actingAsAdmin();
+
+        $single_value_enum_order = $this->getFactory(SingleValueEnumOrder::class)->create();
+
+        $this->adminGet("/single-value-enum-orders/{$single_value_enum_order->id}")
+            ->assertStatus(403)
+            ->assertDontSee($single_value_enum_order->order_no);
+    }
+
+    #[Test]
+    public function it_can_delete_a_single_value_enum_order()
+    {
+        $this->withoutExceptionHandling();
+
+        $this->actingAsAdmin('delete_single_value_enum_orders');
+
+        $single_value_enum_order = $this->getFactory(SingleValueEnumOrder::class)->create();
+
+        $this->assertDatabaseHas('single_value_enum_orders', [
+            'id' => $single_value_enum_order->id,
+        ]);
+
+        $this->adminDelete("/single-value-enum-orders/{$single_value_enum_order->id}")
+             ->assertRedirect();
+
+        $this->assertDatabaseMissing('single_value_enum_orders', [
+            'id' => $single_value_enum_order->id,
+        ]);
+    }
+
+    #[Test]
+    public function it_does_not_allow_an_unauthorized_user_to_delete_a_single_value_enum_order()
+    {
+        $this->actingAsAdmin();
+
+        $single_value_enum_order = $this->getFactory(SingleValueEnumOrder::class)->create();
+
+        $this->assertDatabaseHas('single_value_enum_orders', [
+            'id' => $single_value_enum_order->id,
+        ]);
+
+        $this->adminDelete("/single-value-enum-orders/{$single_value_enum_order->id}")
+             ->assertStatus(403);
+
+        $this->assertDatabaseHas('single_value_enum_orders', [
+            'id' => $single_value_enum_order->id,
+        ]);
+    }
+
+    #[Test]
+    public function it_can_bulk_delete_single_value_enum_orders()
+    {
+        $this->withoutExceptionHandling();
+
+        $this->actingAsAdmin(['view_single_value_enum_orders', 'delete_single_value_enum_orders']);
+
+        $single_value_enum_orders = $this->getFactory(SingleValueEnumOrder::class)->count(3)->create();
+
+        $single_value_enum_orders = $single_value_enum_orders->map(function ($single_value_enum_order) {
+            return collect($single_value_enum_order->toArray())
+                ->only('id')
+                ->all();
+        });
+
+        $single_value_enum_orders->each(function ($single_value_enum_order) {
+            $this->assertDatabaseHas('single_value_enum_orders', $single_value_enum_order);
+        });
+
+        $single_value_enum_orders_to_delete = $single_value_enum_orders->slice(1);
+
+        $this->adminPatch('/single-value-enum-orders', [
+            'single_value_enum_orders' => $single_value_enum_orders_to_delete->pluck('id')->all(),
+            'action' => 'delete',
+        ])
+            ->assertRedirect()
+            ->assertSessionMissing('errors');
+
+        $single_value_enum_orders_to_delete->each(function ($single_value_enum_order) {
+            $this->assertDatabaseMissing('single_value_enum_orders', $single_value_enum_order);
+        });
+    }
+
+    #[Test]
+    public function it_does_not_allow_unauthorized_users_to_bulk_delete_single_value_enum_orders()
+    {
+        $this->actingAsAdmin('view_single_value_enum_orders');
+
+        $single_value_enum_orders = $this->getFactory(SingleValueEnumOrder::class)->count(3)->create();
+
+        $single_value_enum_orders = $single_value_enum_orders->map(function ($single_value_enum_order) {
+            return collect($single_value_enum_order->toArray())
+                ->only('id')
+                ->all();
+        });
+
+        $single_value_enum_orders->each(function ($single_value_enum_order) {
+            $this->assertDatabaseHas('single_value_enum_orders', $single_value_enum_order);
+        });
+
+        $single_value_enum_orders_to_delete = $single_value_enum_orders->slice(1);
+
+        $this->adminPatch('/single-value-enum-orders', [
+            'single_value_enum_orders' => $single_value_enum_orders_to_delete->pluck('id')->all(),
+            'action' => 'delete',
+        ])
+            ->assertStatus(403)
+            ->assertSessionMissing('errors');
+
+        $single_value_enum_orders_to_delete->each(function ($single_value_enum_order) {
+            $this->assertDatabaseHas('single_value_enum_orders', $single_value_enum_order);
+        });
+    }
+
+    #[Test]
+    public function it_can_validate_single_value_enum_order_inputs()
+    {
+        $this->actingAsAdmin('edit_single_value_enum_orders');
+
+        $this->adminPost('/single-value-enum-orders', [
+            'order_no' => [],
+            'category' => -1,
+            'product_slug' => -1,
+            'status' => [],
+        ])
+            ->assertRedirect()
+            ->assertSessionHasErrors([
+                'order_no',
+                'category',
+                'product_slug',
+                'status',
+            ]);
+
+        $this->assertDatabaseMissing('single_value_enum_orders', [
+            'order_no' => [],
+            'category_id' => -1,
+            'product_slug' => -1,
+            'status' => [],
+        ]);
+    }
+}

@@ -139,7 +139,13 @@ class EnumField extends Field
 
     public function generateDifferentCorrectValue(): string
     {
-        return $this->hasEnumClass() ? $this->getEnumClassBasename() . '::' . $this->getEnumCases()[1]->name . '->value' : "'" . ($this->getOptions()[1] ?? $this->getOptions()[0]) . "'";
+        if ($this->hasEnumClass()) {
+            $cases = $this->getEnumCases();
+            $secondCase = $cases[1] ?? $cases[0]; // Fallback to the first case if the second doesn't exist
+            return $this->getEnumClassBasename() . '::' . $secondCase->name . '->value';
+        }
+
+        return "'" . ($this->getOptions()[1] ?? $this->getOptions()[0]) . "'";
     }
 
     public function getFormComponentAttributes(): array

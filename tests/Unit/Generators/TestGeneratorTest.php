@@ -141,4 +141,15 @@ class TestGeneratorTest extends TestCase
 
         $this->assertEquals($expected_content, $actual_content);
     }
+
+    /** @test */
+    public function it_can_generate_a_test_where_the_enum_has_only_one_case(): void
+    {
+        $test_generator = new TestGenerator('single_value_enum_orders');
+
+        $expected_content = $this->getTestStubContents('tests/SingleValueEnumOrdersControllerTest.stub');
+        $actual_content = $test_generator->render();
+
+        $this->assertEquals($expected_content, $actual_content);
+    }
 }
