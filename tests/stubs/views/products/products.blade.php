@@ -4,10 +4,7 @@
 @section('page-title', __('Products'))
 
 @section('top-search')
-    @include('admin.partials.search-model', [
-        'search_route' => 'admin.products.index',
-        'search_placeholder' => __('Search for products...'),
-    ])
+    <x-forms::search-form route="admin.products.index" :placeholder="__('Search for products...')" />
 @endsection
 
 @section('model-actions')

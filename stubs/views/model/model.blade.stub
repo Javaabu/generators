@@ -4,10 +4,7 @@
 @section('page-title', __('{{pluralTitle}}'))
 
 @section('top-search')
-    @include('admin.partials.search-model', [
-        'search_route' => 'admin.{{pluralKebab}}.index',
-        'search_placeholder' => __('Search for {{pluralLower}}...'),
-    ])
+    <x-forms::search-form route="admin.{{pluralKebab}}.index" :placeholder="__('Search for {{pluralLower}}...')" />
 @endsection
 
 @section('model-actions')
