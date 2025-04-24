@@ -1,0 +1,22 @@
+<?php
+/**
+ * {{pluralTitle}} Export
+ */
+
+namespace App\Exports;
+
+use App\Models\{{singularStudly}};
+use Javaabu\Exports\ModelExport;
+
+class {{pluralStudly}}Export extends ModelExport
+{
+    public function modelClass(): string
+    {
+        return {{singularStudly}}::class;
+    }
+
+    public function map(): array
+    {
+        return [];
+    }
+}

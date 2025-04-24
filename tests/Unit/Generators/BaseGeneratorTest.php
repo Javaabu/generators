@@ -2,6 +2,7 @@
 
 namespace Javaabu\Generators\Tests\Unit\Generators;
 
+use Illuminate\Support\Facades\Artisan;
 use Javaabu\Generators\FieldTypes\BooleanField;
 use Javaabu\Generators\FieldTypes\DateField;
 use Javaabu\Generators\FieldTypes\DateTimeField;
@@ -16,6 +17,7 @@ use Javaabu\Generators\FieldTypes\TimeField;
 use Javaabu\Generators\FieldTypes\YearField;
 use Javaabu\Generators\Generators\BaseGenerator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Javaabu\Generators\Generators\ExportGenerator;
 use Javaabu\Generators\Tests\TestCase;
 
 class MockBaseGenerator extends BaseGenerator
@@ -29,6 +31,40 @@ class MockBaseGenerator extends BaseGenerator
 class BaseGeneratorTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        Artisan::call('vendor:publish', [
+            '--provider' => 'Javaabu\\Generators\\GeneratorsServiceProvider',
+            '--tag' => 'generators-stubs',
+        ]);
+
+        // setup skeleton service provider
+        $this->copyFile(
+            $this->getTestStubPath('Exports/ModelExport.stub'),
+            $this->app->basePath('stubs/vendor/generators/Exports/ModelExport.stub')
+        );
+    }
+
+    protected function tearDown(): void
+    {
+        $this->deleteDirectory($this->app->basePath('stubs'));
+
+        parent::tearDown();
+    }
+
+    /** @test */
+    public function it_can_generate_from_custom_stubs(): void
+    {
+        $export_generator = new ExportGenerator('products');
+
+        $expected_content = $this->getTestStubContents('Exports/ProductsExport.php');
+        $actual_content = $export_generator->render();
+
+        $this->assertEquals($expected_content, $actual_content);
+    }
 
     /** @test */
     public function it_can_determine_if_the_model_has_any_fillable_fields(): void
