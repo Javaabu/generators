@@ -2,17 +2,14 @@
 
 namespace Javaabu\Generators\Generators;
 
+use Javaabu\Generators\Generators\Concerns\GeneratesExport;
+
 class ExportGenerator extends BaseGenerator
 {
-    /**
-     * Render the policy
-     */
+    use GeneratesExport;
+
     public function render(): string
     {
-        $stub = 'generators::Exports/ModelExport.stub';
-
-        $renderer = $this->getRenderer();
-
-        return $renderer->replaceStubNames($stub, $this->getTable());
+        return $this->renderExport();
     }
 }
