@@ -26,6 +26,7 @@
                 @endcan
             </div>
         </x-forms::table.cell>
+        // columns
 
     </x-forms::table.row>
 @endforeach

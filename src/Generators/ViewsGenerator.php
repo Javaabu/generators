@@ -292,8 +292,8 @@ class ViewsGenerator extends BaseGenerator
                 'content' => $this->getNameLabel(),
             ],
             [
-                'search' => "</x-forms::table.cell>\n",
-                'keep_search' => true,
+                'search' => $renderer->addIndentation("// columns\n", 2),
+                'keep_search' => false,
                 'content' => $columns ? "\n" . $columns : '',
             ],
         ], $template);
