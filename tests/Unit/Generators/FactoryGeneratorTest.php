@@ -73,7 +73,7 @@ class FactoryGeneratorTest extends TestCase
     {
         $factory_generator = new FactoryGenerator('orders');
 
-        $this->assertEquals('fake()->passThrough(fake()->regexify(\'[a-z]{4}\'))', $factory_generator->getFakerStatement('order_no'));
+        $this->assertEquals('fake()->regexify(\'[a-z]{4}\')', $factory_generator->getFakerStatement('order_no'));
     }
 
     /** @test */
@@ -81,7 +81,7 @@ class FactoryGeneratorTest extends TestCase
     {
         $factory_generator = new FactoryGenerator('products');
 
-        $this->assertEquals('fake()->passThrough(ucfirst(Str::limit(fake()->text(255), fake()->numberBetween(5, 255), \'\')))', $factory_generator->getFakerStatement('name'));
+        $this->assertEquals('fake()->text(fake()->numberBetween(5, 255))', $factory_generator->getFakerStatement('name'));
     }
 
     /** @test */
@@ -154,7 +154,7 @@ class FactoryGeneratorTest extends TestCase
     {
         $factory_generator = new FactoryGenerator('products');
 
-        $this->assertEquals('fake()->passThrough(fake()->words())', $factory_generator->getFakerStatement('features'));
+        $this->assertEquals('fake()->words()', $factory_generator->getFakerStatement('features'));
     }
 
     /** @test */
@@ -212,6 +212,17 @@ class FactoryGeneratorTest extends TestCase
         $factory_generator = new FactoryGenerator('payments');
 
         $expected_content = $this->getTestStubContents('factories/PaymentFactory.php');
+        $actual_content = $factory_generator->render();
+
+        $this->assertEquals($expected_content, $actual_content);
+    }
+
+    /** @test */
+    public function it_can_generate_a_factory_with_optional_unique_values(): void
+    {
+        $factory_generator = new FactoryGenerator('countries');
+
+        $expected_content = $this->getTestStubContents('factories/CountryFactory.php');
         $actual_content = $factory_generator->render();
 
         $this->assertEquals($expected_content, $actual_content);

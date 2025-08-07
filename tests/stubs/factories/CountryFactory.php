@@ -5,9 +5,9 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Category>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Country>
  */
-class CategoryFactory extends Factory
+class CountryFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -17,8 +17,8 @@ class CategoryFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->unique()->text(fake()->numberBetween(5, 255)),
-            'slug' => fake()->unique()->slug(),
+            'name' => fake()->text(fake()->numberBetween(5, 255)),
+            'code' => fake()->optional()->unique()?->regexify('[a-z]{4}'),
         ];
     }
 

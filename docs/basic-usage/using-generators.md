@@ -60,20 +60,20 @@ class ProductFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => $this->faker->passThrough(ucfirst($this->faker->text(255))),
-            'address' => $this->faker->address(),
-            'slug' => $this->faker->unique()->slug(),
-            'description' => $this->faker->optional()->sentences(3, true),
-            'price' => $this->faker->randomFloat(2, 0, 999999999999),
-            'stock' => $this->faker->numberBetween(0, 4294967295),
-            'on_sale' => $this->faker->boolean(),
-            'features' => $this->faker->passThrough($this->faker->words()),
-            'published_at' => $this->faker->dateTime()?->format('Y-m-d H:i'),
-            'expire_at' => $this->faker->dateTime()?->format('Y-m-d H:i'),
-            'released_on' => $this->faker->date(),
-            'sale_time' => $this->faker->time(),
-            'status' => $this->faker->randomElement(['draft', 'published']),
-            'manufactured_year' => $this->faker->year(2100),
+            'name' => fake()->text(fake()->numberBetween(5, 255)),
+            'address' => fake()->address(),
+            'slug' => fake()->unique()->slug(),
+            'description' => fake()->optional()->sentences(3, true),
+            'price' => fake()->randomFloat(2, 0, 999999999999),
+            'stock' => fake()->numberBetween(0, 4294967295),
+            'on_sale' => fake()->boolean(),
+            'features' => fake()->words(),
+            'published_at' => fake()->dateTime()?->format('Y-m-d H:i'),
+            'expire_at' => fake()->dateTime()?->format('Y-m-d H:i'),
+            'released_on' => fake()->date(),
+            'sale_time' => fake()->time(),
+            'status' => fake()->randomElement(['draft', 'published']),
+            'manufactured_year' => fake()->year(2100),
         ];
     }
 
@@ -81,11 +81,12 @@ class ProductFactory extends Factory
     {
         return $this->state(function (array $attributes) {
             return [
-                'category_id' => $this->faker->passThrough(random_id_or_generate(\App\Models\Category::class, 'id')),
+                'category_id' => fake()->passThrough(random_id_or_generate(\App\Models\Category::class, 'id', generate: true)),
             ];
         });
     }
 }
+
 ```
 
 # Generating for specific columns
@@ -120,8 +121,8 @@ class ProductFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => $this->faker->passThrough(ucfirst($this->faker->text(255))),
-            'address' => $this->faker->address(),
+            'name' => fake()->text(fake()->numberBetween(5, 255)),
+            'address' => fake()->address(),
         ];
     }
 }

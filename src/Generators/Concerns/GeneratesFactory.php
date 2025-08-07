@@ -54,12 +54,16 @@ trait GeneratesFactory
 
         $statement = 'fake()';
 
-        if ($field->isUnique()) {
-            $statement .= '->unique()';
-        }
-
         if ($field->isNullable() && (! $required)) {
             $statement .= '->optional()';
+        }
+
+        if ($field->isUnique()) {
+            $statement .= '->unique()';
+
+            if ($field->isNullable() && (! $required)) {
+                $statement .= '?';
+            }
         }
 
         $faker_method = null;

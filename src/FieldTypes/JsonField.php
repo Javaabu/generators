@@ -12,7 +12,7 @@ class JsonField extends Field
 
     public function generateFactoryStatement(): string
     {
-        return 'passThrough(fake()->words())';
+        return 'words()';
     }
 
     public function formatFactoryDbValue(string $value): string

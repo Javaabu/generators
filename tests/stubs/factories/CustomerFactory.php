@@ -3,7 +3,6 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Customer>
@@ -22,7 +21,7 @@ class CustomerFactory extends \Javaabu\Auth\Factories\UserFactory
         $definitions['password'] = 'Customer@123456';
 
         $definitions += [
-            'designation' => fake()->unique()->passThrough(ucfirst(Str::limit(fake()->text(255), fake()->numberBetween(5, 255), ''))),
+            'designation' => fake()->unique()->text(fake()->numberBetween(5, 255)),
             'address' => fake()->address(),
             'on_sale' => fake()->boolean(),
             'expire_at' => fake()->dateTime()?->format('Y-m-d H:i'),
