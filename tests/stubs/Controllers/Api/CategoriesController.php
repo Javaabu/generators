@@ -14,7 +14,7 @@ class CategoriesController extends ApiController
      *
      * @return Builder
      */
-    protected function getBaseQuery(): Builder
+    public function getBaseQuery(): Builder
     {
         return Category::query();
     }
@@ -24,7 +24,7 @@ class CategoriesController extends ApiController
      *
      * @return array
      */
-    protected function getAllowedFields(): array
+    public function getAllowedFields(): array
     {
         return array_diff(\Schema::getColumnListing('categories'), (new Category)->getHidden());
     }
@@ -34,7 +34,7 @@ class CategoriesController extends ApiController
      *
      * @return array
      */
-    protected function getAllowedIncludes(): array
+    public function getAllowedIncludes(): array
     {
         return [
         ];
@@ -45,7 +45,7 @@ class CategoriesController extends ApiController
      *
      * @return array
      */
-    protected function getAllowedAppends(): array
+    public function getAllowedAppends(): array
     {
         return [
         ];
@@ -56,7 +56,7 @@ class CategoriesController extends ApiController
      *
      * @return array
      */
-    protected function getAllowedSorts(): array
+    public function getAllowedSorts(): array
     {
         return [
             'id',
@@ -72,7 +72,7 @@ class CategoriesController extends ApiController
      *
      * @return string
      */
-    protected function getDefaultSort(): string
+    public function getDefaultSort(): string
     {
         return 'created_at';
     }
@@ -82,7 +82,7 @@ class CategoriesController extends ApiController
      *
      * @return array
      */
-    protected function getAllowedFilters(): array
+    public function getAllowedFilters(): array
     {
         return [
             'id',

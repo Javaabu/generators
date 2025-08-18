@@ -14,7 +14,7 @@ class {{pluralStudly}}Controller extends ApiController
      *
      * @return Builder
      */
-    protected function getBaseQuery(): Builder
+    public function getBaseQuery(): Builder
     {
         return {{singularStudly}}::query();
     }
@@ -24,7 +24,7 @@ class {{pluralStudly}}Controller extends ApiController
      *
      * @return array
      */
-    protected function getAllowedFields(): array
+    public function getAllowedFields(): array
     {
         return array_diff(\Schema::getColumnListing('{{tableName}}'), (new {{singularStudly}})->getHidden());
     }
@@ -34,7 +34,7 @@ class {{pluralStudly}}Controller extends ApiController
      *
      * @return array
      */
-    protected function getAllowedIncludes(): array
+    public function getAllowedIncludes(): array
     {
         return [
             // allowed includes
@@ -46,7 +46,7 @@ class {{pluralStudly}}Controller extends ApiController
      *
      * @return array
      */
-    protected function getAllowedAppends(): array
+    public function getAllowedAppends(): array
     {
         return [
         ];
@@ -57,7 +57,7 @@ class {{pluralStudly}}Controller extends ApiController
      *
      * @return array
      */
-    protected function getAllowedSorts(): array
+    public function getAllowedSorts(): array
     {
         return [
             // allowed sorts
@@ -69,7 +69,7 @@ class {{pluralStudly}}Controller extends ApiController
      *
      * @return string
      */
-    protected function getDefaultSort(): string
+    public function getDefaultSort(): string
     {
         return '{{defaultSort}}';
     }
@@ -79,7 +79,7 @@ class {{pluralStudly}}Controller extends ApiController
      *
      * @return array
      */
-    protected function getAllowedFilters(): array
+    public function getAllowedFilters(): array
     {
         return [
             // allowed filters
