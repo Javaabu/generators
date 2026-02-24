@@ -10,8 +10,7 @@ class AuthRequestGeneratorTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
-    public function it_can_generate_the_base_rules_statement(): void
+    public function test_it_can_generate_the_base_rules_statement(): void
     {
         $request_generator = new AuthRequestGenerator('customers');
 
@@ -22,8 +21,7 @@ class AuthRequestGeneratorTest extends TestCase
         $this->assertEquals('$this->baseRules(false, false)', $request_generator->renderBaseRulesStatement());
     }
 
-    /** @test */
-    public function it_can_generate_an_auth_model_request_with_one_unique_rule(): void
+    public function test_it_can_generate_an_auth_model_request_with_one_unique_rule(): void
     {
         $request_generator = new AuthRequestGenerator('customers');
 
@@ -33,8 +31,7 @@ class AuthRequestGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_generate_an_auth_model_request_with_no_unique_rules(): void
+    public function test_it_can_generate_an_auth_model_request_with_no_unique_rules(): void
     {
         $request_generator = new AuthRequestGenerator('public_users', auth_name: 'portal');
 

@@ -10,8 +10,7 @@ class ApiControllerGeneratorTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
-    public function it_can_generate_an_api_controller_without_foreign_keys(): void
+    public function test_it_can_generate_an_api_controller_without_foreign_keys(): void
     {
         $api_generator = new ApiControllerGenerator('categories');
 
@@ -21,8 +20,7 @@ class ApiControllerGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_generate_an_api_controller_with_foreign_keys(): void
+    public function test_it_can_generate_an_api_controller_with_foreign_keys(): void
     {
         $api_generator = new ApiControllerGenerator('products');
 
@@ -32,8 +30,7 @@ class ApiControllerGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_generate_api_routes(): void
+    public function test_it_can_generate_api_routes(): void
     {
         $api_generator = new ApiControllerGenerator('categories');
 

@@ -10,8 +10,7 @@ class ExportGeneratorTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
-    public function it_can_generate_an_export(): void
+    public function test_it_can_generate_an_export(): void
     {
         $export_generator = new ExportGenerator('categories');
 
@@ -21,8 +20,7 @@ class ExportGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_generate_an_export_with_relations(): void
+    public function test_it_can_generate_an_export_with_relations(): void
     {
         $export_generator = new ExportGenerator('all_foreigns');
 

@@ -11,8 +11,7 @@ class GenerateRequestCommandTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
-    public function it_can_generate_request_output(): void
+    public function test_it_can_generate_request_output(): void
     {
         $expected_content = $this->getTestStubContents('Requests/CategoriesRequest.php');
 
@@ -20,8 +19,7 @@ class GenerateRequestCommandTest extends TestCase
              ->expectsOutput($expected_content);
     }
 
-    /** @test */
-    public function it_can_generate_request_file(): void
+    public function test_it_can_generate_request_file(): void
     {
         $expected_path = $this->app->path('Http/Requests/CategoriesRequest.php');
         $expected_content = $this->getTestStubContents('Requests/CategoriesRequest.php');

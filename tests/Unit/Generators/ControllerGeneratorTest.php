@@ -10,8 +10,7 @@ class ControllerGeneratorTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
-    public function it_can_generate_foreign_key_assignment(): void
+    public function test_it_can_generate_foreign_key_assignment(): void
     {
         $controller_generator = new ControllerGenerator('products');
 
@@ -21,8 +20,7 @@ class ControllerGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_generate_boolean_assignment(): void
+    public function test_it_can_generate_boolean_assignment(): void
     {
         $controller_generator = new ControllerGenerator('products');
 
@@ -32,8 +30,7 @@ class ControllerGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_generate_an_orderby(): void
+    public function test_it_can_generate_an_orderby(): void
     {
         $controller_generator = new ControllerGenerator('products');
 
@@ -43,8 +40,7 @@ class ControllerGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_generate_a_controller_without_foreign_keys(): void
+    public function test_it_can_generate_a_controller_without_foreign_keys(): void
     {
         $controller_generator = new ControllerGenerator('categories');
 
@@ -54,8 +50,7 @@ class ControllerGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_generate_a_controller_with_foreign_keys(): void
+    public function test_it_can_generate_a_controller_with_foreign_keys(): void
     {
         $controller_generator = new ControllerGenerator('products');
 
@@ -65,8 +60,7 @@ class ControllerGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_generate_a_controller_with_multiple_foreign_keys(): void
+    public function test_it_can_generate_a_controller_with_multiple_foreign_keys(): void
     {
         $controller_generator = new ControllerGenerator('orders');
 
@@ -76,8 +70,7 @@ class ControllerGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_generate_controller_eager_loads(): void
+    public function test_it_can_generate_controller_eager_loads(): void
     {
         $controller_generator = new ControllerGenerator('orders');
 

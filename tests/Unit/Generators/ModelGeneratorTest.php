@@ -10,8 +10,7 @@ class ModelGeneratorTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
-    public function it_can_generate_foreign_key_relation(): void
+    public function test_it_can_generate_foreign_key_relation(): void
     {
         $model_generator = new ModelGenerator('products');
 
@@ -21,8 +20,7 @@ class ModelGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_generate_date_mutator(): void
+    public function test_it_can_generate_date_mutator(): void
     {
         $model_generator = new ModelGenerator('products');
 
@@ -32,8 +30,7 @@ class ModelGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_generate_nullable_date_mutator(): void
+    public function test_it_can_generate_nullable_date_mutator(): void
     {
         $model_generator = new ModelGenerator('posts');
 
@@ -43,8 +40,7 @@ class ModelGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_generate_a_model_with_foreign_keys(): void
+    public function test_it_can_generate_a_model_with_foreign_keys(): void
     {
         $model_generator = new ModelGenerator('products');
 
@@ -54,8 +50,7 @@ class ModelGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_generate_a_model_without_foreign_keys(): void
+    public function test_it_can_generate_a_model_without_foreign_keys(): void
     {
         $model_generator = new ModelGenerator('categories');
 
@@ -65,8 +60,7 @@ class ModelGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_generate_a_model_with_multiple_foreign_keys(): void
+    public function test_it_can_generate_a_model_with_multiple_foreign_keys(): void
     {
         $model_generator = new ModelGenerator('orders');
 

@@ -11,8 +11,7 @@ class GenerateFactoryCommandTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
-    public function it_can_generate_factory_output(): void
+    public function test_it_can_generate_factory_output(): void
     {
         $expected_content = $this->getTestStubContents('factories/CategoryFactory.php');
 
@@ -20,8 +19,7 @@ class GenerateFactoryCommandTest extends TestCase
              ->expectsOutput($expected_content);
     }
 
-    /** @test */
-    public function it_can_generate_factory_file(): void
+    public function test_it_can_generate_factory_file(): void
     {
         $expected_path = $this->app->databasePath('factories/CategoryFactory.php');
         $expected_content = $this->getTestStubContents('factories/CategoryFactory.php');

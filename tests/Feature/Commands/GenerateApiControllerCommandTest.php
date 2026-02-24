@@ -34,8 +34,7 @@ class GenerateApiControllerCommandTest extends TestCase
         parent::tearDown();
     }
 
-    /** @test */
-    public function it_can_generate_api_output(): void
+    public function test_it_can_generate_api_output(): void
     {
         $expected_content = $this->getTestStubContents('Controllers/Api/CategoriesController.php');
 
@@ -43,8 +42,7 @@ class GenerateApiControllerCommandTest extends TestCase
              ->expectsOutput($expected_content);
     }
 
-    /** @test */
-    public function it_can_generate_api_controller_file(): void
+    public function test_it_can_generate_api_controller_file(): void
     {
         $expected_path = $this->app->path('Http/Controllers/Api/CategoriesController.php');
         $expected_content = $this->getTestStubContents('Controllers/Api/CategoriesController.php');
@@ -63,8 +61,7 @@ class GenerateApiControllerCommandTest extends TestCase
             ->assertSuccessful();
     }
 
-    /** @test */
-    public function it_can_append_api_routes_to_an_existing_api_routes_file(): void
+    public function test_it_can_append_api_routes_to_an_existing_api_routes_file(): void
     {
         $expected_path = $this->app->basePath('routes/api.php');
         $expected_content = $this->getTestStubContents('routes/modelsApi.php');

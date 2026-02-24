@@ -27,8 +27,7 @@ class GenerateRoutesCommandTest extends TestCase
         parent::tearDown();
     }
 
-    /** @test */
-    public function it_can_generate_routes_output(): void
+    public function test_it_can_generate_routes_output(): void
     {
         $expected_content = $this->getTestStubContents('routes/_admin.stub');
 
@@ -37,8 +36,7 @@ class GenerateRoutesCommandTest extends TestCase
     }
 
 
-    /** @test */
-    public function it_can_append_routes_to_an_existing_routes_file(): void
+    public function test_it_can_append_routes_to_an_existing_routes_file(): void
     {
         $expected_path = $this->app->basePath('routes/admin.php');
         $expected_content = $this->getTestStubContents('routes/modelsAdmin.php');

@@ -10,8 +10,7 @@ class AuthPermissionsGeneratorTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
-    public function it_can_generate_auth_permissions_for_soft_delete_model(): void
+    public function test_it_can_generate_auth_permissions_for_soft_delete_model(): void
     {
         $permissions_generator = new AuthPermissionsGenerator('customers');
 

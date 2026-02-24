@@ -10,8 +10,7 @@ class PermissionsGeneratorTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
-    public function it_can_generate_permissions_for_soft_delete_model(): void
+    public function test_it_can_generate_permissions_for_soft_delete_model(): void
     {
         $permissions_generator = new PermissionsGenerator('products');
 
@@ -21,8 +20,7 @@ class PermissionsGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_generate_a_permissions_for_a_none_soft_delete(): void
+    public function test_it_can_generate_a_permissions_for_a_none_soft_delete(): void
     {
         $permissions_generator = new PermissionsGenerator('categories');
 

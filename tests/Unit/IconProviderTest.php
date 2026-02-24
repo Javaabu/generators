@@ -8,8 +8,7 @@ use Javaabu\Generators\Tests\TestCase;
 
 class IconProviderTest extends TestCase
 {
-    /** @test */
-    public function it_can_find_appropriate_icons(): void
+    public function test_it_can_find_appropriate_icons(): void
     {
         $icons = new MaterialDesignIconicProvider();
 
@@ -20,8 +19,7 @@ class IconProviderTest extends TestCase
         $this->assertEquals('cloud-upload', $icons->findIconFor('cloud_file_uploads'));
     }
 
-    /** @test */
-    public function it_can_find_appropriate_fontawesome_icons(): void
+    public function test_it_can_find_appropriate_fontawesome_icons(): void
     {
         $icons = new FontAwesomeProvider();
 

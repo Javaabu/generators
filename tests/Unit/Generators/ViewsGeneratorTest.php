@@ -10,40 +10,35 @@ class ViewsGeneratorTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
-    public function it_can_generate_the_component_for_nullable_attributes(): void
+    public function test_it_can_generate_the_component_for_nullable_attributes(): void
     {
         $views_generator = new ViewsGenerator('products');
 
         $this->assertEquals('<x-forms::textarea name="description" inline show-placeholder />', $views_generator->getFormComponentBlade('description'));
     }
 
-    /** @test */
-    public function it_can_generate_the_component_for_decimals(): void
+    public function test_it_can_generate_the_component_for_decimals(): void
     {
         $views_generator = new ViewsGenerator('products');
 
         $this->assertEquals('<x-forms::number name="price" min="0" max="999999999999" step="0.01" required inline show-placeholder />', $views_generator->getFormComponentBlade('price'));
     }
 
-    /** @test */
-    public function it_can_generate_the_component_for_ints(): void
+    public function test_it_can_generate_the_component_for_ints(): void
     {
         $views_generator = new ViewsGenerator('products');
 
         $this->assertEquals('<x-forms::number name="stock" min="0" max="4294967295" step="1" required inline show-placeholder />', $views_generator->getFormComponentBlade('stock'));
     }
 
-    /** @test */
-    public function it_can_generate_the_component_for_texts(): void
+    public function test_it_can_generate_the_component_for_texts(): void
     {
         $views_generator = new ViewsGenerator('products');
 
         $this->assertEquals('<x-forms::textarea name="description" inline show-placeholder />', $views_generator->getFormComponentBlade('description'));
     }
 
-    /** @test */
-    public function it_can_generate_the_component_for_strings(): void
+    public function test_it_can_generate_the_component_for_strings(): void
     {
         $views_generator = new ViewsGenerator('products');
 
@@ -51,8 +46,7 @@ class ViewsGeneratorTest extends TestCase
     }
 
 
-    /** @test */
-    public function it_can_generate_the_component_for_booleans(): void
+    public function test_it_can_generate_the_component_for_booleans(): void
     {
         $views_generator = new ViewsGenerator('products');
 
@@ -60,88 +54,77 @@ class ViewsGeneratorTest extends TestCase
     }
 
 
-    /** @test */
-    public function it_can_generate_the_component_for_date_times(): void
+    public function test_it_can_generate_the_component_for_date_times(): void
     {
         $views_generator = new ViewsGenerator('products');
 
         $this->assertEquals('<x-forms::datetime name="published_at" required inline show-placeholder />', $views_generator->getFormComponentBlade('published_at'));
     }
 
-    /** @test */
-    public function it_can_generate_the_component_for_times(): void
+    public function test_it_can_generate_the_component_for_times(): void
     {
         $views_generator = new ViewsGenerator('products');
 
         $this->assertEquals('<x-forms::time name="sale_time" required inline show-placeholder />', $views_generator->getFormComponentBlade('sale_time'));
     }
 
-    /** @test */
-    public function it_can_generate_the_component_for_timestamps(): void
+    public function test_it_can_generate_the_component_for_timestamps(): void
     {
         $views_generator = new ViewsGenerator('products');
 
         $this->assertEquals('<x-forms::datetime name="expire_at" required inline show-placeholder />', $views_generator->getFormComponentBlade('expire_at'));
     }
 
-    /** @test */
-    public function it_can_generate_the_component_for_dates(): void
+    public function test_it_can_generate_the_component_for_dates(): void
     {
         $views_generator = new ViewsGenerator('products');
 
         $this->assertEquals('<x-forms::date name="released_on" required inline show-placeholder />', $views_generator->getFormComponentBlade('released_on'));
     }
 
-    /** @test */
-    public function it_can_generate_the_component_for_years(): void
+    public function test_it_can_generate_the_component_for_years(): void
     {
         $views_generator = new ViewsGenerator('products');
 
         $this->assertEquals('<x-forms::number name="manufactured_year" min="1900" max="2100" step="1" required inline show-placeholder />', $views_generator->getFormComponentBlade('manufactured_year'));
     }
 
-    /** @test */
-    public function it_can_generate_the_component_for_foreign_keys(): void
+    public function test_it_can_generate_the_component_for_foreign_keys(): void
     {
         $views_generator = new ViewsGenerator('products');
 
         $this->assertEquals('<x-forms::select2 name="category" :options="\App\Models\Category::query()" relation inline show-placeholder />', $views_generator->getFormComponentBlade('category_id'));
     }
 
-    /** @test */
-    public function it_can_generate_the_component_for_json_fields(): void
+    public function test_it_can_generate_the_component_for_json_fields(): void
     {
         $views_generator = new ViewsGenerator('products');
 
         $this->assertEquals('<x-forms::select2 name="features[]" :options="[\'apple\', \'orange\']" multiple required inline show-placeholder />', $views_generator->getFormComponentBlade('features'));
     }
 
-    /** @test */
-    public function it_can_generate_the_component_for_enum_fields(): void
+    public function test_it_can_generate_the_component_for_enum_fields(): void
     {
         $views_generator = new ViewsGenerator('products');
 
         $this->assertEquals('<x-forms::select2 name="status" :options="[\'draft\', \'published\']" required inline show-placeholder />', $views_generator->getFormComponentBlade('status'));
     }
 
-    /** @test */
-    public function it_can_generate_the_component_for_enum_fields_with_enum_class_that_dont_have_get_labels(): void
+    public function test_it_can_generate_the_component_for_enum_fields_with_enum_class_that_dont_have_get_labels(): void
     {
         $views_generator = new ViewsGenerator('payments');
 
         $this->assertEquals('<x-forms::select2 name="status" :options="array_column(\\App\\Enums\\PaymentStatuses::cases(), \'name\', \'value\')" inline show-placeholder />', $views_generator->getFormComponentBlade('status'));
     }
 
-    /** @test */
-    public function it_can_generate_the_component_for_enum_fields_with_enum_class(): void
+    public function test_it_can_generate_the_component_for_enum_fields_with_enum_class(): void
     {
         $views_generator = new ViewsGenerator('orders');
 
         $this->assertEquals('<x-forms::select2 name="status" :options="\\Javaabu\\Generators\\Tests\\TestSupport\\Enums\\OrderStatuses::getLabels()" required inline show-placeholder />', $views_generator->getFormComponentBlade('status'));
     }
 
-    /** @test */
-    public function it_can_generate_an_infolist_with_foreign_keys(): void
+    public function test_it_can_generate_an_infolist_with_foreign_keys(): void
     {
         $views_generator = new ViewsGenerator('products');
 
@@ -151,8 +134,7 @@ class ViewsGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_generate_an_infolist_with_multiple_foreign_keys(): void
+    public function test_it_can_generate_an_infolist_with_multiple_foreign_keys(): void
     {
         $views_generator = new ViewsGenerator('orders');
 
@@ -162,8 +144,7 @@ class ViewsGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_generate_a_form_with_foreign_keys(): void
+    public function test_it_can_generate_a_form_with_foreign_keys(): void
     {
         $views_generator = new ViewsGenerator('products');
 
@@ -173,8 +154,7 @@ class ViewsGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_generate_a_form_without_foreign_keys(): void
+    public function test_it_can_generate_a_form_without_foreign_keys(): void
     {
         $views_generator = new ViewsGenerator('categories');
 
@@ -184,8 +164,7 @@ class ViewsGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_generate_a_form_with_multiple_foreign_keys(): void
+    public function test_it_can_generate_a_form_with_multiple_foreign_keys(): void
     {
         $views_generator = new ViewsGenerator('orders');
 
@@ -195,8 +174,7 @@ class ViewsGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_generate_model_layout(): void
+    public function test_it_can_generate_model_layout(): void
     {
         $views_generator = new ViewsGenerator('products');
 
@@ -206,8 +184,7 @@ class ViewsGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_generate_model_create_view(): void
+    public function test_it_can_generate_model_create_view(): void
     {
         $views_generator = new ViewsGenerator('products');
 
@@ -217,8 +194,7 @@ class ViewsGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_generate_model_edit_view(): void
+    public function test_it_can_generate_model_edit_view(): void
     {
         $views_generator = new ViewsGenerator('products');
 
@@ -228,8 +204,7 @@ class ViewsGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_generate_model_show_view(): void
+    public function test_it_can_generate_model_show_view(): void
     {
         $views_generator = new ViewsGenerator('products');
 
@@ -239,8 +214,7 @@ class ViewsGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_generate_actions_view_for_soft_delete_models(): void
+    public function test_it_can_generate_actions_view_for_soft_delete_models(): void
     {
         $views_generator = new ViewsGenerator('products');
 
@@ -250,8 +224,7 @@ class ViewsGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_generate_actions_view_for_none_soft_delete_models(): void
+    public function test_it_can_generate_actions_view_for_none_soft_delete_models(): void
     {
         $views_generator = new ViewsGenerator('categories');
 
@@ -261,8 +234,7 @@ class ViewsGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_generate_bulk_actions_view(): void
+    public function test_it_can_generate_bulk_actions_view(): void
     {
         $views_generator = new ViewsGenerator('products');
 
@@ -272,8 +244,7 @@ class ViewsGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_generate_filters_view_for_soft_delete_models(): void
+    public function test_it_can_generate_filters_view_for_soft_delete_models(): void
     {
         $views_generator = new ViewsGenerator('products');
 
@@ -283,8 +254,7 @@ class ViewsGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_generate_filters_view_for_none_soft_delete_models(): void
+    public function test_it_can_generate_filters_view_for_none_soft_delete_models(): void
     {
         $views_generator = new ViewsGenerator('categories');
 
@@ -294,8 +264,7 @@ class ViewsGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_render_model_columns_and_skips_the_admin_link_name(): void
+    public function test_it_can_render_model_columns_and_skips_the_admin_link_name(): void
     {
         $views_generator = new ViewsGenerator('products');
 
@@ -305,8 +274,7 @@ class ViewsGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_generate_list_view_for_multiple_foreign_keys_model(): void
+    public function test_it_can_generate_list_view_for_multiple_foreign_keys_model(): void
     {
         $views_generator = new ViewsGenerator('orders');
 
@@ -316,8 +284,7 @@ class ViewsGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_generate_list_view_for_soft_delete_models(): void
+    public function test_it_can_generate_list_view_for_soft_delete_models(): void
     {
         $views_generator = new ViewsGenerator('products');
 
@@ -327,8 +294,7 @@ class ViewsGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_generate_list_view_for_none_soft_delete_models(): void
+    public function test_it_can_generate_list_view_for_none_soft_delete_models(): void
     {
         $views_generator = new ViewsGenerator('categories');
 
@@ -338,8 +304,7 @@ class ViewsGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_render_column_titles_and_skips_the_admin_link_name(): void
+    public function test_it_can_render_column_titles_and_skips_the_admin_link_name(): void
     {
         $views_generator = new ViewsGenerator('products');
 
@@ -349,8 +314,7 @@ class ViewsGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_generate_table_view_for_soft_delete_models(): void
+    public function test_it_can_generate_table_view_for_soft_delete_models(): void
     {
         $views_generator = new ViewsGenerator('products');
 
@@ -360,8 +324,7 @@ class ViewsGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_generate_table_view_for_none_soft_delete_models(): void
+    public function test_it_can_generate_table_view_for_none_soft_delete_models(): void
     {
         $views_generator = new ViewsGenerator('categories');
 
@@ -371,8 +334,7 @@ class ViewsGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_generate_index_view_for_soft_delete_models(): void
+    public function test_it_can_generate_index_view_for_soft_delete_models(): void
     {
         $views_generator = new ViewsGenerator('products');
 
@@ -382,8 +344,7 @@ class ViewsGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_generate_index_view_for_none_soft_delete_models(): void
+    public function test_it_can_generate_index_view_for_none_soft_delete_models(): void
     {
         $views_generator = new ViewsGenerator('categories');
 
@@ -393,8 +354,7 @@ class ViewsGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_render_sidebar_links(): void
+    public function test_it_can_render_sidebar_links(): void
     {
         $views_generator = new ViewsGenerator('categories');
 

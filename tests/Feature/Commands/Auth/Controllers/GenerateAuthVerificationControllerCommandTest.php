@@ -11,8 +11,7 @@ class GenerateAuthVerificationControllerCommandTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
-    public function it_can_generate_auth_verification_controller_output(): void
+    public function test_it_can_generate_auth_verification_controller_output(): void
     {
         $expected_content = $this->getTestStubContents('Controllers/Customer/Auth/VerificationController.php');
 
@@ -20,8 +19,7 @@ class GenerateAuthVerificationControllerCommandTest extends TestCase
              ->expectsOutput($expected_content);
     }
 
-    /** @test */
-    public function it_can_generate_auth_verification_controller_file(): void
+    public function test_it_can_generate_auth_verification_controller_file(): void
     {
         $expected_path = $this->app->path('Http/Controllers/Customer/Auth/VerificationController.php');
         $expected_content = $this->getTestStubContents('Controllers/Customer/Auth/VerificationController.php');

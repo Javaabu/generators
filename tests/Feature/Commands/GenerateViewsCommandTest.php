@@ -36,8 +36,7 @@ class GenerateViewsCommandTest extends TestCase
         parent::tearDown();
     }
 
-    /** @test */
-    public function it_can_generate_views_output(): void
+    public function test_it_can_generate_views_output(): void
     {
         $expected_content = '';
 
@@ -81,8 +80,7 @@ class GenerateViewsCommandTest extends TestCase
              ->expectsOutput($expected_content);
     }
 
-    /** @test */
-    public function it_can_generate_new_view_files(): void
+    public function test_it_can_generate_new_view_files(): void
     {
         $views = [
             'products.blade.php',
@@ -119,8 +117,7 @@ class GenerateViewsCommandTest extends TestCase
         }
     }
 
-    /** @test */
-    public function it_adds_sidebar_links(): void
+    public function test_it_adds_sidebar_links(): void
     {
         $expected_path = $this->app->path('Menus/AdminSidebar.php');
         $expected_content = $this->getTestStubContents('Menus/ModelsAdminSidebar.php');

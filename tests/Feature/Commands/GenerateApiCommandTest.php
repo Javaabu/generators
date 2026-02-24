@@ -19,8 +19,7 @@ class GenerateApiCommandTest extends TestCase
         ];
     }
 
-    /** @test */
-    public function it_can_generate_all_api_output(): void
+    public function test_it_can_generate_all_api_output(): void
     {
         $commands = $this->getCommands();
 
@@ -39,8 +38,7 @@ class GenerateApiCommandTest extends TestCase
             ->assertSuccessful();
     }
 
-    /** @test */
-    public function it_can_create_all_api_files(): void
+    public function test_it_can_create_all_api_files(): void
     {
         $commands = $this->getCommands();
 

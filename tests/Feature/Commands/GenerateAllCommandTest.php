@@ -35,8 +35,7 @@ class GenerateAllCommandTest extends TestCase
         ];
     }
 
-    /** @test */
-    public function it_can_skip_commands_for_all(): void
+    public function test_it_can_skip_commands_for_all(): void
     {
         $commands = $this->getCommands();
 
@@ -63,8 +62,7 @@ class GenerateAllCommandTest extends TestCase
             ->assertSuccessful();
     }
 
-    /** @test */
-    public function it_can_generate_all_output(): void
+    public function test_it_can_generate_all_output(): void
     {
         $commands = $this->getCommands();
 
@@ -83,8 +81,7 @@ class GenerateAllCommandTest extends TestCase
              ->assertSuccessful();
     }
 
-    /** @test */
-    public function it_can_create_all_files(): void
+    public function test_it_can_create_all_files(): void
     {
         $commands = $this->getCommands();
 

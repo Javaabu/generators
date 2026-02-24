@@ -10,8 +10,7 @@ class AuthVerificationControllerGeneratorTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
-    public function it_can_generate_an_auth_verification_controller(): void
+    public function test_it_can_generate_an_auth_verification_controller(): void
     {
         $controller_generator = new AuthVerificationControllerGenerator('customers');
 

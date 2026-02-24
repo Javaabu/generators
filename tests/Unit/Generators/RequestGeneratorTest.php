@@ -10,16 +10,14 @@ class RequestGeneratorTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
-    public function it_can_determine_the_validation_rules_for_nullable_attributes(): void
+    public function test_it_can_determine_the_validation_rules_for_nullable_attributes(): void
     {
         $request_generator = new RequestGenerator('products');
 
         $this->assertContains('nullable', $request_generator->getRequestValidationRules('description'));
     }
 
-    /** @test */
-    public function it_can_determine_the_validation_rules_for_decimals(): void
+    public function test_it_can_determine_the_validation_rules_for_decimals(): void
     {
         $request_generator = new RequestGenerator('products');
 
@@ -30,8 +28,7 @@ class RequestGeneratorTest extends TestCase
         ], $request_generator->getRequestValidationRules('price'));
     }
 
-    /** @test */
-    public function it_can_determine_the_validation_rules_for_ints(): void
+    public function test_it_can_determine_the_validation_rules_for_ints(): void
     {
         $request_generator = new RequestGenerator('products');
 
@@ -42,8 +39,7 @@ class RequestGeneratorTest extends TestCase
         ], $request_generator->getRequestValidationRules('stock'));
     }
 
-    /** @test */
-    public function it_can_determine_the_validation_rules_for_texts(): void
+    public function test_it_can_determine_the_validation_rules_for_texts(): void
     {
         $request_generator = new RequestGenerator('products');
 
@@ -53,8 +49,7 @@ class RequestGeneratorTest extends TestCase
         ], $request_generator->getRequestValidationRules('description'));
     }
 
-    /** @test */
-    public function it_can_determine_the_validation_rules_for_strings(): void
+    public function test_it_can_determine_the_validation_rules_for_strings(): void
     {
         $request_generator = new RequestGenerator('products');
 
@@ -64,8 +59,7 @@ class RequestGeneratorTest extends TestCase
         ], $request_generator->getRequestValidationRules('name'));
     }
 
-    /** @test */
-    public function it_can_determine_the_validation_rules_for_booleans(): void
+    public function test_it_can_determine_the_validation_rules_for_booleans(): void
     {
         $request_generator = new RequestGenerator('products');
 
@@ -75,8 +69,7 @@ class RequestGeneratorTest extends TestCase
     }
 
 
-    /** @test */
-    public function it_can_determine_the_validation_rules_for_date_times(): void
+    public function test_it_can_determine_the_validation_rules_for_date_times(): void
     {
         $request_generator = new RequestGenerator('products');
 
@@ -85,8 +78,7 @@ class RequestGeneratorTest extends TestCase
         ], $request_generator->getRequestValidationRules('published_at'));
     }
 
-    /** @test */
-    public function it_can_determine_the_validation_rules_for_times(): void
+    public function test_it_can_determine_the_validation_rules_for_times(): void
     {
         $request_generator = new RequestGenerator('products');
 
@@ -95,8 +87,7 @@ class RequestGeneratorTest extends TestCase
         ], $request_generator->getRequestValidationRules('sale_time'));
     }
 
-    /** @test */
-    public function it_can_determine_the_validation_rules_for_timestamps(): void
+    public function test_it_can_determine_the_validation_rules_for_timestamps(): void
     {
         $request_generator = new RequestGenerator('products');
 
@@ -105,8 +96,7 @@ class RequestGeneratorTest extends TestCase
         ], $request_generator->getRequestValidationRules('expire_at'));
     }
 
-    /** @test */
-    public function it_can_determine_the_validation_rules_for_dates(): void
+    public function test_it_can_determine_the_validation_rules_for_dates(): void
     {
         $request_generator = new RequestGenerator('products');
 
@@ -115,8 +105,7 @@ class RequestGeneratorTest extends TestCase
         ], $request_generator->getRequestValidationRules('released_on'));
     }
 
-    /** @test */
-    public function it_can_determine_the_validation_rules_for_years(): void
+    public function test_it_can_determine_the_validation_rules_for_years(): void
     {
         $request_generator = new RequestGenerator('products');
 
@@ -127,8 +116,7 @@ class RequestGeneratorTest extends TestCase
         ], $request_generator->getRequestValidationRules('manufactured_year'));
     }
 
-    /** @test */
-    public function it_can_determine_the_validation_rules_for_foreign_keys(): void
+    public function test_it_can_determine_the_validation_rules_for_foreign_keys(): void
     {
         $request_generator = new RequestGenerator('products');
 
@@ -138,24 +126,21 @@ class RequestGeneratorTest extends TestCase
         ], $request_generator->getRequestValidationRules('category_id'));
     }
 
-    /** @test */
-    public function it_can_determine_the_validation_rules_for_json_fields(): void
+    public function test_it_can_determine_the_validation_rules_for_json_fields(): void
     {
         $request_generator = new RequestGenerator('products');
 
         $this->assertEquals(['array'], $request_generator->getRequestValidationRules('features'));
     }
 
-    /** @test */
-    public function it_can_determine_the_validation_rules_for_enum_fields(): void
+    public function test_it_can_determine_the_validation_rules_for_enum_fields(): void
     {
         $request_generator = new RequestGenerator('products');
 
         $this->assertEquals(['in:draft,published'], $request_generator->getRequestValidationRules('status'));
     }
 
-    /** @test */
-    public function it_can_generate_a_request_with_one_unique_rule(): void
+    public function test_it_can_generate_a_request_with_one_unique_rule(): void
     {
         $request_generator = new RequestGenerator('products');
 
@@ -165,8 +150,7 @@ class RequestGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_generate_a_request_with_multiple_unique_rules(): void
+    public function test_it_can_generate_a_request_with_multiple_unique_rules(): void
     {
         $request_generator = new RequestGenerator('categories');
 
@@ -176,8 +160,7 @@ class RequestGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_generate_a_request_with_no_unique_rules(): void
+    public function test_it_can_generate_a_request_with_no_unique_rules(): void
     {
         $request_generator = new RequestGenerator('orders');
 

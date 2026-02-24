@@ -11,8 +11,7 @@ class GenerateAuthPasswordResetsCommandTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
-    public function it_can_generate_password_resets_output(): void
+    public function test_it_can_generate_password_resets_output(): void
     {
         $expected_content = $this->getTestStubContents('migrations/create_customer_password_reset_tokens_table.php');
 
@@ -20,8 +19,7 @@ class GenerateAuthPasswordResetsCommandTest extends TestCase
              ->expectsOutput($expected_content);
     }
 
-    /** @test */
-    public function it_can_generate_password_resets_migration_file(): void
+    public function test_it_can_generate_password_resets_migration_file(): void
     {
         $this->travelTo('2024-04-23 12:43:31');
 

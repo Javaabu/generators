@@ -10,8 +10,7 @@ class AuthPolicyGeneratorTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
-    public function it_can_generate_an_auth_policy_for_soft_delete_model(): void
+    public function test_it_can_generate_an_auth_policy_for_soft_delete_model(): void
     {
         $policy_generator = new AuthPolicyGenerator('customers');
 

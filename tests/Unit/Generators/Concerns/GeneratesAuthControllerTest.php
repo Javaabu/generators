@@ -10,16 +10,14 @@ class GeneratesAuthControllerTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
-    public function it_can_generate_auth_controller_name(): void
+    public function test_it_can_generate_auth_controller_name(): void
     {
         $controller_generator = new AuthConfirmPasswordControllerGenerator('customers');
 
         $this->assertEquals('ConfirmPasswordController', $controller_generator->getControllerName());
     }
 
-    /** @test */
-    public function it_can_generate_auth_controller_path(): void
+    public function test_it_can_generate_auth_controller_path(): void
     {
         $controller_generator = new AuthConfirmPasswordControllerGenerator('customers');
 

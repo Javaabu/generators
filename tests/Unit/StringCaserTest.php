@@ -7,8 +7,7 @@ use Javaabu\Generators\Tests\TestCase;
 
 class StringCaserTest extends TestCase
 {
-    /** @test */
-    public function it_can_generate_correct_string_cases_in_studly_format(): void
+    public function test_it_can_generate_correct_string_cases_in_studly_format(): void
     {
         $name = 'FormInputField';
 
@@ -34,8 +33,7 @@ class StringCaserTest extends TestCase
         $this->assertEquals('form input field', StringCaser::lower($name));
     }
 
-    /** @test */
-    public function it_can_generate_correct_string_cases_in_snake_format(): void
+    public function test_it_can_generate_correct_string_cases_in_snake_format(): void
     {
         $name = 'Form_input_Field';
 
@@ -61,8 +59,7 @@ class StringCaserTest extends TestCase
         $this->assertEquals('form input field', StringCaser::lower($name));
     }
 
-    /** @test */
-    public function it_can_generate_correct_string_cases_in_kebab_format(): void
+    public function test_it_can_generate_correct_string_cases_in_kebab_format(): void
     {
         $name = 'form-input-field';
 

@@ -25,8 +25,7 @@ class GeneratePermissionsCommandTest extends TestCase
         parent::tearDown();
     }
 
-    /** @test */
-    public function it_can_generate_permissions_output(): void
+    public function test_it_can_generate_permissions_output(): void
     {
         $expected_content = $this->getTestStubContents('seeders/_permissions.stub');
 
@@ -34,8 +33,7 @@ class GeneratePermissionsCommandTest extends TestCase
              ->expectsOutput($expected_content);
     }
 
-    /** @test */
-    public function it_can_generate_a_new_permissions_file(): void
+    public function test_it_can_generate_a_new_permissions_file(): void
     {
         $expected_path = $this->app->databasePath('seeders/PermissionsSeeder.php');
         $expected_content = $this->getTestStubContents('seeders/PermissionsSeederNew.php');
@@ -52,8 +50,7 @@ class GeneratePermissionsCommandTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_append_permissions_to_an_existing_permissions_seeder(): void
+    public function test_it_can_append_permissions_to_an_existing_permissions_seeder(): void
     {
         $expected_path = $this->app->databasePath('seeders/PermissionsSeeder.php');
 
@@ -72,8 +69,7 @@ class GeneratePermissionsCommandTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_does_not_duplicate_permissions_when_the_generate_command_is_called_multiple_times(): void
+    public function test_it_can_does_not_duplicate_permissions_when_the_generate_command_is_called_multiple_times(): void
     {
         $expected_path = $this->app->databasePath('seeders/PermissionsSeeder.php');
 

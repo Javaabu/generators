@@ -46,8 +46,7 @@ class BaseAuthGeneratorTest extends TestCase
         parent::tearDown();
     }
 
-    /** @test */
-    public function it_can_determine_if_the_table_has_additional_attributes(): void
+    public function test_it_can_determine_if_the_table_has_additional_attributes(): void
     {
         $generator = new MockAuthBaseGenerator('customers');
 
@@ -58,8 +57,7 @@ class BaseAuthGeneratorTest extends TestCase
         $this->assertFalse($generator->hasAdditionalAttributes());
     }
 
-    /** @test */
-    public function it_can_determine_if_email_is_required(): void
+    public function test_it_can_determine_if_email_is_required(): void
     {
         $generator = new MockAuthBaseGenerator('customers');
 
@@ -70,8 +68,7 @@ class BaseAuthGeneratorTest extends TestCase
         $this->assertFalse($generator->requiresEmail());
     }
 
-    /** @test */
-    public function it_can_determine_if_password_is_required(): void
+    public function test_it_can_determine_if_password_is_required(): void
     {
         $generator = new MockAuthBaseGenerator('customers');
 
@@ -82,8 +79,7 @@ class BaseAuthGeneratorTest extends TestCase
         $this->assertFalse($generator->requiresPassword());
     }
 
-    /** @test */
-    public function it_can_extract_default_password_from_default_users_seeder(): void
+    public function test_it_can_extract_default_password_from_default_users_seeder(): void
     {
         $seeder_path = $this->app->databasePath('seeders/DefaultUsersSeeder.php');
 
@@ -94,8 +90,7 @@ class BaseAuthGeneratorTest extends TestCase
         $this->assertEquals('RandomPassword12345', $generator->getDefaultPassword());
     }
 
-    /** @test */
-    public function it_can_generate_default_password_from_table_name(): void
+    public function test_it_can_generate_default_password_from_table_name(): void
     {
         $generator = new MockAuthBaseGenerator('customers');
 
@@ -103,8 +98,7 @@ class BaseAuthGeneratorTest extends TestCase
 
     }
 
-    /** @test */
-    public function it_can_generate_auth_name_from_table_name(): void
+    public function test_it_can_generate_auth_name_from_table_name(): void
     {
         $generator = new MockAuthBaseGenerator('customers');
 
@@ -115,8 +109,7 @@ class BaseAuthGeneratorTest extends TestCase
 
     }
 
-    /** @test */
-    public function it_can_generate_custom_auth_name(): void
+    public function test_it_can_generate_custom_auth_name(): void
     {
         $generator = new MockAuthBaseGenerator('customers', auth_name: 'Portal');
 
@@ -127,8 +120,7 @@ class BaseAuthGeneratorTest extends TestCase
 
     }
 
-    /** @test */
-    public function it_can_remove_auth_columns_even_if_no_columns_are_provided(): void
+    public function test_it_can_remove_auth_columns_even_if_no_columns_are_provided(): void
     {
         $generator = new MockAuthBaseGenerator('customers');
 
@@ -164,8 +156,7 @@ class BaseAuthGeneratorTest extends TestCase
         }
     }
 
-    /** @test */
-    public function it_can_remove_auth_columns_from_the_columns_that_are_provided(): void
+    public function test_it_can_remove_auth_columns_from_the_columns_that_are_provided(): void
     {
         $extra_columns = [
             'address',
@@ -188,8 +179,7 @@ class BaseAuthGeneratorTest extends TestCase
         }
     }
 
-    /** @test */
-    public function it_can_determine_what_is_an_auth_column(): void
+    public function test_it_can_determine_what_is_an_auth_column(): void
     {
         $generator = new MockAuthBaseGenerator('customers');
 

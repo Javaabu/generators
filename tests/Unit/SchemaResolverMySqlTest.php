@@ -23,15 +23,13 @@ class SchemaResolverMySqlTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
-    public function it_can_resolve_the_key_name(): void
+    public function test_it_can_resolve_the_key_name(): void
     {
         $resolver = new SchemaResolverMySql('products');
         $this->assertEquals('id', $resolver->resolve()->getKeyName());
     }
 
-    /** @test */
-    public function it_can_resolve_soft_deletes(): void
+    public function test_it_can_resolve_soft_deletes(): void
     {
         $resolver = new SchemaResolverMySql('products');
         $this->assertTrue($resolver->resolve()->hasSoftDeletes());
@@ -40,8 +38,7 @@ class SchemaResolverMySqlTest extends TestCase
         $this->assertFalse($resolver->resolve()->hasSoftDeletes());
     }
 
-    /** @test */
-    public function it_can_resolve_timestamps(): void
+    public function test_it_can_resolve_timestamps(): void
     {
         $resolver = new SchemaResolverMySql('products');
         $this->assertTrue($resolver->resolve()->hasTimestamps());
@@ -50,8 +47,7 @@ class SchemaResolverMySqlTest extends TestCase
         $this->assertFalse($resolver->resolve()->hasTimestamps());
     }
 
-    /** @test */
-    public function it_can_resolve_a_subset_of_fields(): void
+    public function test_it_can_resolve_a_subset_of_fields(): void
     {
         $resolver = new SchemaResolverMySql('orders', ['order_no', 'category_id']);
         $fields = $resolver->resolve()->getFields();
@@ -62,8 +58,7 @@ class SchemaResolverMySqlTest extends TestCase
         $this->assertCount(2, $fields);
     }
 
-    /** @test */
-    public function it_does_not_resolve_always_ignored_fields(): void
+    public function test_it_does_not_resolve_always_ignored_fields(): void
     {
         $resolver = new SchemaResolverMySql('products');
         $fields = $resolver->resolve()->getFields();
@@ -73,8 +68,7 @@ class SchemaResolverMySqlTest extends TestCase
         $this->assertArrayNotHasKey('deleted_at', $fields);
     }
 
-    /** @test */
-    public function it_does_not_resolve_auto_increments(): void
+    public function test_it_does_not_resolve_auto_increments(): void
     {
         $resolver = new SchemaResolverMySql('products');
         $fields = $resolver->resolve()->getFields();
@@ -82,8 +76,7 @@ class SchemaResolverMySqlTest extends TestCase
         $this->assertArrayNotHasKey('id', $fields);
     }
 
-    /** @test */
-    public function it_can_resolve_text_fields(): void
+    public function test_it_can_resolve_text_fields(): void
     {
         $resolver = new SchemaResolverMySql('posts');
         $fields = $resolver->resolve()->getFields();
@@ -99,8 +92,7 @@ class SchemaResolverMySqlTest extends TestCase
         $this->assertFalse($field->isUnique());
     }
 
-    /** @test */
-    public function it_can_resolve_medium_text_fields(): void
+    public function test_it_can_resolve_medium_text_fields(): void
     {
         $resolver = new SchemaResolverMySql('posts');
         $fields = $resolver->resolve()->getFields();
@@ -116,8 +108,7 @@ class SchemaResolverMySqlTest extends TestCase
         $this->assertFalse($field->isUnique());
     }
 
-    /** @test */
-    public function it_can_resolve_tiny_text_fields(): void
+    public function test_it_can_resolve_tiny_text_fields(): void
     {
         $resolver = new SchemaResolverMySql('posts');
         $fields = $resolver->resolve()->getFields();
@@ -133,8 +124,7 @@ class SchemaResolverMySqlTest extends TestCase
         $this->assertFalse($field->isUnique());
     }
 
-    /** @test */
-    public function it_can_resolve_long_text_fields(): void
+    public function test_it_can_resolve_long_text_fields(): void
     {
         $resolver = new SchemaResolverMySql('posts');
         $fields = $resolver->resolve()->getFields();
@@ -150,8 +140,7 @@ class SchemaResolverMySqlTest extends TestCase
         $this->assertFalse($field->isUnique());
     }
 
-    /** @test */
-    public function it_can_resolve_foreign_key_fields(): void
+    public function test_it_can_resolve_foreign_key_fields(): void
     {
         $field = $this->resolveField('category_id');
 
@@ -166,8 +155,7 @@ class SchemaResolverMySqlTest extends TestCase
         $this->assertNull($field->generateCast());
     }
 
-    /** @test */
-    public function it_can_resolve_enums_from_comments(): void
+    public function test_it_can_resolve_enums_from_comments(): void
     {
         $field = $this->resolveField('status', 'payments');
 
@@ -179,8 +167,7 @@ class SchemaResolverMySqlTest extends TestCase
         $this->assertEquals('PaymentStatuses::class', $field->generateCast());
     }
 
-    /** @test */
-    public function it_can_resolve_boolean_fields(): void
+    public function test_it_can_resolve_boolean_fields(): void
     {
         $field = $this->resolveField('on_sale');
 
@@ -193,8 +180,7 @@ class SchemaResolverMySqlTest extends TestCase
         $this->assertEquals('boolean', $field->generateCast());
     }
 
-    /** @test */
-    public function it_can_resolve_unique_fields(): void
+    public function test_it_can_resolve_unique_fields(): void
     {
         $field = $this->resolveField('slug');
 
@@ -206,8 +192,7 @@ class SchemaResolverMySqlTest extends TestCase
         $this->assertTrue($field->isUnique());
     }
 
-    /** @test */
-    public function it_can_resolve_string_fields(): void
+    public function test_it_can_resolve_string_fields(): void
     {
         $field = $this->resolveField('name');
 
@@ -220,8 +205,7 @@ class SchemaResolverMySqlTest extends TestCase
         $this->assertEquals('string', $field->generateCast());
     }
 
-    /** @test */
-    public function it_can_resolve_integer_fields(): void
+    public function test_it_can_resolve_integer_fields(): void
     {
         $field = $this->resolveField('stock');
 
@@ -236,8 +220,7 @@ class SchemaResolverMySqlTest extends TestCase
         $this->assertEquals('integer', $field->generateCast());
     }
 
-    /** @test */
-    public function it_can_resolve_decimal_fields(): void
+    public function test_it_can_resolve_decimal_fields(): void
     {
         $field = $this->resolveField('price');
 
@@ -254,8 +237,7 @@ class SchemaResolverMySqlTest extends TestCase
         $this->assertEquals('decimal:2', $field->generateCast());
     }
 
-    /** @test */
-    public function it_can_resolve_enum_fields(): void
+    public function test_it_can_resolve_enum_fields(): void
     {
         $field = $this->resolveField('status');
 
@@ -268,8 +250,7 @@ class SchemaResolverMySqlTest extends TestCase
         $this->assertNull($field->generateCast());
     }
 
-    /** @test */
-    public function it_can_resolve_year_fields(): void
+    public function test_it_can_resolve_year_fields(): void
     {
         $field = $this->resolveField('manufactured_year');
 
@@ -283,8 +264,7 @@ class SchemaResolverMySqlTest extends TestCase
         $this->assertEquals('integer', $field->generateCast());
     }
 
-    /** @test */
-    public function it_can_resolve_date_time_fields(): void
+    public function test_it_can_resolve_date_time_fields(): void
     {
         $field = $this->resolveField('published_at');
 
@@ -309,8 +289,7 @@ class SchemaResolverMySqlTest extends TestCase
         $this->assertEquals('datetime', $field->generateCast());
     }
 
-    /** @test */
-    public function it_can_resolve_date_fields(): void
+    public function test_it_can_resolve_date_fields(): void
     {
         $field = $this->resolveField('released_on');
 
@@ -324,8 +303,7 @@ class SchemaResolverMySqlTest extends TestCase
         $this->assertEquals('date', $field->generateCast());
     }
 
-    /** @test */
-    public function it_can_resolve_time_fields(): void
+    public function test_it_can_resolve_time_fields(): void
     {
         $field = $this->resolveField('sale_time');
 
@@ -339,8 +317,7 @@ class SchemaResolverMySqlTest extends TestCase
         $this->assertEquals('datetime', $field->generateCast());
     }
 
-    /** @test */
-    public function it_can_resolve_json_fields(): void
+    public function test_it_can_resolve_json_fields(): void
     {
         $field = $this->resolveField('features');
 

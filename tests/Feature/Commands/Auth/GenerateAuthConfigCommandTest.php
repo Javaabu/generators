@@ -23,8 +23,7 @@ class GenerateAuthConfigCommandTest extends TestCase
         parent::tearDown();
     }
 
-    /** @test */
-    public function it_can_generate_auth_config_output(): void
+    public function test_it_can_generate_auth_config_output(): void
     {
         $expected_content = '';
 
@@ -50,8 +49,7 @@ class GenerateAuthConfigCommandTest extends TestCase
              ->expectsOutput($expected_content);
     }
 
-    /** @test */
-    public function it_can_append_config_to_an_existing_auth_config_file(): void
+    public function test_it_can_append_config_to_an_existing_auth_config_file(): void
     {
         $expected_path = $this->app->configPath('auth.php');
 

@@ -15,8 +15,7 @@ class BaseGenerateCommandTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
-    public function it_asks_for_the_table_name(): void
+    public function test_it_asks_for_the_table_name(): void
     {
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Not enough arguments (missing: "table")');
@@ -24,32 +23,28 @@ class BaseGenerateCommandTest extends TestCase
         $this->artisan('generate:factory');
     }
 
-    /** @test */
-    public function it_does_not_accept_multiple_table_names(): void
+    public function test_it_does_not_accept_multiple_table_names(): void
     {
         $this->expectException(MultipleTablesSuppliedException::class);
 
         $this->artisan('generate:factory', ['table' => 'categories,orders']);
     }
 
-    /** @test */
-    public function it_checks_if_the_table_exists(): void
+    public function test_it_checks_if_the_table_exists(): void
     {
         $this->expectException(TableDoesNotExistException::class);
 
         $this->artisan('generate:factory', ['table' => 'none_existing_table']);
     }
 
-    /** @test */
-    public function it_checks_if_the_columns_exists(): void
+    public function test_it_checks_if_the_columns_exists(): void
     {
         $this->expectException(ColumnDoesNotExistException::class);
 
         $this->artisan('generate:factory', ['table' => 'products', '--columns' => 'name,none_existing_field']);
     }
 
-    /** @test */
-    public function it_does_not_create_existing_files_without_the_force_option(): void
+    public function test_it_does_not_create_existing_files_without_the_force_option(): void
     {
         $expected_path = $this->app->databasePath('factories/CategoryFactory.php');
 
@@ -67,8 +62,7 @@ class BaseGenerateCommandTest extends TestCase
             ->expectsOutput($expected_path . ' already exists!');
     }
 
-    /** @test */
-    public function it_over_writes_existing_files_with_the_force_option(): void
+    public function test_it_over_writes_existing_files_with_the_force_option(): void
     {
         $this->partialMock(Filesystem::class, function (MockInterface $mock) {
             $mock->shouldReceive('exists')

@@ -10,8 +10,7 @@ class TestGeneratorTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
-    public function it_can_generate_input_errors(): void
+    public function test_it_can_generate_input_errors(): void
     {
         $test_generator = new TestGenerator('products');
 
@@ -21,8 +20,7 @@ class TestGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_render_wrong_inputs(): void
+    public function test_it_can_render_wrong_inputs(): void
     {
         $test_generator = new TestGenerator('products');
 
@@ -32,8 +30,7 @@ class TestGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_render_wrong_db_values(): void
+    public function test_it_can_render_wrong_db_values(): void
     {
         $test_generator = new TestGenerator('products');
 
@@ -43,8 +40,7 @@ class TestGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_render_correct_inputs(): void
+    public function test_it_can_render_correct_inputs(): void
     {
         $test_generator = new TestGenerator('products');
 
@@ -54,8 +50,7 @@ class TestGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_render_correct_db_values(): void
+    public function test_it_can_render_correct_db_values(): void
     {
         $test_generator = new TestGenerator('products');
 
@@ -65,8 +60,7 @@ class TestGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_render_different_correct_inputs(): void
+    public function test_it_can_render_different_correct_inputs(): void
     {
         $test_generator = new TestGenerator('products');
 
@@ -76,8 +70,7 @@ class TestGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_render_different_correct_db_values(): void
+    public function test_it_can_render_different_correct_db_values(): void
     {
         $test_generator = new TestGenerator('products');
 
@@ -87,8 +80,7 @@ class TestGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_render_factory_inputs(): void
+    public function test_it_can_render_factory_inputs(): void
     {
         $test_generator = new TestGenerator('products');
 
@@ -98,8 +90,7 @@ class TestGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_render_factory_db_values(): void
+    public function test_it_can_render_factory_db_values(): void
     {
         $test_generator = new TestGenerator('products');
 
@@ -109,8 +100,7 @@ class TestGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_generate_a_test_with_foreign_keys(): void
+    public function test_it_can_generate_a_test_with_foreign_keys(): void
     {
         $test_generator = new TestGenerator('products');
 
@@ -120,8 +110,7 @@ class TestGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_generate_a_test_without_foreign_keys(): void
+    public function test_it_can_generate_a_test_without_foreign_keys(): void
     {
         $test_generator = new TestGenerator('categories');
 
@@ -131,8 +120,7 @@ class TestGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_generate_a_test_with_multiple_foreign_keys(): void
+    public function test_it_can_generate_a_test_with_multiple_foreign_keys(): void
     {
         $test_generator = new TestGenerator('orders');
 
@@ -142,8 +130,7 @@ class TestGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_generate_a_test_where_the_enum_has_only_one_case(): void
+    public function test_it_can_generate_a_test_where_the_enum_has_only_one_case(): void
     {
         $test_generator = new TestGenerator('single_value_enum_orders');
 

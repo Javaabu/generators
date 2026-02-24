@@ -10,8 +10,7 @@ class AuthFactoryGeneratorTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
-    public function it_can_generate_an_auth_factory_with_foreign_keys(): void
+    public function test_it_can_generate_an_auth_factory_with_foreign_keys(): void
     {
         $factory_generator = new AuthFactoryGenerator('customers');
 

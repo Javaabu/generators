@@ -10,8 +10,7 @@ class AuthForgotPasswordControllerGeneratorTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
-    public function it_can_generate_an_auth_forgot_password_controller(): void
+    public function test_it_can_generate_an_auth_forgot_password_controller(): void
     {
         $controller_generator = new AuthForgotPasswordControllerGenerator('customers');
 

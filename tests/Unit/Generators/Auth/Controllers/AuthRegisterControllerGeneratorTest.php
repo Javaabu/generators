@@ -10,8 +10,7 @@ class AuthRegisterControllerGeneratorTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
-    public function it_can_generate_an_auth_register_controller(): void
+    public function test_it_can_generate_an_auth_register_controller(): void
     {
         $controller_generator = new AuthRegisterControllerGenerator('customers');
 
@@ -21,8 +20,7 @@ class AuthRegisterControllerGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_generate_register_assignments(): void
+    public function test_it_can_generate_register_assignments(): void
     {
         $controller_generator = new AuthRegisterControllerGenerator('customers');
 

@@ -55,8 +55,7 @@ class BaseGeneratorTest extends TestCase
         parent::tearDown();
     }
 
-    /** @test */
-    public function it_can_generate_from_custom_stubs(): void
+    public function test_it_can_generate_from_custom_stubs(): void
     {
         $export_generator = new ExportGenerator('products');
 
@@ -66,8 +65,7 @@ class BaseGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_determine_if_the_model_has_any_fillable_fields(): void
+    public function test_it_can_determine_if_the_model_has_any_fillable_fields(): void
     {
         $generator = new MockBaseGenerator('products');
         $this->assertTrue($generator->hasAnyFillable());
@@ -76,8 +74,7 @@ class BaseGeneratorTest extends TestCase
         $this->assertFalse($generator->hasAnyFillable());
     }
 
-    /** @test */
-    public function it_can_determine_the_name_field(): void
+    public function test_it_can_determine_the_name_field(): void
     {
         $generator = new MockBaseGenerator('products');
         $this->assertEquals('name', $generator->getNameField());
@@ -95,8 +92,7 @@ class BaseGeneratorTest extends TestCase
         $this->assertEquals('title', $generator->getNameField());
     }
 
-    /** @test */
-    public function it_can_determine_the_type_from_attribute(): void
+    public function test_it_can_determine_the_type_from_attribute(): void
     {
         $generator = new MockBaseGenerator('products');
 
@@ -115,8 +111,7 @@ class BaseGeneratorTest extends TestCase
         $this->assertInstanceOf(YearField::class, $generator->getField('manufactured_year'));
     }
 
-    /** @test */
-    public function it_can_determine_the_label_from_the_attribute(): void
+    public function test_it_can_determine_the_label_from_the_attribute(): void
     {
         $generator = new MockBaseGenerator('products');
 
@@ -135,8 +130,7 @@ class BaseGeneratorTest extends TestCase
         $this->assertEquals('Manufactured Year', $generator->getField('manufactured_year')->getLabel());
     }
 
-    /** @test */
-    public function it_can_identify_the_fillable_attributes(): void
+    public function test_it_can_identify_the_fillable_attributes(): void
     {
         $generator = new MockBaseGenerator('products');
 
@@ -158,8 +152,7 @@ class BaseGeneratorTest extends TestCase
         ], $generator->getFillableAttributes());
     }
 
-    /** @test */
-    public function it_can_identify_the_searchable_attributes(): void
+    public function test_it_can_identify_the_searchable_attributes(): void
     {
         $generator = new MockBaseGenerator('products');
 
@@ -170,8 +163,7 @@ class BaseGeneratorTest extends TestCase
         ], $generator->getSearchableAttributes());
     }
 
-    /** @test */
-    public function it_can_identify_the_foreign_key_attributes(): void
+    public function test_it_can_identify_the_foreign_key_attributes(): void
     {
         $generator = new MockBaseGenerator('products');
 

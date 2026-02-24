@@ -10,8 +10,7 @@ class PolicyGeneratorTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
-    public function it_can_generate_a_policy_for_soft_delete_model(): void
+    public function test_it_can_generate_a_policy_for_soft_delete_model(): void
     {
         $policy_generator = new PolicyGenerator('products');
 
@@ -21,8 +20,7 @@ class PolicyGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_generate_a_policy_for_a_none_soft_delete(): void
+    public function test_it_can_generate_a_policy_for_a_none_soft_delete(): void
     {
         $policy_generator = new PolicyGenerator('categories');
 

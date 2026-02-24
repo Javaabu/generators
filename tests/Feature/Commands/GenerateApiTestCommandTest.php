@@ -11,8 +11,7 @@ class GenerateApiTestCommandTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
-    public function it_can_generate_test_output(): void
+    public function test_it_can_generate_test_output(): void
     {
         $expected_content = $this->getTestStubContents('tests/Api/CategoriesControllerTest.stub');
 
@@ -20,8 +19,7 @@ class GenerateApiTestCommandTest extends TestCase
              ->expectsOutput($expected_content);
     }
 
-    /** @test */
-    public function it_can_generate_test_file(): void
+    public function test_it_can_generate_test_file(): void
     {
         $expected_path = $this->app->basePath('tests/Feature/Controllers/Api/CategoriesControllerTest.php');
         $expected_content = $this->getTestStubContents('tests/Api/CategoriesControllerTest.stub');

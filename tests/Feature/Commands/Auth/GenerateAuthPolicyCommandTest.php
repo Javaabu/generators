@@ -11,8 +11,7 @@ class GenerateAuthPolicyCommandTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
-    public function it_can_generate_auth_policy_output(): void
+    public function test_it_can_generate_auth_policy_output(): void
     {
         $expected_content = $this->getTestStubContents('Policies/CustomerPolicy.php');
 
@@ -20,8 +19,7 @@ class GenerateAuthPolicyCommandTest extends TestCase
              ->expectsOutput($expected_content);
     }
 
-    /** @test */
-    public function it_can_generate_auth_policy_file(): void
+    public function test_it_can_generate_auth_policy_file(): void
     {
         $expected_path = $this->app->path('Policies/CustomerPolicy.php');
         $expected_content = $this->getTestStubContents('Policies/CustomerPolicy.php');

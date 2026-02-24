@@ -10,8 +10,7 @@ class ApiTestGeneratorTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
-    public function it_can_generate_an_api_controller_test_without_foreign_keys(): void
+    public function test_it_can_generate_an_api_controller_test_without_foreign_keys(): void
     {
         $api_generator = new ApiTestGenerator('categories');
 

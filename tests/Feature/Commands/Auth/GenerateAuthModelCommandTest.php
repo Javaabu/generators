@@ -38,8 +38,7 @@ class GenerateAuthModelCommandTest extends TestCase
         parent::tearDown();
     }
 
-    /** @test */
-    public function it_can_generate_auth_model_output(): void
+    public function test_it_can_generate_auth_model_output(): void
     {
         $expected_content = $this->getTestStubContents('Models/Customer.php');
 
@@ -47,8 +46,7 @@ class GenerateAuthModelCommandTest extends TestCase
              ->expectsOutput($expected_content);
     }
 
-    /** @test */
-    public function it_can_generate_a_new_auth_model_file(): void
+    public function test_it_can_generate_a_new_auth_model_file(): void
     {
         $expected_path = $this->app->path('Models/Customer.php');
         $expected_content = $this->getTestStubContents('Models/Customer.php');
@@ -62,8 +60,7 @@ class GenerateAuthModelCommandTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_adds_auth_causer_types_and_subject_types_and_morph_maps(): void
+    public function test_it_adds_auth_causer_types_and_subject_types_and_morph_maps(): void
     {
         $expected_path = $this->app->path('Models/PublicUser.php');
         $expected_content = $this->getTestStubContents('Models/PublicUser.php');

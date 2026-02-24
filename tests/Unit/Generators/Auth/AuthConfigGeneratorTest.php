@@ -11,8 +11,7 @@ class AuthConfigGeneratorTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
-    public function it_can_generate_auth_guards_config(): void
+    public function test_it_can_generate_auth_guards_config(): void
     {
         $config_generator = new AuthConfigGenerator('customers');
 
@@ -22,8 +21,7 @@ class AuthConfigGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_generate_auth_providers_config(): void
+    public function test_it_can_generate_auth_providers_config(): void
     {
         $config_generator = new AuthConfigGenerator('customers');
 
@@ -33,8 +31,7 @@ class AuthConfigGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_generate_auth_passwords_config(): void
+    public function test_it_can_generate_auth_passwords_config(): void
     {
         $config_generator = new AuthConfigGenerator('customers');
 
@@ -44,8 +41,7 @@ class AuthConfigGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_generate_auth_passport_guards_config(): void
+    public function test_it_can_generate_auth_passport_guards_config(): void
     {
         $config_generator = new AuthConfigGenerator('customers');
 
@@ -55,8 +51,7 @@ class AuthConfigGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_generate_auth_default_guard_config(): void
+    public function test_it_can_generate_auth_default_guard_config(): void
     {
         $config_generator = new AuthConfigGenerator('customers');
 
@@ -66,8 +61,7 @@ class AuthConfigGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_generate_auth_default_passwords_config(): void
+    public function test_it_can_generate_auth_default_passwords_config(): void
     {
         $config_generator = new AuthConfigGenerator('customers');
 
@@ -77,8 +71,7 @@ class AuthConfigGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_determine_whether_default_guard_should_be_generated(): void
+    public function test_it_can_determine_whether_default_guard_should_be_generated(): void
     {
         $config_generator = new AuthConfigGenerator('customers');
 

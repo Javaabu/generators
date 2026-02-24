@@ -10,8 +10,7 @@ class AuthModelGeneratorTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
-    public function it_can_generate_an_auth_model_with_foreign_keys(): void
+    public function test_it_can_generate_an_auth_model_with_foreign_keys(): void
     {
         $model_generator = new AuthModelGenerator('customers');
 
@@ -21,8 +20,7 @@ class AuthModelGeneratorTest extends TestCase
         $this->assertEquals($expected_content, $actual_content);
     }
 
-    /** @test */
-    public function it_can_generate_an_auth_model_without_foreign_keys(): void
+    public function test_it_can_generate_an_auth_model_without_foreign_keys(): void
     {
         $model_generator = new AuthModelGenerator('public_users', auth_name: 'portal');
 

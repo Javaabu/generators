@@ -11,8 +11,7 @@ class GenerateControllerCommandTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
-    public function it_can_generate_controller_output(): void
+    public function test_it_can_generate_controller_output(): void
     {
         $expected_content = $this->getTestStubContents('Controllers/CategoriesController.php');
 
@@ -20,8 +19,7 @@ class GenerateControllerCommandTest extends TestCase
              ->expectsOutput($expected_content);
     }
 
-    /** @test */
-    public function it_can_generate_controller_file(): void
+    public function test_it_can_generate_controller_file(): void
     {
         $expected_path = $this->app->path('Http/Controllers/Admin/CategoriesController.php');
         $expected_content = $this->getTestStubContents('Controllers/CategoriesController.php');
