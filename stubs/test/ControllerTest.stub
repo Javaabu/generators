@@ -7,12 +7,14 @@ namespace {{ namespace }};
 class {{ class }} extends TestCase
 {
     use RefreshDatabase;
+    {{ traits }}
 
     protected function setUp(): void
     {
         parent::setUp();
 
         $this->artisan('permissions:sync');
+        {{ setUp }}
     }
 
     {{ tests }}

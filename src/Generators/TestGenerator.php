@@ -58,12 +58,22 @@ class TestGenerator extends Generator
 
         $guard = $resource->guard() ? ", '{$resource->guard()}'" : '';
 
+        $traits = '';
+        $set_up = '';
+
+        if ($resource->isTranslatable()) {
+            $traits = 'use ' . $this->imports->add('Javaabu\\Translatable\\Testing\\InteractsWithLanguages') . ';';
+            $set_up = "\$this->setUpLanguages(['en', 'dv']);";
+        }
+
         return Stub::make('test/ControllerTest.stub')->with([
             'namespace' => $namespace,
             'class' => class_basename($resource->testClass()),
             'tests' => implode("\n\n", $tests),
             'user' => $user,
             'guard' => $guard,
+            'traits' => $traits,
+            'setUp' => $set_up,
             'imports' => $this->imports->render(),
         ])->render();
     }
@@ -446,6 +456,17 @@ class TestGenerator extends Generator
 
             $value = $set === 'valid' ? $field->getValidValue() : $field->getOtherValidValue();
             $name = $field->getInputName();
+
+            if (in_array($column, $resource->translatable, true)) {
+                $dhivehi = $set === 'valid' ? "'ދިވެހި {$column}'" : "'އެހެން {$column}'";
+
+                $inputs[] = "    '{$name}_en' => {$value},";
+                $inputs[] = "    '{$name}_dv' => {$dhivehi},";
+                $assertions[] = "\$this->assertEquals({$dhivehi}, {$variable}->translate('{$column}', 'dv', fallback: false));";
+                $database[] = "    '{$column}' => {$value},";
+
+                continue;
+            }
 
             $inputs[] = "    '{$name}' => {$value},";
 
