@@ -3,6 +3,7 @@
 namespace Javaabu\Generators\Tests\Feature\Commands;
 
 use Illuminate\Filesystem\Filesystem;
+use InvalidArgumentException;
 use Javaabu\Generators\Exceptions\ColumnDoesNotExistException;
 use Javaabu\Generators\Exceptions\MultipleTablesSuppliedException;
 use Javaabu\Generators\Exceptions\TableDoesNotExistException;
@@ -241,6 +242,44 @@ class GenerateCommandsTest extends TestCase
             ->expectsOutputToContain("UserTypes::register('customer', [")
             ->expectsOutputToContain("Route::authRoutes('customer', ['prefix' => 'customer']);")
             ->assertSuccessful();
+    }
+
+    #[Test]
+    public function it_explains_pivot_tables(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('product_tag is the pivot table of products and tags');
+
+        $this->artisan('generate:all', ['table' => 'product_tag']);
+    }
+
+    #[Test]
+    public function it_speaks_dhivehi(): void
+    {
+        app()->setLocale('dv');
+
+        $this->expectException(TableDoesNotExistException::class);
+        $this->expectExceptionMessage('"missing" ޓޭބަލެއް ނުފެނުނު.');
+
+        $this->artisan('generate:model', ['table' => 'missing']);
+    }
+
+    #[Test]
+    public function it_writes_the_admin_guard_into_the_generated_code(): void
+    {
+        config()->set('generators.admin.guard', 'web_admin');
+        config()->set('generators.admin.user_model', 'App\\Models\\Admin');
+
+        $this->artisan('generate:all', ['table' => 'categories', '--create' => true])->assertSuccessful();
+
+        $this->assertStringContainsString("protected ?string \$guard = 'web_admin';", file_get_contents("{$this->path}/app/Policies/CategoryPolicy.php"));
+        $this->assertStringContainsString("Permissions::resource('categories', label: 'Categories')->guards(['web_admin']);", file_get_contents("{$this->path}/app/Providers/AppServiceProvider.php"));
+        $this->assertStringContainsString("Route::bulkActions('categories', CategoryBulkActions::class, ['guard' => 'web_admin']);", file_get_contents("{$this->path}/routes/admin.php"));
+
+        $test = file_get_contents("{$this->path}/tests/Feature/Admin/CategoriesControllerTest.php");
+
+        $this->assertStringContainsString('use App\\Models\\Admin;', $test);
+        $this->assertStringContainsString("\$this->actingAs(\$user, 'web_admin');", $test);
     }
 
     #[Test]

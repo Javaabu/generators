@@ -4,6 +4,7 @@ namespace Javaabu\Generators\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
+use InvalidArgumentException;
 use Javaabu\Generators\Exceptions\MultipleTablesSuppliedException;
 use Javaabu\Generators\Exceptions\TableDoesNotExistException;
 use Javaabu\Generators\Fields\ForeignKeyField;
@@ -13,6 +14,7 @@ use Javaabu\Generators\Resource\MediaCollection;
 use Javaabu\Generators\Resource\ResourceDefinition;
 use Javaabu\Generators\Resource\ResourceOptions;
 use Javaabu\Generators\Resource\ResourceResolver;
+use Javaabu\Generators\Schema\RelationResolver;
 use Javaabu\Generators\Schema\SchemaInspector;
 
 use function Laravel\Prompts\multiselect;
@@ -71,6 +73,19 @@ abstract class GenerateCommand extends Command
 
         if (! $inspector->hasTable($table)) {
             throw new TableDoesNotExistException(__('generators::generators.no_table', ['table' => $table]));
+        }
+
+        $relations = app(RelationResolver::class);
+
+        if ($relations->isPivotTable($pivot = $inspector->table($table))) {
+            $related = [$pivot->foreign_keys[0]->foreign_table, $pivot->foreign_keys[1]->foreign_table];
+            sort($related);
+
+            throw new InvalidArgumentException(__('generators::generators.pivot_table', [
+                'table' => $table,
+                'first' => $related[0],
+                'second' => $related[1],
+            ]));
         }
 
         $resource = $this->resolveResource($table);
