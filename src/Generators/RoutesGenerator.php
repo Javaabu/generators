@@ -67,14 +67,42 @@ class RoutesGenerator extends Generator
         $code = PhpFile::addImport($code, $resource->controllerClass());
         $code = PhpFile::addImport($code, $resource->bulkActionsClass());
 
-        if (! str_contains($code, self::MARKER)) {
-            return rtrim($code) . "\n\n" . $this->renderRoutes() . "\n";
+        $code = str_contains($code, self::MARKER)
+            ? PhpFile::insertBeforeMarker($code, self::MARKER, $this->resourceRoutes())
+            : rtrim($code) . "\n\n" . $this->resourceRoutes() . "\n";
+
+        if ($resource->hasMedia() && ! str_contains($code, 'Route::mediapicker(')) {
+            $code = rtrim($code) . "\n\n" . $this->renderMediapickerRoutes() . "\n";
         }
 
-        return PhpFile::insertBeforeMarker($code, self::MARKER, $this->renderRoutes());
+        return $code;
+    }
+
+    /**
+     * The media library the pickers of the admin area pick from (javaabu/mediapicker).
+     */
+    public function renderMediapickerRoutes(): string
+    {
+        $resource = $this->resource;
+        $prefix = trim((string) $resource->area('route_prefix', 'admin'), '/');
+
+        $options = ["'prefix' => '" . ltrim("{$prefix}/media", '/') . "'", "'name' => '{$resource->routeNamePrefix()}media'"];
+
+        if ($guard = $resource->guard()) {
+            array_unshift($options, "'guard' => '{$guard}'");
+        }
+
+        $options = implode(', ', $options);
+
+        return "// The media library of the admin area\nRoute::middleware('web')->group(function () {\n    Route::mediapicker([{$options}]);\n});";
     }
 
     public function renderRoutes(): string
+    {
+        return $this->resourceRoutes() . ($this->resource->hasMedia() ? "\n\n" . $this->renderMediapickerRoutes() : '');
+    }
+
+    public function resourceRoutes(): string
     {
         $resource = $this->resource;
         $controller = class_basename($resource->controllerClass());

@@ -50,6 +50,7 @@ class TestGenerator extends Generator
             $this->editPageTest(),
             $this->updateTest(),
             $this->updateForbiddenTest(),
+            $this->mediaTest(),
             $this->destroyTest(),
             ...($resource->hasSoftDeletes() ? [$this->restoreTest(), $this->forceDeleteTest()] : []),
             $this->bulkDeleteTest(),
@@ -286,6 +287,59 @@ class TestGenerator extends Generator
             . '    ->assertForbidden();';
 
         return $this->test("it_does_not_update_{$resource->plural()}_without_permission", $body);
+    }
+
+    /**
+     * Picks media from the user's library, when the admin users have one
+     * (javaabu/mediapicker's MediaOwner).
+     */
+    protected function mediaTest(): ?string
+    {
+        $resource = $this->resource;
+        $user_model = (string) $resource->area('user_model', 'App\\Models\\User');
+
+        if (! $resource->hasMedia()) {
+            return null;
+        }
+
+        if (! interface_exists('Javaabu\\Mediapicker\\Contracts\\MediaOwner') || ! class_exists($user_model) || ! is_subclass_of($user_model, 'Javaabu\\Mediapicker\\Contracts\\MediaOwner')) {
+            return null;
+        }
+
+        $variable = '$' . $resource->variable();
+        $storage = $this->imports->add('Illuminate\\Support\\Facades\\Storage');
+        $file = $this->imports->add('Illuminate\\Http\\UploadedFile');
+
+        [$setup, $inputs] = $this->inputs('other');
+
+        $uploads = [];
+        $media_inputs = [];
+        $assertions = [];
+
+        foreach ($resource->media as $media) {
+            $upload = $media->type === 'image'
+                ? "{$file}::fake()->image('{$media->name}.jpg')"
+                : "{$file}::fake()->createWithContent('{$media->name}.pdf', \"%PDF-1.4\\n%%EOF\\n\")";
+
+            $uploads[] = "\${$media->name} = \$user->addMedia({$upload})->toMediaCollection(\$user->getMediapickerCollectionName());";
+            $media_inputs[] = $media->multiple
+                ? "    '{$media->name}' => [\${$media->name}->id],"
+                : "    '{$media->name}' => \${$media->name}->id,";
+            $assertions[] = "\$this->assertEquals(\${$media->name}->id, {$variable}->getFirstAttachmentMedia('{$media->name}')?->id);";
+        }
+
+        $body = $this->parentSetup()
+            . $setup
+            . "{$storage}::fake(config('media-library.disk_name'));\n\n"
+            . "\$user = \$this->actingAsAdmin('{$resource->permission('edit')}');\n\n"
+            . implode("\n", $uploads) . "\n\n"
+            . "{$variable} = {$this->factory()}->create();\n\n"
+            . "\$this->patch({$resource->route('update', $variable)}, [\n{$inputs}\n" . implode("\n", $media_inputs) . "\n])\n"
+            . "    ->assertRedirect()\n"
+            . "    ->assertSessionHasNoErrors();\n\n"
+            . implode("\n", $assertions);
+
+        return $this->test("it_attaches_media_to_a_{$resource->singular()}", $body);
     }
 
     protected function destroyTest(): string

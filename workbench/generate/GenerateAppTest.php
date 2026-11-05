@@ -39,6 +39,8 @@ class GenerateAppTest extends TestCase
             ['generate:all', ['table' => 'products']],
             // Inertia React, nested under products
             ['generate:all', ['table' => 'reviews', '--parent' => 'products', '--views' => 'inertia']],
+            // Media collections (javaabu/mediapicker), Blade and Inertia React
+            ['generate:all', ['table' => 'posts', '--media' => 'featured_image:image,documents:document:multiple']],
         ];
     }
 
