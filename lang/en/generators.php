@@ -21,4 +21,5 @@ return [
     'next_steps' => 'Next steps',
     'rolled_back' => 'Generator changes rolled back.',
     'rollback_warning' => 'If you run this command, you will lose all uncommitted changes!',
+    'auth_migrate' => 'The migration for :table is written. Add your columns, run php artisan migrate, then run this command again to generate the user type.',
 ];

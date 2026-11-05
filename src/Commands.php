@@ -3,6 +3,7 @@
 namespace Javaabu\Generators;
 
 use Javaabu\Generators\Commands\GenerateAllCommand;
+use Javaabu\Generators\Commands\GenerateAuthCommand;
 use Javaabu\Generators\Commands\GenerateBulkActionsCommand;
 use Javaabu\Generators\Commands\GenerateControllerCommand;
 use Javaabu\Generators\Commands\GenerateExportCommand;
@@ -38,6 +39,7 @@ class Commands
             GenerateViewsCommand::class,
             GenerateTestCommand::class,
             GenerateExportCommand::class,
+            GenerateAuthCommand::class,
             GenerateRollbackCommand::class,
         ];
     }

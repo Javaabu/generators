@@ -25,7 +25,17 @@ class FactoryGenerator extends Generator
         $definition = [];
 
         foreach ($resource->fields as $column => $field) {
+            if ($resource->isUserType() && $column === 'status') {
+                $definition[] = "'status' => " . $imports->add('Javaabu\\Auth\\Enums\\UserStatuses') . '::APPROVED,';
+
+                continue;
+            }
+
             $definition[] = "'{$column}' => {$field->getFactoryValue($imports)},";
+        }
+
+        if ($resource->isUserType() && $resource->table->hasColumn('email_verified_at')) {
+            $definition[] = "'email_verified_at' => now(),";
         }
 
         return Stub::make('factory/Factory.stub')->with([

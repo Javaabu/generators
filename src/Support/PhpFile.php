@@ -107,6 +107,73 @@ class PhpFile
         return substr($code, 0, $line_start) . $content . "\n\n" . substr($code, $line_start);
     }
 
+    /**
+     * Add an entry to an array under a key, e.g. 'customer' => [...] to 'guards'
+     * in config/auth.php, unless the array has the entry's key already.
+     */
+    public static function addArrayEntry(string $code, string $array_key, string $entry_key, string $entry): string
+    {
+        if (! preg_match("/(['\"]){$array_key}\\1\\s*=>\\s*\\[/", $code, $match, PREG_OFFSET_CAPTURE)) {
+            throw new RuntimeException("The [{$array_key}] array was not found.");
+        }
+
+        $open = $match[0][1] + strlen($match[0][0]) - 1;
+        $close = static::matchingBracket($code, $open);
+
+        $body = substr($code, $open + 1, $close - $open - 1);
+
+        if (preg_match("/(['\"])" . preg_quote($entry_key, '/') . '\\1\\s*=>/', $body)) {
+            return $code;
+        }
+
+        $line_start = strrpos(substr($code, 0, $match[0][1]), "\n") + 1;
+        $indent = preg_replace('/\S.*$/s', '', substr($code, $line_start, $match[0][1] - $line_start));
+        $item_indent = $indent . '    ';
+
+        $entry = implode("\n", array_map(
+            fn (string $line) => $line === '' ? '' : $item_indent . $line,
+            explode("\n", trim($entry))
+        ));
+
+        $trimmed = rtrim($body);
+
+        $new_body = trim($trimmed) === ''
+            ? "\n{$entry}\n{$indent}"
+            : $trimmed . (str_ends_with($trimmed, ',') ? '' : ',') . "\n\n{$entry}\n{$indent}";
+
+        return substr($code, 0, $open + 1) . $new_body . substr($code, $close);
+    }
+
+    protected static function matchingBracket(string $code, int $open): int
+    {
+        $depth = 0;
+        $length = strlen($code);
+
+        for ($i = $open; $i < $length; $i++) {
+            $char = $code[$i];
+
+            if ($char === '\'' || $char === '"') {
+                $i = static::skipString($code, $i);
+
+                continue;
+            }
+
+            if ($char === '[') {
+                $depth++;
+            }
+
+            if ($char === ']') {
+                $depth--;
+
+                if ($depth === 0) {
+                    return $i;
+                }
+            }
+        }
+
+        throw new RuntimeException('Unbalanced brackets.');
+    }
+
     protected static function matchingBrace(string $code, int $open): int
     {
         $depth = 0;

@@ -72,7 +72,7 @@ class TestGenerator extends Generator
             'tests' => implode("\n\n", $tests),
             'user' => $user,
             'guard' => $guard,
-            'traits' => $traits,
+            'traits_before' => $traits,
             'setUp' => $set_up,
             'imports' => $this->imports->render(),
         ])->render();
@@ -478,7 +478,7 @@ class TestGenerator extends Generator
                 continue;
             }
 
-            if ($assertion = $field->getSavedValueAssertion($variable, $value)) {
+            if ($assertion = $field->getSavedValueAssertion($variable, $value, $this->imports)) {
                 $assertions[] = $assertion;
             }
         }

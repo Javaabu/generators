@@ -111,6 +111,14 @@ abstract class Field
     }
 
     /**
+     * Whether it is shown on pages and sent to the browser.
+     */
+    public function isShown(): bool
+    {
+        return true;
+    }
+
+    /**
      * Whether it is a good default column for the index table.
      */
     public function isIndexColumn(): bool
@@ -311,7 +319,7 @@ abstract class Field
     /**
      * Code that asserts the saved value, when it isn't compared in the database.
      */
-    public function getSavedValueAssertion(string $variable, string $input): ?string
+    public function getSavedValueAssertion(string $variable, string $input, ?Imports $imports = null): ?string
     {
         return null;
     }

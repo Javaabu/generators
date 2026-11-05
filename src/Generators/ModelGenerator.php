@@ -22,14 +22,19 @@ class ModelGenerator extends Generator
     {
         $resource = $this->resource;
         $namespace = $resource->namespace('models');
-        $imports = new Imports(['Illuminate\\Database\\Eloquent\\Model', 'Illuminate\\Database\\Eloquent\\Factories\\HasFactory'], $namespace);
+        $imports = new Imports(['Illuminate\\Database\\Eloquent\\Factories\\HasFactory'], $namespace);
+
+        // a javaabu/auth user type extends its User model, which soft deletes
+        $base = $resource->isUserType()
+            ? $imports->add('Javaabu\\Auth\\Models\\User')
+            : $imports->add('Illuminate\\Database\\Eloquent\\Model');
 
         $factory = $imports->add($resource->factoryClass());
 
         $traits = ["/** @use HasFactory<{$factory}> */", 'use HasFactory;'];
         $implements = [];
 
-        if ($resource->hasSoftDeletes()) {
+        if ($resource->hasSoftDeletes() && ! $resource->isUserType()) {
             $traits[] = 'use ' . $imports->add('Illuminate\\Database\\Eloquent\\SoftDeletes') . ';';
         }
 
@@ -53,6 +58,7 @@ class ModelGenerator extends Generator
         return Stub::make('model/Model.stub')->with([
             'namespace' => $namespace,
             'class' => $resource->model(),
+            'base' => $base,
             'implements' => $implements ? ' implements ' . implode(', ', $implements) : '',
             'traits' => implode("\n", array_slice($traits, 0, 2)) . (count($traits) > 2 ? "\n\n" . implode("\n", array_slice($traits, 2)) : ''),
             'fillable' => implode("\n", array_map(fn (string $column) => "'{$column}',", $this->fillable())),
@@ -100,7 +106,14 @@ class ModelGenerator extends Generator
     {
         $casts = [];
 
+        $user_type = $this->resource->isUserType();
+
         foreach ($this->resource->fields as $column => $field) {
+            // the user model casts the account columns
+            if ($user_type && in_array($column, ['password', 'status'], true)) {
+                continue;
+            }
+
             if ($cast = $field->getCast($imports)) {
                 $casts[] = "        '{$column}' => {$cast},";
             }
@@ -111,6 +124,10 @@ class ModelGenerator extends Generator
         }
 
         $casts = implode("\n", $casts);
+
+        if ($user_type) {
+            $casts = "        ...parent::casts(),\n{$casts}";
+        }
 
         return <<<PHP
         /**
@@ -182,7 +199,7 @@ class ModelGenerator extends Generator
         $collections = [];
 
         foreach ($this->resource->media as $media) {
-            $single = $media->multiple ? '' : "\n            ->singleFile()";
+            $single = $media->multiple ? '' : "\n        ->singleFile()";
 
             $collections[] = <<<PHP
                 \$this->addAttachmentCollection('{$media->name}'){$single}

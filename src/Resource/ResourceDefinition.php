@@ -47,7 +47,16 @@ class ResourceDefinition
         public readonly array $translatable = [],
         public readonly ?string $user_type = null,
         public readonly ?string $parent_relation = null,
+        public readonly ?string $user_guard = null,
     ) {}
+
+    /**
+     * Whether the resource is a javaabu/auth user type (generate:auth).
+     */
+    public function isUserType(): bool
+    {
+        return $this->user_type !== null;
+    }
 
     /*
     |--------------------------------------------------------------------------
@@ -408,7 +417,7 @@ class ResourceDefinition
      */
     public function indexFields(): array
     {
-        return $this->pick($this->index_columns);
+        return array_filter($this->pick($this->index_columns), fn (Field $field) => $field->isShown());
     }
 
     /**
@@ -416,7 +425,7 @@ class ResourceDefinition
      */
     public function showFields(): array
     {
-        return $this->pick($this->show_columns);
+        return array_filter($this->pick($this->show_columns), fn (Field $field) => $field->isShown());
     }
 
     /**

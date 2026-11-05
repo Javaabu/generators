@@ -2,6 +2,8 @@
 
 namespace Javaabu\Generators\Fields;
 
+use Javaabu\Generators\Support\Imports;
+
 class TimeField extends Field
 {
     public function isSortable(): bool
@@ -39,7 +41,7 @@ class TimeField extends Field
         return null;
     }
 
-    public function getSavedValueAssertion(string $variable, string $input): ?string
+    public function getSavedValueAssertion(string $variable, string $input, ?Imports $imports = null): ?string
     {
         return "\$this->assertEquals({$input}, substr((string) {$variable}->{$this->getName()}, 0, 5));";
     }

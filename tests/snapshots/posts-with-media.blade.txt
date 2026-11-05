@@ -50,7 +50,7 @@ class Post extends Model implements HasAttachments
     public function registerAttachmentCollections(): void
     {
         $this->addAttachmentCollection('featured_image')
-                ->singleFile()
+            ->singleFile()
             ->acceptsFile(fn (File $file) => FileTypes::isAllowed($file->mimeType, 'image'));
 
         $this->addAttachmentCollection('gallery')

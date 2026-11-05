@@ -84,7 +84,7 @@ jobs:
           php workbench/build.php
           vendor/bin/phpunit -c workbench/phpunit.generate.xml
           vendor/bin/phpunit -c workbench/phpunit.xml
-          vendor/bin/pint --test build/app/app build/app/database/factories build/app/tests/Feature build/app/routes
+          vendor/bin/pint --test --config pint.json build/app/app build/app/database/factories build/app/tests/Feature build/app/routes
 
   databases:
     runs-on: ubuntu-latest

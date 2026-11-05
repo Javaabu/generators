@@ -14,6 +14,7 @@ use Javaabu\Generators\Fields\Field;
 use Javaabu\Generators\Fields\ForeignKeyField;
 use Javaabu\Generators\Fields\IntegerField;
 use Javaabu\Generators\Fields\JsonField;
+use Javaabu\Generators\Fields\PasswordField;
 use Javaabu\Generators\Fields\StringField;
 use Javaabu\Generators\Fields\TextField;
 use Javaabu\Generators\Fields\TimeField;
@@ -46,6 +47,10 @@ class ResourceResolver
         $key_name = $table->keyName() ?? 'id';
         $skip = (array) config('generators.skip_columns', []);
 
+        if ($options->user_type) {
+            $skip = [...$skip, ...(array) config('generators.auth.skip_columns', [])];
+        }
+
         $fields = [];
 
         foreach ($table->columns as $column) {
@@ -64,6 +69,10 @@ class ResourceResolver
             if ($field = $this->makeField($table, $column)) {
                 $fields[$column->name] = $field;
             }
+        }
+
+        if ($options->user_type) {
+            $fields = $this->addUserTypeFields($table, $fields);
         }
 
         $parent = null;
@@ -109,7 +118,32 @@ class ResourceResolver
             translatable: $translatable,
             user_type: $options->user_type,
             parent_relation: $parent_relation,
+            user_guard: $options->user_type ? ($options->user_guard ?? $options->user_type) : null,
         );
+    }
+
+    /**
+     * A user type's password and account status, after its name and email.
+     *
+     * @param  array<string, Field>  $fields
+     * @return array<string, Field>
+     */
+    protected function addUserTypeFields(Table $table, array $fields): array
+    {
+        $account = [];
+
+        if ($table->hasColumn('password')) {
+            $account['password'] = new PasswordField('password', $table->column('password')->nullable);
+        }
+
+        if ($table->hasColumn('status')) {
+            $account['status'] = new EnumField('status', [], 'Javaabu\\Auth\\Enums\\UserStatuses', default: 'pending');
+        }
+
+        $position = array_search('email', array_keys($fields), true);
+        $position = $position === false ? 0 : $position + 1;
+
+        return array_slice($fields, 0, $position, true) + $account + array_slice($fields, $position, null, true);
     }
 
     public function makeField(Table $table, Column $column): ?Field

@@ -53,7 +53,7 @@ class DateTimeField extends Field
         return null;
     }
 
-    public function getSavedValueAssertion(string $variable, string $input): ?string
+    public function getSavedValueAssertion(string $variable, string $input, ?Imports $imports = null): ?string
     {
         return "\$this->assertEquals({$input}, {$variable}->{$this->getName()}?->format('Y-m-d H:i'));";
     }

@@ -43,6 +43,8 @@ class GenerateAppTest extends TestCase
             ['generate:all', ['table' => 'posts', '--media' => 'featured_image:image,documents:document:multiple']],
             // Translatable when javaabu/translatable is installed (the translations and lang columns)
             ['generate:all', ['table' => 'articles']],
+            // A javaabu/auth user type and the admin pages of its users
+            ['generate:auth', ['table' => 'customers']],
         ];
     }
 

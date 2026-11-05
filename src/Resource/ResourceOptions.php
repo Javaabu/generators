@@ -25,6 +25,7 @@ final readonly class ResourceOptions
         public ?string $views = null,
         public array|bool|null $translatable = null,
         public ?string $user_type = null,
+        public ?string $user_guard = null,
     ) {}
 
     /**
@@ -66,6 +67,7 @@ final readonly class ResourceOptions
             views: ($options['views'] ?? null) ?: null,
             translatable: $translatable,
             user_type: ($options['user_type'] ?? null) ?: null,
+            user_guard: ($options['user_guard'] ?? null) ?: null,
         );
     }
 }

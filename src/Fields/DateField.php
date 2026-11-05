@@ -31,7 +31,7 @@ class DateField extends DateTimeField
         return "'2025-11-06'";
     }
 
-    public function getSavedValueAssertion(string $variable, string $input): ?string
+    public function getSavedValueAssertion(string $variable, string $input, ?Imports $imports = null): ?string
     {
         return "\$this->assertEquals({$input}, {$variable}->{$this->getName()}?->format('Y-m-d'));";
     }

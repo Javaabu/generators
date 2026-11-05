@@ -178,6 +178,72 @@ class GenerateCommandsTest extends TestCase
     }
 
     #[Test]
+    public function it_writes_a_user_type_migration_when_the_table_does_not_exist(): void
+    {
+        $this->artisan('generate:auth', ['table' => 'vendors', '--migration' => true, '--create' => true])
+            ->expectsOutputToContain('php artisan migrate')
+            ->assertSuccessful();
+
+        $migrations = glob("{$this->path}/database/migrations/*_create_vendors_table.php");
+
+        $this->assertCount(1, $migrations);
+        $this->assertStringContainsString('UserSchema::columns($table);', file_get_contents($migrations[0]));
+    }
+
+    #[Test]
+    public function it_generates_a_user_type(): void
+    {
+        (new Filesystem)->ensureDirectoryExists("{$this->path}/config");
+        copy(dirname(__DIR__, 3) . '/vendor/orchestra/testbench-core/laravel/config/auth.php', "{$this->path}/config/auth.php");
+        $this->app->useConfigPath("{$this->path}/config");
+
+        $this->artisan('generate:auth', ['table' => 'public_users', '--type' => 'member', '--guard' => 'web_member', '--create' => true])
+            ->assertSuccessful();
+
+        $model = file_get_contents("{$this->path}/app/Models/PublicUser.php");
+
+        $this->assertStringContainsString('class PublicUser extends User', $model);
+        $this->assertStringContainsString('use Javaabu\\Auth\\Models\\User;', $model);
+        $this->assertStringNotContainsString('use SoftDeletes;', $model);
+
+        $config = file_get_contents("{$this->path}/config/auth.php");
+
+        $this->assertStringContainsString("'web_member' => [\n            'driver' => 'session',\n            'provider' => 'public_users',", $config);
+        $this->assertStringContainsString("'model' => PublicUser::class,", $config);
+        $this->assertStringContainsString("'members' => [\n            'provider' => 'public_users',", $config);
+
+        $provider = file_get_contents("{$this->path}/app/Providers/AppServiceProvider.php");
+
+        $this->assertStringContainsString("UserTypes::register('member', [", $provider);
+        $this->assertStringContainsString("'guard' => 'web_member',", $provider);
+
+        $this->assertStringContainsString("Route::authRoutes('member', ['prefix' => 'member']);", file_get_contents("{$this->path}/routes/web.php"));
+        $this->assertStringContainsString("Route::userAccountActions('member', ['prefix' => 'public-users']);", file_get_contents("{$this->path}/routes/admin.php"));
+
+        $form = file_get_contents("{$this->path}/app/Stencil/PublicUserForm.php");
+
+        $this->assertStringContainsString('->password()', $form);
+        $this->assertStringContainsString('->options(UserStatuses::class)', $form);
+        $this->assertStringNotContainsString("'remember_token'", $form);
+        $this->assertStringNotContainsString("'login_attempts'", $form);
+
+        // running it again changes nothing
+        $this->artisan('generate:auth', ['table' => 'public_users', '--type' => 'member', '--guard' => 'web_member', '--create' => true])->assertSuccessful();
+
+        $this->assertEquals(1, substr_count(file_get_contents("{$this->path}/config/auth.php"), "'web_member' =>"));
+        $this->assertEquals(1, substr_count(file_get_contents("{$this->path}/app/Providers/AppServiceProvider.php"), "UserTypes::register('member'"));
+    }
+
+    #[Test]
+    public function it_prints_a_user_type_without_create(): void
+    {
+        $this->artisan('generate:auth', ['table' => 'customers', '--except' => 'views,test'])
+            ->expectsOutputToContain("UserTypes::register('customer', [")
+            ->expectsOutputToContain("Route::authRoutes('customer', ['prefix' => 'customer']);")
+            ->assertSuccessful();
+    }
+
+    #[Test]
     public function it_rejects_several_tables(): void
     {
         $this->expectException(MultipleTablesSuppliedException::class);
