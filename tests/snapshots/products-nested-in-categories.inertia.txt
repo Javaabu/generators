@@ -1,0 +1,768 @@
+// app/Http/Controllers/Admin/ProductsController.php
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\BulkActions\ProductBulkActions;
+use App\Filters\ProductFilters;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\Admin\ProductResource;
+use App\Models\Category;
+use App\Models\Product;
+use App\Stencil\ProductForm;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
+use Inertia\Inertia;
+use Inertia\Response;
+
+class ProductsController extends Controller
+{
+    /**
+     * List the products.
+     */
+    public function index(Request $request, Category $category): Response
+    {
+        Gate::authorize('viewAny', Product::class);
+
+        $filters = ProductFilters::make();
+
+        $products = $filters->apply(Product::query()->whereBelongsTo($category, 'category'))
+            ->paginate($request->integer('per_page', 20))
+            ->withQueryString();
+
+        return Inertia::render('admin/products/Index', [
+            'category' => $category,
+            'products' => ProductResource::collection($products),
+            'filters' => $filters,
+            'bulkActions' => ProductBulkActions::make()->paginator($products),
+            'createUrl' => Gate::allows('create', Product::class) ? route('admin.categories.products.create', $category) : null,
+        ]);
+    }
+
+    /**
+     * Show the form for a new product.
+     */
+    public function create(Category $category): Response
+    {
+        Gate::authorize('create', Product::class);
+
+        return Inertia::render('admin/products/Create', [
+            'category' => $category,
+            'form' => ProductForm::make()->model(Product::class)->action(route('admin.categories.products.store', $category)),
+        ]);
+    }
+
+    /**
+     * Save a new product.
+     */
+    public function store(Category $category): RedirectResponse
+    {
+        Gate::authorize('create', Product::class);
+
+        $product = ProductForm::make()->model((new Product)->category()->associate($category))->save();
+
+        return redirect(route('admin.categories.products.show', [$category, $product]))
+            ->with('status', __('Product created.'));
+    }
+
+    /**
+     * Show a product.
+     */
+    public function show(Category $category, Product $product): Response
+    {
+        Gate::authorize('view', $product);
+
+        $product->load(['tags']);
+
+        return Inertia::render('admin/products/Show', [
+            'category' => $category,
+            'product' => ProductResource::make($product)->resolve(),
+        ]);
+    }
+
+    /**
+     * Show the form for editing a product.
+     */
+    public function edit(Category $category, Product $product): Response
+    {
+        Gate::authorize('update', $product);
+
+        return Inertia::render('admin/products/Edit', [
+            'category' => $category,
+            'product' => ProductResource::make($product)->resolve(),
+            'form' => ProductForm::make()->model($product)->action(route('admin.categories.products.update', [$category, $product])),
+        ]);
+    }
+
+    /**
+     * Save the changes to a product.
+     */
+    public function update(Category $category, Product $product): RedirectResponse
+    {
+        Gate::authorize('update', $product);
+
+        ProductForm::make()->model($product)->save();
+
+        return redirect(route('admin.categories.products.show', [$category, $product]))
+            ->with('status', __('Product updated.'));
+    }
+
+    /**
+     * Delete a product.
+     */
+    public function destroy(Category $category, Product $product): RedirectResponse
+    {
+        Gate::authorize('delete', $product);
+
+        $product->delete();
+
+        return redirect(route('admin.categories.products.index', $category))
+            ->with('status', __('Product deleted.'));
+    }
+
+    /**
+     * Restore a deleted product.
+     */
+    public function restore(Category $category, Product $product): RedirectResponse
+    {
+        Gate::authorize('restore', $product);
+
+        $product->restore();
+
+        return redirect(route('admin.categories.products.show', [$category, $product]))
+            ->with('status', __('Product restored.'));
+    }
+
+    /**
+     * Permanently delete a product.
+     */
+    public function forceDelete(Category $category, Product $product): RedirectResponse
+    {
+        Gate::authorize('forceDelete', $product);
+
+        $product->forceDelete();
+
+        return redirect(route('admin.categories.products.index', $category))
+            ->with('status', __('Product permanently deleted.'));
+    }
+}
+
+// app/Http/Resources/Admin/ProductResource.php
+<?php
+
+namespace App\Http\Resources\Admin;
+
+use App\Models\Product;
+use App\Models\Tag;
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+
+/**
+ * @mixin Product
+ */
+class ProductResource extends JsonResource
+{
+    /**
+     * Transform the resource into an array.
+     *
+     * @return array<string, mixed>
+     */
+    public function toArray(Request $request): array
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'address' => $this->address,
+            'slug' => $this->slug,
+            'description' => $this->description,
+            'price' => $this->price,
+            'stock' => $this->stock,
+            'on_sale' => $this->on_sale,
+            'features' => $this->features,
+            'published_at' => $this->published_at?->format('Y-m-d H:i'),
+            'expire_at' => $this->expire_at?->format('Y-m-d H:i'),
+            'released_on' => $this->released_on?->format('Y-m-d'),
+            'sale_time' => $this->sale_time,
+            'status' => $this->status,
+            'category_id' => $this->category_id,
+            'category' => $this->whenLoaded('category', fn () => [
+                'id' => $this->category->id,
+                'name' => $this->category->name,
+            ]),
+            'manufactured_year' => $this->manufactured_year,
+            'tags' => $this->whenLoaded('tags', fn () => $this->tags->map(fn (Tag $tag) => [
+                'id' => $tag->getKey(),
+                'name' => $tag->name,
+            ])->all()),
+            'created_at' => $this->created_at?->format('Y-m-d H:i'),
+            'updated_at' => $this->updated_at?->format('Y-m-d H:i'),
+            'deleted_at' => $this->deleted_at?->format('Y-m-d H:i'),
+            'urls' => [
+                'show' => route('admin.categories.products.show', [$this->category_id, $this->resource]),
+                'edit' => route('admin.categories.products.edit', [$this->category_id, $this->resource]),
+                'destroy' => route('admin.categories.products.destroy', [$this->category_id, $this->resource]),
+                'restore' => route('admin.categories.products.restore', [$this->category_id, $this->resource]),
+                'force_delete' => route('admin.categories.products.force-delete', [$this->category_id, $this->resource]),
+            ],
+            'can' => [
+                'view' => (bool) $request->user()?->can('view', $this->resource),
+                'update' => (bool) $request->user()?->can('update', $this->resource),
+                'delete' => (bool) $request->user()?->can('delete', $this->resource),
+                'restore' => (bool) $request->user()?->can('restore', $this->resource),
+                'forceDelete' => (bool) $request->user()?->can('forceDelete', $this->resource),
+            ],
+        ];
+    }
+}
+
+// resources/js/pages/admin/products/types.ts
+/** A product, as ProductResource sends it. */
+export interface Product {
+  id: number
+  name: string
+  address: string
+  slug: string
+  description: string | null
+  price: string
+  stock: number
+  on_sale: boolean
+  features: string
+  published_at: string
+  expire_at: string
+  released_on: string
+  sale_time: string
+  status: "draft" | "published"
+  category_id: number | null
+  category?: { id: number; name: string } | null
+  manufactured_year: number
+  tags?: { id: number; name: string }[]
+  created_at: string | null
+  updated_at: string | null
+  deleted_at: string | null
+  urls: { show: string; edit: string; destroy: string; restore: string; force_delete: string }
+  can: { view: boolean; update: boolean; delete: boolean; restore: boolean; forceDelete: boolean }
+}
+
+/** The category the products belong to. */
+export interface Category {
+  id: number
+  name: string
+}
+
+// resources/js/pages/admin/products/Index.tsx
+import { Head, Link, router } from "@inertiajs/react"
+import { BulkActionsTable, type BulkActionsSchema } from "@javaabu/bulk-actions"
+import { FilterBar, SortableHeading, type FiltersData } from "@javaabu/filters"
+import { type LaravelResourceCollection, LinkButton, Pagination, TableCell, TableEmptyRow, TableHeading, TableRow } from "@javaabu/forms"
+import { __ } from "@javaabu/i18n"
+import type { Product, Category } from "./types"
+
+interface Props {
+  category: Category
+  products: Omit<LaravelResourceCollection, "data"> & { data: Product[] }
+  filters: FiltersData
+  bulkActions: BulkActionsSchema
+  createUrl: string | null
+}
+
+export default function Index({ category, products, filters, bulkActions, createUrl }: Props) {
+  return (
+    <>
+      <Head title={__("Products")} />
+
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <nav className="mb-1 flex gap-2 text-sm text-muted-foreground" aria-label={__("Breadcrumb")}>
+            <span>{category.name}</span>
+          </nav>
+          <h1 className="text-2xl font-semibold">{__("Products")}</h1>
+        </div>
+
+        {createUrl && (
+          <LinkButton url={createUrl} startIcon="plus">
+            {__("New product")}
+          </LinkButton>
+        )}
+      </div>
+
+      <FilterBar filters={filters} />
+
+      <BulkActionsTable
+        bulkActions={bulkActions}
+        onRunFinished={() => router.reload()}
+        headers={
+          <>
+            <SortableHeading filters={filters} sort="name" label={__("Name")} />
+            <SortableHeading filters={filters} sort="price" label={__("Price")} />
+          </>
+        }
+        pagination={products.meta.last_page > 1 ? <Pagination paginator={products} /> : null}
+      >
+        {products.data.length > 0 ? (
+          products.data.map((product) => (
+            <TableRow key={product.id} model={product} name="products">
+              <TableCell label={__("Name")}>
+                {product.can.view ? (
+                  <Link href={product.urls.show} className="font-medium hover:underline">
+                    {product.name}
+                  </Link>
+                ) : (
+                  product.name
+                )}
+              </TableCell>
+              <TableCell name="price" label={__("Price")} />
+            </TableRow>
+          ))
+        ) : (
+          <TableEmptyRow columns={3}>
+            {filters.active > 0
+              ? __("No products match these filters.")
+              : __("No products yet.")}
+          </TableEmptyRow>
+        )}
+      </BulkActionsTable>
+    </>
+  )
+}
+
+// resources/js/pages/admin/products/Create.tsx
+import { Head } from "@inertiajs/react"
+import { __ } from "@javaabu/i18n"
+import { StencilForm, type StencilSchema } from "@javaabu/stencil"
+import type { Category } from "./types"
+
+interface Props {
+  category: Category
+  form: StencilSchema
+}
+
+export default function Create({ category, form }: Props) {
+  return (
+    <>
+      <Head title={__("New product")} />
+
+      <div className="mb-6">
+        <div>
+          <nav className="mb-1 flex gap-2 text-sm text-muted-foreground" aria-label={__("Breadcrumb")}>
+            <span>{category.name}</span>
+          </nav>
+          <h1 className="text-2xl font-semibold">{__("New product")}</h1>
+        </div>
+      </div>
+
+      <StencilForm schema={form} />
+    </>
+  )
+}
+
+// resources/js/pages/admin/products/Edit.tsx
+import { Head } from "@inertiajs/react"
+import { LinkButton } from "@javaabu/forms"
+import { __ } from "@javaabu/i18n"
+import { StencilForm, type StencilSchema } from "@javaabu/stencil"
+import type { Product, Category } from "./types"
+
+interface Props {
+  category: Category
+  product: Product
+  form: StencilSchema
+}
+
+export default function Edit({ category, product, form }: Props) {
+  return (
+    <>
+      <Head title={__("Edit product")} />
+
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <nav className="mb-1 flex gap-2 text-sm text-muted-foreground" aria-label={__("Breadcrumb")}>
+            <span>{category.name}</span>
+          </nav>
+          <h1 className="text-2xl font-semibold">{__("Edit product")}</h1>
+        </div>
+
+        <LinkButton url={product.urls.show} color="light" startIcon="eye">
+          {__("View")}
+        </LinkButton>
+      </div>
+
+      <StencilForm schema={form} />
+    </>
+  )
+}
+
+// resources/js/pages/admin/products/Show.tsx
+import { Head, router } from "@inertiajs/react"
+import { Alert, BooleanEntry, Button, Infolist, LinkButton, TextEntry } from "@javaabu/forms"
+import { __ } from "@javaabu/i18n"
+import type { Product, Category } from "./types"
+
+interface Props {
+  category: Category
+  product: Product
+}
+
+export default function Show({ category, product }: Props) {
+  return (
+    <>
+      <Head title={String(product.name)} />
+
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <nav className="mb-1 flex gap-2 text-sm text-muted-foreground" aria-label={__("Breadcrumb")}>
+            <span>{category.name}</span>
+          </nav>
+          <h1 className="text-2xl font-semibold">{product.name}</h1>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2">
+          {product.deleted_at ? (
+            <>
+              {product.can.restore && (
+                <Button
+                  type="button"
+                  color="success"
+                  onClick={() => router.patch(product.urls.restore)}
+                >
+                  {__("Restore")}
+                </Button>
+              )}
+              {product.can.forceDelete && (
+                <Button
+                  type="button"
+                  color="danger"
+                  startIcon="trash-2"
+                  onClick={() => {
+                    if (window.confirm(__("Permanently delete this product? This cannot be undone."))) router.delete(product.urls.force_delete)
+                  }}
+                >
+                  {__("Delete permanently")}
+                </Button>
+              )}
+            </>
+          ) : (
+            <>
+              {product.can.update && (
+                <LinkButton url={product.urls.edit} startIcon="pencil">
+                  {__("Edit")}
+                </LinkButton>
+              )}
+              {product.can.delete && (
+                <Button
+                  type="button"
+                  color="danger"
+                  startIcon="trash-2"
+                  onClick={() => {
+                    if (window.confirm(__("Delete this product?"))) router.delete(product.urls.destroy)
+                  }}
+                >
+                  {__("Delete")}
+                </Button>
+              )}
+            </>
+          )}
+        </div>
+      </div>
+
+      {product.deleted_at && (
+        <Alert type="warning" className="mb-6">
+          {__("This product is deleted.")}
+        </Alert>
+      )}
+
+      <Infolist title={__("Product")} model={product}>
+        <TextEntry name="name" label={__("Name")} />
+        <TextEntry name="address" label={__("Address")} />
+        <TextEntry name="slug" label={__("Slug")} />
+        <TextEntry name="description" label={__("Description")} multiline />
+        <TextEntry name="price" label={__("Price")} />
+        <TextEntry name="stock" label={__("Stock")} />
+        <BooleanEntry name="on_sale" label={__("On sale")} />
+        <TextEntry name="features" label={__("Features")} multiline />
+        <TextEntry name="published_at" label={__("Published at")} />
+        <TextEntry name="expire_at" label={__("Expire at")} />
+        <TextEntry name="released_on" label={__("Released on")} />
+        <TextEntry name="sale_time" label={__("Sale time")} />
+        <TextEntry name="status" label={__("Status")} />
+        <TextEntry label={__("Category")} value={product.category?.name ?? "-"} />
+        <TextEntry name="manufactured_year" label={__("Manufactured year")} />
+        <TextEntry label={__("Tags")} value={(product.tags ?? []).map((related) => related.name).join(", ")} />
+      </Infolist>
+    </>
+  )
+}
+
+// tests/Feature/Admin/ProductsControllerTest.php
+<?php
+
+namespace Tests\Feature\Admin;
+
+use App\Models\Category;
+use App\Models\Product;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Inertia\Testing\AssertableInertia;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\TestCase;
+
+class ProductsControllerTest extends TestCase
+{
+    use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->artisan('permissions:sync');
+    }
+
+    #[Test]
+    public function it_lists_the_products(): void
+    {
+        $category = Category::factory()->create();
+        $product = Product::factory()->for($category, 'category')->create();
+
+        $this->actingAsAdmin('view_products');
+
+        $this->get(route('admin.categories.products.index', $category))
+            ->assertOk()
+            ->assertInertia(fn (AssertableInertia $page) => $page
+                ->component('admin/products/Index')
+                ->has('products.data', 1)
+            );
+    }
+
+    #[Test]
+    public function it_does_not_list_the_products_without_permission(): void
+    {
+        $category = Category::factory()->create();
+        $this->actingAsAdmin();
+
+        $this->get(route('admin.categories.products.index', $category))
+            ->assertForbidden();
+    }
+
+    #[Test]
+    public function it_searches_the_products(): void
+    {
+        $category = Category::factory()->create();
+        $product = Product::factory()->for($category, 'category')->create(['name' => 'ރަސްމީ ދުވަސް']);
+        $other = Product::factory()->for($category, 'category')->create(['name' => 'Something else']);
+
+        $this->actingAsAdmin('view_products');
+
+        $this->get(route('admin.categories.products.index', [$category, 'search' => 'ރަސްމީ']))
+            ->assertOk()
+            ->assertInertia(fn (AssertableInertia $page) => $page
+                ->component('admin/products/Index')
+                ->has('products.data', 1)
+                ->where('products.data.0.id', $product->id)
+            );
+    }
+
+    #[Test]
+    public function it_shows_the_new_product_form(): void
+    {
+        $category = Category::factory()->create();
+        $this->actingAsAdmin('edit_products');
+
+        $this->get(route('admin.categories.products.create', $category))
+            ->assertOk()
+            ->assertInertia(fn (AssertableInertia $page) => $page
+                ->component('admin/products/Create')
+                ->has('form')
+            );
+    }
+
+    #[Test]
+    public function it_creates_a_product(): void
+    {
+        $category = Category::factory()->create();
+        $this->actingAsAdmin('edit_products');
+
+        $this->post(route('admin.categories.products.store', $category), [
+            'name' => 'ރަސްމީ',
+            'price' => 10.5,
+        ])
+            ->assertRedirect()
+            ->assertSessionHasNoErrors();
+
+        $this->assertDatabaseHas('products', [
+            'category_id' => $category->id,
+            'name' => 'ރަސްމީ',
+            'price' => 10.5,
+        ]);
+    }
+
+    #[Test]
+    public function it_validates_new_products(): void
+    {
+        $category = Category::factory()->create();
+        $this->actingAsAdmin('edit_products');
+
+        $this->post(route('admin.categories.products.store', $category), [
+            'name' => [],
+            'price' => 'ބަދަލު',
+        ])
+            ->assertSessionHasErrors(['name', 'price']);
+
+        $this->assertDatabaseCount('products', 0);
+    }
+
+    #[Test]
+    public function it_does_not_create_products_without_permission(): void
+    {
+        $category = Category::factory()->create();
+        $this->actingAsAdmin('view_products');
+
+        $this->post(route('admin.categories.products.store', $category), [])
+            ->assertForbidden();
+
+        $this->assertDatabaseCount('products', 0);
+    }
+
+    #[Test]
+    public function it_shows_a_product(): void
+    {
+        $category = Category::factory()->create();
+        $product = Product::factory()->for($category, 'category')->create();
+
+        $this->actingAsAdmin('view_products');
+
+        $this->get(route('admin.categories.products.show', [$category, $product]))
+            ->assertOk()
+            ->assertInertia(fn (AssertableInertia $page) => $page
+                ->component('admin/products/Show')
+                ->where('product.id', $product->id)
+            );
+    }
+
+    #[Test]
+    public function it_shows_the_edit_product_form(): void
+    {
+        $category = Category::factory()->create();
+        $product = Product::factory()->for($category, 'category')->create();
+
+        $this->actingAsAdmin('edit_products');
+
+        $this->get(route('admin.categories.products.edit', [$category, $product]))
+            ->assertOk()
+            ->assertInertia(fn (AssertableInertia $page) => $page
+                ->component('admin/products/Edit')
+                ->has('form')
+            );
+    }
+
+    #[Test]
+    public function it_updates_a_product(): void
+    {
+        $category = Category::factory()->create();
+        $product = Product::factory()->for($category, 'category')->create();
+
+        $this->actingAsAdmin('edit_products');
+
+        $this->patch(route('admin.categories.products.update', [$category, $product]), [
+            'name' => 'ދިވެހި',
+            'price' => 20.25,
+        ])
+            ->assertRedirect()
+            ->assertSessionHasNoErrors();
+
+        $this->assertDatabaseHas('products', [
+            'id' => $product->id,
+            'name' => 'ދިވެހި',
+            'price' => 20.25,
+        ]);
+    }
+
+    #[Test]
+    public function it_does_not_update_products_without_permission(): void
+    {
+        $category = Category::factory()->create();
+        $product = Product::factory()->for($category, 'category')->create();
+
+        $this->actingAsAdmin('view_products');
+
+        $this->patch(route('admin.categories.products.update', [$category, $product]), [])
+            ->assertForbidden();
+    }
+
+    #[Test]
+    public function it_deletes_a_product(): void
+    {
+        $category = Category::factory()->create();
+        $product = Product::factory()->for($category, 'category')->create();
+
+        $this->actingAsAdmin('delete_products');
+
+        $this->delete(route('admin.categories.products.destroy', [$category, $product]))
+            ->assertRedirect(route('admin.categories.products.index', $category));
+
+        $this->assertSoftDeleted($product);
+    }
+
+    #[Test]
+    public function it_restores_a_deleted_product(): void
+    {
+        $category = Category::factory()->create();
+        $product = Product::factory()->for($category, 'category')->create();
+        $product->delete();
+
+        $this->actingAsAdmin('delete_products');
+
+        $this->patch(route('admin.categories.products.restore', [$category, $product]))
+            ->assertRedirect();
+
+        $this->assertNotSoftDeleted($product);
+    }
+
+    #[Test]
+    public function it_permanently_deletes_a_product(): void
+    {
+        $category = Category::factory()->create();
+        $product = Product::factory()->for($category, 'category')->create();
+        $product->delete();
+
+        $this->actingAsAdmin('force_delete_products');
+
+        $this->delete(route('admin.categories.products.force-delete', [$category, $product]))
+            ->assertRedirect(route('admin.categories.products.index', $category));
+
+        $this->assertModelMissing($product);
+    }
+
+    #[Test]
+    public function it_deletes_products_in_bulk(): void
+    {
+        $category = Category::factory()->create();
+        $products = Product::factory()->for($category, 'category')->count(2)->create();
+
+        $this->actingAsAdmin('view_products', 'delete_products');
+
+        $this->postJson(route('admin.categories.products.bulk', $category), [
+            'action' => 'delete',
+            'products' => $products->pluck('id')->all(),
+        ])
+            ->assertOk()
+            ->assertJson(['succeeded' => 2]);
+
+        $products->each(fn (Product $record) => $this->assertSoftDeleted($record));
+    }
+
+    /**
+     * Log in as a user of the admin area with these permissions.
+     */
+    protected function actingAsAdmin(string ...$permissions): User
+    {
+        $user = User::factory()->create();
+
+        if ($permissions) {
+            $user->givePermissionTo($permissions);
+        }
+
+        $this->actingAs($user);
+
+        return $user;
+    }
+}

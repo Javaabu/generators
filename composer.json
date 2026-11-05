@@ -1,25 +1,71 @@
 {
     "name": "javaabu/generators",
-    "description": "Laravel generators on steroids",
+    "description": "Generate a complete, tested Laravel admin resource from a database table: model, policy, permissions, filters, bulk actions, form, controller, routes, Blade or Inertia React views and tests, built on the Javaabu next-gen packages.",
     "homepage": "https://github.com/Javaabu/generators",
     "license": "MIT",
+    "keywords": [
+        "javaabu",
+        "laravel",
+        "generators",
+        "scaffolding",
+        "crud",
+        "stencil",
+        "inertia",
+        "react",
+        "blade",
+        "dhivehi"
+    ],
     "authors": [
         {
             "name": "Arushad Ahmed",
-            "email": "arushad@javaabu.com"
+            "email": "arushad@javaabu.com",
+            "role": "Developer"
+        },
+        {
+            "name": "Javaabu Pvt. Ltd.",
+            "email": "info@javaabu.com",
+            "homepage": "https://javaabu.com",
+            "role": "Developer"
         }
     ],
     "require": {
-        "php": "^8.1",
-        "illuminate/support": "^9.0 || ^10.0 || ^11.0 || ^12.0 || ^13.0",
-        "symfony/process": "^6.0 || ^7.0 || ^8.0",
-        "doctrine/dbal": "^3.6 || ^4.0",
-        "javaabu/generator-helpers": "^1.3"
+        "php": "^8.4",
+        "illuminate/console": "^12.0 || ^13.0",
+        "illuminate/database": "^12.0 || ^13.0",
+        "illuminate/filesystem": "^12.0 || ^13.0",
+        "illuminate/support": "^12.0 || ^13.0",
+        "javaabu/generator-helpers": "^1.3",
+        "laravel/prompts": "^0.3.6",
+        "symfony/process": "^7.2 || ^8.0"
     },
     "require-dev": {
-        "orchestra/testbench": "^7.0 || ^8.0 || ^9.16 || ^10.0 || ^11.0",
-        "phpunit/phpunit": "^9.5 || ^10.5 || ^11.5.3 || ^12.5.8 || ^13.0.3",
-        "javaabu/schema": "^1.2"
+        "inertiajs/inertia-laravel": "^2.0",
+        "javaabu/auth": "^3.0@dev",
+        "javaabu/boost-javaabu-guidelines": "^1.4",
+        "javaabu/bulk-actions": "^1.0@dev",
+        "javaabu/exports": "^2.0@dev",
+        "javaabu/filters": "^1.0@dev",
+        "javaabu/forms": "^2.0@dev",
+        "javaabu/manifest": "^1.0@dev",
+        "javaabu/mediapicker": "^1.0@dev",
+        "javaabu/permissions": "^3.0@dev",
+        "javaabu/stencil": "^1.0@dev",
+        "javaabu/translatable": "^3.0@dev",
+        "laravel/pint": "^1.24",
+        "orchestra/testbench": "^10.0 || ^11.0",
+        "phpunit/phpunit": "^11.5.3 || ^12.5.8"
+    },
+    "suggest": {
+        "javaabu/stencil": "The forms the generated code uses (^1.0)",
+        "javaabu/forms": "The Blade components of the generated pages (^2.0)",
+        "javaabu/filters": "The index filters and sorts the generated code uses (^1.0)",
+        "javaabu/bulk-actions": "The bulk actions the generated code uses (^1.0)",
+        "javaabu/permissions": "The policies and permissions the generated code uses (^3.0)",
+        "javaabu/mediapicker": "Media collections with --media (^1.0)",
+        "javaabu/translatable": "Translatable models (^3.0)",
+        "javaabu/auth": "User types with generate:auth (^3.0)",
+        "javaabu/exports": "Exports with generate:export (^2.0)",
+        "inertiajs/inertia-laravel": "Inertia React pages with --views=inertia (^2.0)"
     },
     "autoload": {
         "psr-4": {
@@ -28,12 +74,16 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Javaabu\\Generators\\Tests\\": "tests/"
+            "Javaabu\\Generators\\Tests\\": "tests/",
+            "Javaabu\\Generators\\Workbench\\": "workbench/generate/",
+            "App\\": "build/app/app/",
+            "Database\\Factories\\": "build/app/database/factories/",
+            "Tests\\": "build/app/tests/"
         }
     },
     "extra": {
         "branch-alias": {
-            "dev-main": "1.0-dev"
+            "dev-next-gen": "2.x-dev"
         },
         "laravel": {
             "providers": [
@@ -41,6 +91,71 @@
             ]
         }
     },
+    "config": {
+        "sort-packages": true,
+        "process-timeout": 0
+    },
     "minimum-stability": "dev",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/Javaabu/block-editor"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/Javaabu/bulk-actions"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/Javaabu/filters"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/Javaabu/forms"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/Javaabu/js-localization"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/Javaabu/manifest"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/Javaabu/permissions"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/Javaabu/stencil"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/n4ff4h/auth"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/n4ff4h/exports"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/n4ff4h/mediapicker"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/n4ff4h/translatable"
+        }
+    ],
+    "scripts": {
+        "test": "vendor/bin/phpunit",
+        "test-coverage": "vendor/bin/phpunit --coverage-clover=clover.xml",
+        "lint": "vendor/bin/pint --test",
+        "format": "vendor/bin/pint",
+        "integration": [
+            "@php workbench/build.php",
+            "@php vendor/bin/phpunit -c workbench/phpunit.generate.xml",
+            "@php vendor/bin/phpunit -c workbench/phpunit.xml"
+        ]
+    }
 }

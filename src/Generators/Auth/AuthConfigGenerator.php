@@ -2,110 +2,55 @@
 
 namespace Javaabu\Generators\Generators\Auth;
 
-use Faker\Generator;
-use Illuminate\Support\Str;
-use Javaabu\Generators\FieldTypes\Field;
-use Javaabu\Generators\FieldTypes\ForeignKeyField;
-use Javaabu\Generators\Generators\BaseGenerator;
-use Javaabu\Generators\Generators\Concerns\GeneratesFactory;
-use Javaabu\GeneratorHelpers\StringCaser;
+use Javaabu\Generators\Generators\GeneratedFile;
+use Javaabu\Generators\Generators\Generator;
+use Javaabu\Generators\Support\PhpFile;
 
-class AuthConfigGenerator extends BaseAuthGenerator
+/**
+ * The user type's session guard, user provider and password broker in
+ * config/auth.php. Every broker shares the password_reset_tokens table.
+ */
+class AuthConfigGenerator extends Generator
 {
-    public function stubsToRender(): array
+    public function files(): array
     {
-        $stubs = [
-            'renderGuards' => 'guards',
-            'renderProviders' => 'providers',
-            'renderPasswords' => 'passwords',
-            'renderPassportGuards' => 'passport-guards',
-        ];
-
-        if ($this->shouldRenderDefaultGuard()) {
-            $stubs['renderDefaultGuard'] = 'default-guard';
-            $stubs['renderDefaultPasswords'] = 'default-passwords';
-        }
-
-        return $stubs;
+        return [new GeneratedFile(config_path('auth.php'), $this->renderConfig(), fn (string $code) => $this->mergeInto($code), 'auth config')];
     }
 
-
-    /**
-     * Render the views
-     */
-    public function render(): string
+    protected function types(): UserTypeGenerator
     {
-
-        $output = '';
-
-        $views = $this->stubsToRender();
-
-        foreach ($views as $method => $file_name) {
-            $output .= "// $file_name\n";
-            $output .= $this->{$method}();
-        }
-
-        return $output;
+        return new UserTypeGenerator($this->resource);
     }
 
-    public function renderGuards(): string
+    public function mergeInto(string $code): string
     {
-        $stub = 'generators::config/auth/_guards.stub';
+        $types = $this->types();
+        $provider = $this->resource->table();
 
-        $renderer = $this->getRenderer();
+        $code = PhpFile::addImport($code, $this->resource->modelClass());
+        $code = PhpFile::addArrayEntry($code, 'guards', $types->guard(), $this->guardEntry());
+        $code = PhpFile::addArrayEntry($code, 'providers', $provider, $this->providerEntry());
 
-        return $renderer->replaceStubNames($stub, $this->getTable());
+        return PhpFile::addArrayEntry($code, 'passwords', $types->broker(), $this->brokerEntry());
     }
 
-    public function renderProviders(): string
+    public function renderConfig(): string
     {
-        $stub = 'generators::config/auth/_providers.stub';
-
-        $renderer = $this->getRenderer();
-
-        return $renderer->replaceStubNames($stub, $this->getTable());
+        return "// 'guards'\n{$this->guardEntry()}\n\n// 'providers'\n{$this->providerEntry()}\n\n// 'passwords'\n{$this->brokerEntry()}";
     }
 
-    public function renderPasswords(): string
+    protected function guardEntry(): string
     {
-        $stub = 'generators::config/auth/_passwords.stub';
-
-        $renderer = $this->getRenderer();
-
-        return $renderer->replaceStubNames($stub, $this->getTable());
+        return "'{$this->types()->guard()}' => [\n    'driver' => 'session',\n    'provider' => '{$this->resource->table()}',\n],";
     }
 
-    public function renderPassportGuards(): string
+    protected function providerEntry(): string
     {
-        $stub = 'generators::config/auth/_passport-guards.stub';
-
-        $renderer = $this->getRenderer();
-
-        return $renderer->replaceStubNames($stub, $this->getTable());
+        return "'{$this->resource->table()}' => [\n    'driver' => 'eloquent',\n    'model' => {$this->resource->model()}::class,\n],";
     }
 
-    public function renderDefaultGuard(): string
+    protected function brokerEntry(): string
     {
-        $stub = 'generators::config/auth/_default-guard.stub';
-
-        $renderer = $this->getRenderer();
-
-        return $renderer->replaceStubNames($stub, $this->getTable());
-    }
-
-    public function renderDefaultPasswords(): string
-    {
-        $stub = 'generators::config/auth/_default-passwords.stub';
-
-        $renderer = $this->getRenderer();
-
-        return $renderer->replaceStubNames($stub, $this->getTable());
-    }
-
-    public function shouldRenderDefaultGuard(): bool
-    {
-        $default_guard = config('auth.defaults.guard');
-
-        return is_null($default_guard) || in_array($default_guard, ['web', 'web_admin']);
+        return "'{$this->types()->broker()}' => [\n    'provider' => '{$this->resource->table()}',\n    'table' => 'password_reset_tokens',\n    'expire' => 60,\n    'throttle' => 60,\n],";
     }
 }

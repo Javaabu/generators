@@ -5,6 +5,7 @@
     "collapsed": false,
     "link": {
         "type": "generated-index",
-        "slug": "/generators/_categories/advanced-usage"
+        "slug": "/generators/_categories/advanced-usage",
+        "description": "Configuration, stubs, translatable models, Dhivehi, databases, the generated tests and extending the generators."
     }
 }

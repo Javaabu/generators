@@ -1,8 +1,0 @@
-    /**
-     * {{pluralTitle}}
-     */
-    Route::match(['PUT', 'PATCH'], '{{pluralKebab}}', [{{pluralStudly}}Controller::class, 'bulk'])->name('{{pluralKebab}}.bulk');
-    Route::get('{{pluralKebab}}/trash', [{{pluralStudly}}Controller::class, 'trash'])->name('{{pluralKebab}}.trash');
-    Route::post('{{pluralKebab}}/{{{singularSnake}}}/restore', [{{pluralStudly}}Controller::class, 'restore'])->name('{{pluralKebab}}.restore')->withTrashed();
-    Route::delete('{{pluralKebab}}/{{{singularSnake}}}/force-delete', [{{pluralStudly}}Controller::class, 'forceDelete'])->name('{{pluralKebab}}.force-delete')->withTrashed();
-    Route::resource('{{pluralKebab}}', {{pluralStudly}}Controller::class);

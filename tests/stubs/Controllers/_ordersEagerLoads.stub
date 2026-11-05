@@ -1,2 +1,0 @@
-
-        $orders->with('category', 'productSlug');
