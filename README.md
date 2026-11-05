@@ -1,9 +1,9 @@
 # Generators
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/javaabu/generators.svg?style=flat-square)](https://packagist.org/packages/javaabu/generators)
-[![Test Status](../../actions/workflows/run-tests.yml/badge.svg)](../../actions/workflows/run-tests.yml)
-![Code Coverage Badge](./.github/coverage.svg)
-[![Total Downloads](https://img.shields.io/packagist/dt/javaabu/generators.svg?style=flat-square)](https://packagist.org/packages/javaabu/generators)
+[![Tests](https://github.com/Javaabu/generators/actions/workflows/tests.yml/badge.svg?branch=next-gen)](https://github.com/Javaabu/generators/actions/workflows/tests.yml?query=branch%3Anext-gen)
+[![codecov](https://codecov.io/gh/Javaabu/generators/branch/next-gen/graph/badge.svg)](https://codecov.io/gh/Javaabu/generators/tree/next-gen)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/javaabu/generators.svg)](https://packagist.org/packages/javaabu/generators)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE.md)
 
 Laravel generators on steroids
 

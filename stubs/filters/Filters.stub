@@ -1,0 +1,28 @@
+<?php
+
+namespace {{ namespace }};
+
+{{ imports }}
+
+class {{ class }} extends Filters
+{
+    protected ?string $model = {{ model }}::class;
+
+    protected ?string $default_sort = '{{ defaultSort }}';
+
+    protected string $default_direction = 'desc';
+
+    protected function filters(): array
+    {
+        return [
+            {{ filters }}
+        ];
+    }
+
+    protected function sorts(): array
+    {
+        return [
+            {{ sorts }}
+        ];
+    }
+}

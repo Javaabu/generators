@@ -1,9 +1,0 @@
-        'web_customer' => [
-            'driver' => 'session',
-            'provider' => 'customers',
-        ],
-
-        'api_customer' => [
-            'driver' => 'passport',
-            'provider' => 'customers',
-        ],

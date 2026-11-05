@@ -1,7 +1,0 @@
-    /**
-     * A {{singularLowerModel}} belongs to a {{singularLower}}
-     */
-    public function {{relationName}}(): BelongsTo
-    {
-        return $this->{{relationStatement}};
-    }

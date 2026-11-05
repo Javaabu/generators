@@ -1,0 +1,35 @@
+<?php
+
+namespace {{ namespace }};
+
+{{ imports }}
+
+class {{ class }} extends TestCase
+{
+    use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->artisan('permissions:sync');
+    }
+
+    {{ tests }}
+
+    /**
+     * Log in as a user of the admin area with these permissions.
+     */
+    protected function actingAsAdmin(string ...$permissions): {{ user }}
+    {
+        $user = {{ user }}::factory()->create();
+
+        if ($permissions) {
+            $user->givePermissionTo($permissions);
+        }
+
+        $this->actingAs($user{{ guard }});
+
+        return $user;
+    }
+}

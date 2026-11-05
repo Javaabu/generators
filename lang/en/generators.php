@@ -1,0 +1,24 @@
+<?php
+
+return [
+    'one_table' => 'The command takes one table at a time, you gave: :tables',
+    'no_table' => 'Table ":table" not found.',
+    'many_to_many' => 'many-to-many',
+    'prompt_parent' => 'Nest the resource under a parent?',
+    'not_nested' => 'Not nested',
+    'prompt_index' => 'Which fields go in the index table?',
+    'prompt_form' => 'Which fields go in the form?',
+    'prompt_show' => 'Which fields go on the show page?',
+    'prompt_media' => 'Media collections (leave empty for none)',
+    'prompt_media_hint' => 'name:type[:multiple], types: image, video, audio, document, archive',
+    'prompt_views' => 'Which views?',
+    'added_to' => 'added to the file',
+    'created' => 'created',
+    'updated' => 'updated',
+    'unchanged' => 'unchanged',
+    'exists' => 'exists, skipped (use --force to overwrite)',
+    'overwritten' => 'overwritten',
+    'next_steps' => 'Next steps',
+    'rolled_back' => 'Generator changes rolled back.',
+    'rollback_warning' => 'If you run this command, you will lose all uncommitted changes!',
+];

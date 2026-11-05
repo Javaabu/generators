@@ -1,0 +1,24 @@
+<?php
+
+namespace {{ namespace }};
+
+{{ imports }}
+
+class {{ class }} extends BulkActions
+{
+    protected ?string $model = {{ model }}::class;
+
+    protected function setUp(): void
+    {
+        {{ setUp }}
+    }
+
+    protected function actions(): array
+    {
+        return [
+            {{ actions }}
+        ];
+    }
+
+    {{ methods }}
+}

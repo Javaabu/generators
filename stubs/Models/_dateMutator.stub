@@ -1,7 +1,0 @@
-    /**
-     * Convert dates to Carbon
-     */
-    public function set{{attributeStudly}}Attribute($value)
-    {
-        return $this->attributes['{{attribute}}'] = $value ? Carbon::parse($value) : now();
-    }

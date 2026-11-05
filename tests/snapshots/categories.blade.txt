@@ -1,0 +1,238 @@
+// app/Models/Category.php
+<?php
+
+namespace App\Models;
+
+use Database\Factories\CategoryFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
+class Category extends Model
+{
+    /** @use HasFactory<CategoryFactory> */
+    use HasFactory;
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var list<string>
+     */
+    protected $fillable = [
+        'name',
+        'slug',
+    ];
+
+    /**
+     * @return HasMany<AllForeign, $this>
+     */
+    public function allForeigns(): HasMany
+    {
+        return $this->hasMany(AllForeign::class);
+    }
+
+    /**
+     * @return HasMany<Customer, $this>
+     */
+    public function customers(): HasMany
+    {
+        return $this->hasMany(Customer::class);
+    }
+
+    /**
+     * @return HasMany<Order, $this>
+     */
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class);
+    }
+
+    /**
+     * @return HasMany<Product, $this>
+     */
+    public function products(): HasMany
+    {
+        return $this->hasMany(Product::class);
+    }
+
+    /**
+     * @return HasMany<SingleValueEnumOrder, $this>
+     */
+    public function singleValueEnumOrders(): HasMany
+    {
+        return $this->hasMany(SingleValueEnumOrder::class);
+    }
+}
+
+// app/Filters/CategoryFilters.php
+<?php
+
+namespace App\Filters;
+
+use App\Models\Category;
+use Javaabu\Filters\DateRangeFilter;
+use Javaabu\Filters\Filters;
+use Javaabu\Filters\Sort;
+use Javaabu\Filters\TextFilter;
+
+class CategoryFilters extends Filters
+{
+    protected ?string $model = Category::class;
+
+    protected ?string $default_sort = 'created_at';
+
+    protected string $default_direction = 'desc';
+
+    protected function filters(): array
+    {
+        return [
+            TextFilter::make('search')->label(__('Search'))->columns(['name', 'slug']),
+            DateRangeFilter::make('created_at')->label(__('Created at')),
+        ];
+    }
+
+    protected function sorts(): array
+    {
+        return [
+            Sort::make('name')->label(__('Name')),
+            Sort::make('slug')->label(__('Slug')),
+            Sort::make('created_at')->label(__('Created at')),
+            Sort::make('updated_at')->label(__('Updated at')),
+        ];
+    }
+}
+
+// resources/views/admin/categories/index.blade.php
+@extends('layouts.admin')
+
+@section('title', __('Categories'))
+
+@section('content')
+    <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
+        <div>
+            <h1 class="text-2xl font-semibold">{{ __('Categories') }}</h1>
+        </div>
+
+        @can('create', \App\Models\Category::class)
+            <x-forms::link-button :url="route('admin.categories.create')" start-icon="plus">
+                {{ __('New category') }}
+            </x-forms::link-button>
+        @endcan
+    </div>
+
+    <x-filters::bar :filters="$filters" />
+
+    <x-forms::table model="categories">
+        <x-slot:bulk-form :action="$bulk_actions->getUrl()">
+            <x-bulk-actions::actions :actions="$bulk_actions" :paginator="$categories" />
+        </x-slot:bulk-form>
+
+        <x-slot:headers>
+            <x-filters::heading :filters="$filters" sort="name" :label="__('Name')" />
+            <x-filters::heading :filters="$filters" sort="slug" :label="__('Slug')" />
+        </x-slot:headers>
+
+        <x-slot:rows>
+            @forelse($categories as $category)
+                <x-forms::table.row :model="$category" name="categories">
+                    <x-forms::table.cell :label="__('Name')">
+                        @can('view', $category)
+                            <a href="{{ route('admin.categories.show', $category) }}" class="font-medium hover:underline">{{ $category->name }}</a>
+                        @else
+                            {{ $category->name }}
+                        @endcan
+                    </x-forms::table.cell>
+                    <x-forms::table.cell name="slug" :label="__('Slug')" />
+                </x-forms::table.row>
+            @empty
+                <x-forms::table.empty-row :columns="3">
+                    {{ $filters->hasActiveFilters() ? __('No categories match these filters.') : __('No categories yet.') }}
+                </x-forms::table.empty-row>
+            @endforelse
+        </x-slot:rows>
+
+        @if($categories->hasPages())
+            <x-slot:pagination>
+                <x-forms::pagination :paginator="$categories" />
+            </x-slot:pagination>
+        @endif
+    </x-forms::table>
+@endsection
+
+// resources/views/admin/categories/create.blade.php
+@extends('layouts.admin')
+
+@section('title', __('New category'))
+
+@section('content')
+    <div class="mb-6">
+        <nav class="mb-1 flex gap-2 text-sm text-muted-foreground" aria-label="{{ __('Breadcrumb') }}">
+            <a href="{{ route('admin.categories.index') }}" class="hover:underline">{{ __('Categories') }}</a>
+        </nav>
+        <h1 class="text-2xl font-semibold">{{ __('New category') }}</h1>
+    </div>
+
+    {{ $form }}
+@endsection
+
+// resources/views/admin/categories/edit.blade.php
+@extends('layouts.admin')
+
+@section('title', __('Edit category'))
+
+@section('content')
+    <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
+        <div>
+            <nav class="mb-1 flex gap-2 text-sm text-muted-foreground" aria-label="{{ __('Breadcrumb') }}">
+                <a href="{{ route('admin.categories.index') }}" class="hover:underline">{{ __('Categories') }}</a>
+            </nav>
+            <h1 class="text-2xl font-semibold">{{ __('Edit category') }}</h1>
+        </div>
+
+        <x-forms::link-button :url="route('admin.categories.show', $category)" color="light" start-icon="eye">
+            {{ __('View') }}
+        </x-forms::link-button>
+    </div>
+
+    {{ $form }}
+@endsection
+
+// resources/views/admin/categories/show.blade.php
+@extends('layouts.admin')
+
+@section('title', $category->name)
+
+@section('content')
+    <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
+        <div>
+            <nav class="mb-1 flex gap-2 text-sm text-muted-foreground" aria-label="{{ __('Breadcrumb') }}">
+                <a href="{{ route('admin.categories.index') }}" class="hover:underline">{{ __('Categories') }}</a>
+            </nav>
+            <h1 class="text-2xl font-semibold">{{ $category->name }}</h1>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+            @can('update', $category)
+                <x-forms::link-button :url="route('admin.categories.edit', $category)" start-icon="pencil">
+                    {{ __('Edit') }}
+                </x-forms::link-button>
+            @endcan
+
+            @can('delete', $category)
+                <form method="POST" action="{{ route('admin.categories.destroy', $category) }}" onsubmit="return confirm(@js(__('Delete this category?')))">
+                    @csrf
+                    @method('DELETE')
+
+                    <x-forms::submit color="danger" start-icon="trash-2">
+                        {{ __('Delete') }}
+                    </x-forms::submit>
+                </form>
+            @endcan
+        </div>
+    </div>
+
+    <x-forms::infolist :title="__('Category')" :model="$category">
+        <x-forms::text-entry name="name" :label="__('Name')" />
+        <x-forms::text-entry name="slug" :label="__('Slug')" />
+    </x-forms::infolist>
+@endsection

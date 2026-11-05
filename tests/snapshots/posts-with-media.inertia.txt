@@ -1,0 +1,264 @@
+// app/Http/Resources/Admin/PostResource.php
+<?php
+
+namespace App\Http\Resources\Admin;
+
+use App\Models\Post;
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+
+/**
+ * @mixin Post
+ */
+class PostResource extends JsonResource
+{
+    /**
+     * Transform the resource into an array.
+     *
+     * @return array<string, mixed>
+     */
+    public function toArray(Request $request): array
+    {
+        return [
+            'id' => $this->id,
+            'title' => $this->title,
+            'published_at' => $this->published_at?->format('Y-m-d H:i'),
+            'excerpt' => $this->excerpt,
+            'content' => $this->content,
+            'medium_content' => $this->medium_content,
+            'tiny_content' => $this->tiny_content,
+            'featured_image' => $this->getFirstAttachmentUrl('featured_image') ?: null,
+            'attachments' => $this->getAttachmentMedia('attachments')->map(fn ($media) => $media->getUrl())->values()->all(),
+            'created_at' => $this->created_at?->format('Y-m-d H:i'),
+            'updated_at' => $this->updated_at?->format('Y-m-d H:i'),
+            'urls' => [
+                'show' => route('admin.posts.show', $this->resource),
+                'edit' => route('admin.posts.edit', $this->resource),
+                'destroy' => route('admin.posts.destroy', $this->resource),
+            ],
+            'can' => [
+                'view' => (bool) $request->user()?->can('view', $this->resource),
+                'update' => (bool) $request->user()?->can('update', $this->resource),
+                'delete' => (bool) $request->user()?->can('delete', $this->resource),
+            ],
+        ];
+    }
+}
+
+// resources/js/pages/admin/posts/types.ts
+/** A post, as PostResource sends it. */
+export interface Post {
+  id: number
+  title: string
+  published_at: string | null
+  excerpt: string
+  content: string | null
+  medium_content: string | null
+  tiny_content: string | null
+  featured_image: string | null
+  attachments: string[]
+  created_at: string | null
+  updated_at: string | null
+  urls: { show: string; edit: string; destroy: string }
+  can: { view: boolean; update: boolean; delete: boolean }
+}
+
+// resources/js/pages/admin/posts/Index.tsx
+import { Head, Link, router } from "@inertiajs/react"
+import { BulkActionsTable, type BulkActionsSchema } from "@javaabu/bulk-actions"
+import { FilterBar, SortableHeading, type FiltersData } from "@javaabu/filters"
+import { type LaravelResourceCollection, LinkButton, Pagination, TableCell, TableEmptyRow, TableHeading, TableRow } from "@javaabu/forms"
+import { __ } from "@javaabu/i18n"
+import type { Post } from "./types"
+
+interface Props {
+  posts: LaravelResourceCollection & { data: Post[] }
+  filters: FiltersData
+  bulkActions: BulkActionsSchema
+  createUrl: string | null
+}
+
+export default function Index({ posts, filters, bulkActions, createUrl }: Props) {
+  return (
+    <>
+      <Head title={__("Posts")} />
+
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold">{__("Posts")}</h1>
+        </div>
+
+        {createUrl && (
+          <LinkButton url={createUrl} startIcon="plus">
+            {__("New post")}
+          </LinkButton>
+        )}
+      </div>
+
+      <FilterBar filters={filters} />
+
+      <BulkActionsTable
+        bulkActions={bulkActions}
+        onRunFinished={() => router.reload()}
+        headers={
+          <>
+            <SortableHeading filters={filters} sort="title" label={__("Title")} />
+            <SortableHeading filters={filters} sort="published_at" label={__("Published at")} />
+          </>
+        }
+        pagination={posts.meta.last_page > 1 ? <Pagination paginator={posts} /> : null}
+      >
+        {posts.data.length > 0 ? (
+          posts.data.map((post) => (
+            <TableRow key={post.id} model={post} name="posts">
+              <TableCell label={__("Title")}>
+                {post.can.view ? (
+                  <Link href={post.urls.show} className="font-medium hover:underline">
+                    {post.title}
+                  </Link>
+                ) : (
+                  post.title
+                )}
+              </TableCell>
+              <TableCell name="published_at" label={__("Published at")} />
+            </TableRow>
+          ))
+        ) : (
+          <TableEmptyRow columns={3}>
+            {filters.active > 0
+              ? __("No posts match these filters.")
+              : __("No posts yet.")}
+          </TableEmptyRow>
+        )}
+      </BulkActionsTable>
+    </>
+  )
+}
+
+// resources/js/pages/admin/posts/Create.tsx
+import { Head } from "@inertiajs/react"
+import { __ } from "@javaabu/i18n"
+import { StencilMediaPicker } from "@javaabu/mediapicker"
+import { StencilForm, type StencilSchema } from "@javaabu/stencil"
+
+interface Props {
+  form: StencilSchema
+}
+
+export default function Create({ form }: Props) {
+  return (
+    <>
+      <Head title={__("New post")} />
+
+      <div className="mb-6">
+        <div>
+          <h1 className="text-2xl font-semibold">{__("New post")}</h1>
+        </div>
+      </div>
+
+      <StencilForm schema={form} components={{ mediapicker: StencilMediaPicker }} />
+    </>
+  )
+}
+
+// resources/js/pages/admin/posts/Edit.tsx
+import { Head } from "@inertiajs/react"
+import { LinkButton } from "@javaabu/forms"
+import { __ } from "@javaabu/i18n"
+import { StencilMediaPicker } from "@javaabu/mediapicker"
+import { StencilForm, type StencilSchema } from "@javaabu/stencil"
+import type { Post } from "./types"
+
+interface Props {
+  post: Post
+  form: StencilSchema
+}
+
+export default function Edit({ post, form }: Props) {
+  return (
+    <>
+      <Head title={__("Edit post")} />
+
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold">{__("Edit post")}</h1>
+        </div>
+
+        <LinkButton url={post.urls.show} color="light" startIcon="eye">
+          {__("View")}
+        </LinkButton>
+      </div>
+
+      <StencilForm schema={form} components={{ mediapicker: StencilMediaPicker }} />
+    </>
+  )
+}
+
+// resources/js/pages/admin/posts/Show.tsx
+import { Head, router } from "@inertiajs/react"
+import { Button, Card, Infolist, LinkButton, TextEntry } from "@javaabu/forms"
+import { __ } from "@javaabu/i18n"
+import type { Post } from "./types"
+
+interface Props {
+  post: Post
+}
+
+export default function Show({ post }: Props) {
+  return (
+    <>
+      <Head title={String(post.title)} />
+
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold">{post.title}</h1>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2">
+          {post.can.update && (
+            <LinkButton url={post.urls.edit} startIcon="pencil">
+              {__("Edit")}
+            </LinkButton>
+          )}
+          {post.can.delete && (
+            <Button
+              type="button"
+              color="danger"
+              startIcon="trash-2"
+              onClick={() => {
+                if (window.confirm(__("Delete this post?"))) router.delete(post.urls.destroy)
+              }}
+            >
+              {__("Delete")}
+            </Button>
+          )}
+        </div>
+      </div>
+
+      <Infolist title={__("Post")} model={post}>
+        <TextEntry name="title" label={__("Title")} />
+        <TextEntry name="published_at" label={__("Published at")} />
+        <TextEntry name="excerpt" label={__("Excerpt")} multiline />
+        <TextEntry name="content" label={__("Content")} multiline />
+        <TextEntry name="medium_content" label={__("Medium content")} multiline />
+        <TextEntry name="tiny_content" label={__("Tiny content")} multiline />
+      </Infolist>
+
+      <Card title={__("Featured image")} className="mt-6">
+        {post.featured_image && <img src={post.featured_image} alt="" className="rounded-lg" />}
+      </Card>
+
+      <Card title={__("Attachments")} className="mt-6">
+        <ul className="list-disc ps-6">
+          {post.attachments.map((url) => (
+            <li key={url}>
+              <a href={url} className="hover:underline">
+                {url.split("/").pop()}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </Card>
+    </>
+  )
+}

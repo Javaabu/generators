@@ -1,7 +1,0 @@
-    /**
-     * Convert dates to Carbon
-     */
-    public function setPublishedAtAttribute($value)
-    {
-        return $this->attributes['published_at'] = $value ? Carbon::parse($value) : now();
-    }

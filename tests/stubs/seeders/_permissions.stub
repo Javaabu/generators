@@ -1,8 +1,0 @@
-        /**
-         * Categories permissions
-         */
-        'categories' => [
-            'view_categories' => 'View categories',
-            'edit_categories' => 'Edit categories',
-            'delete_categories' => 'Delete categories',
-        ],
