@@ -1,16 +1,12 @@
 ---
 title: Rolling back changes
-sidebar_position: 4
+sidebar_position: 10
 ---
 
-If you want to roll back the changes made by the generator, you can run the following command.
+To undo what a generator wrote, commit your work first, then run:
 
 ```bash
 php artisan generate:rollback
 ```
 
-:::danger
-
-If you run this command you will lose all uncommitted changes. So make sure any changes you want to keep are commited before running this command.
-
-:::
+It runs `git reset`, `git checkout .` and `git clean -fd`: **every uncommitted change is lost**, not only the generated files. It asks before it does; `--force` skips the question.

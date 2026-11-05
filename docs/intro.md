@@ -5,80 +5,45 @@ sidebar_position: 1.0
 
 # Generators
 
-[Generators](https://github.com/Javaabu/generators) provide Laravel generators on steroids based on database schemas.
-For example, if you have a `products` table with the following schema:
+[javaabu/generators](https://github.com/Javaabu/generators) reads a database table and writes a complete, tested admin resource for it, built on the Javaabu next-gen packages. You design the migration; the generators write the rest.
 
-```php
-Schema::create('products', function (Blueprint $table) {
-    $table->id();
-    $table->string('name');
-    $table->string('address');
-    $table->string('slug')->unique();
-    $table->text('description')->nullable();
-    $table->unsignedDecimal('price', 14, 2);
-    $table->unsignedInteger('stock');
-    $table->boolean('on_sale')->default(false);
-    $table->json('features');
-    $table->dateTime('published_at');
-    $table->timestamp('expire_at');
-    $table->date('released_on');
-    $table->time('sale_time');
-    $table->enum('status', ['draft', 'published']);
-    $table->foreignId('category_id')->nullable()->constrained()->nullOnDelete();
-    $table->year('manufactured_year');
-    $table->timestamps();
-    $table->softDeletes();
-});
+```bash
+php artisan generate:all products --create
 ```
 
-and you run the artisan command `php artisan generate:factory products --create` it will output the code for a `ProductFactory` like below:
+For a `products` table with a category, tags (through a `product_tag` pivot table), an enum `status` and soft deletes, that writes:
 
-```php
-<?php
+| File | What it uses |
+| --- | --- |
+| `app/Models/Product.php` | Fillable fields, casts, `category()`, `tags()` and the other relations found in the schema, `SoftDeletes` |
+| `database/factories/ProductFactory.php` | A value for every column, related records for foreign keys |
+| `app/Policies/ProductPolicy.php` | [javaabu/permissions](https://github.com/Javaabu/permissions)' `ResourcePolicy` |
+| `app/Providers/AppServiceProvider.php` | `Permissions::resource('products')`: `view_products`, `edit_products`, `delete_products`, `force_delete_products` |
+| `app/Filters/ProductFilters.php` | [javaabu/filters](https://github.com/Javaabu/filters): a search over the text columns, selects for the status, category and tags, ranges, trashed records, sorts |
+| `app/BulkActions/ProductBulkActions.php` | [javaabu/bulk-actions](https://github.com/Javaabu/bulk-actions): delete, restore and permanently delete the selected or filtered products |
+| `app/Stencil/ProductForm.php` | A [javaabu/stencil](https://github.com/Javaabu/stencil) form: one field per column, and the validation rules |
+| `app/Http/Controllers/Admin/ProductsController.php` | Index, create, show, edit, delete, restore and permanently delete, authorized by the policy |
+| `routes/admin.php` | `Route::resource()`, the restore and delete routes, `Route::bulkActions()` |
+| `resources/views/admin/products/*.blade.php` | Blade pages with [javaabu/forms](https://github.com/Javaabu/forms) |
+| or `resources/js/pages/admin/products/*.tsx` | Inertia React pages with [@javaabu/forms](https://github.com/Javaabu/react-forms) and a JSON resource |
+| `tests/Feature/Admin/ProductsControllerTest.php` | Feature tests of every page, validation, authorization and the bulk actions, which pass as they are |
+| `lang/dv.json` | Dhivehi for the generic phrases of the pages |
 
-namespace Database\Factories;
+The generators also:
 
-use Illuminate\Database\Eloquent\Factories\Factory;
+- nest resources under a parent (`/admin/categories/{category}/products`)
+- add [javaabu/mediapicker](https://github.com/Javaabu/mediapicker) media collections
+- make models translatable with [javaabu/translatable](https://github.com/Javaabu/translatable)
+- create [javaabu/auth](https://github.com/Javaabu/auth) user types with their own guard, routes and permissions
+- let you choose which fields appear on the index table, the form and the show page
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Product>
- */
-class ProductFactory extends Factory
-{
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
-    public function definition(): array
-    {
-        return [
-            'name' => fake()->text(fake()->numberBetween(5, 255)),
-            'address' => fake()->address(),
-            'slug' => fake()->unique()->slug(),
-            'description' => fake()->optional()->sentences(3, true),
-            'price' => fake()->randomFloat(2, 0, 999999999999),
-            'stock' => fake()->numberBetween(0, 4294967295),
-            'on_sale' => fake()->boolean(),
-            'features' => fake()->words(),
-            'published_at' => fake()->dateTime()?->format('Y-m-d H:i'),
-            'expire_at' => fake()->dateTime()?->format('Y-m-d H:i'),
-            'released_on' => fake()->date(),
-            'sale_time' => fake()->time(),
-            'status' => fake()->randomElement(['draft', 'published']),
-            'manufactured_year' => fake()->year(2100),
-        ];
-    }
+The generated code is yours: it is plain Laravel code that follows the Javaabu coding standards and passes Pint. Edit it as you like.
 
-    public function withCategory(): ProductFactory
-    {
-        return $this->state(function (array $attributes) {
-            return [
-                'category_id' => fake()->passThrough(random_id_or_generate(\App\Models\Category::class, 'id', generate: true)),
-            ];
-        });
-    }
-}
+Every generated file is checked in this package's CI. A whole admin is generated into a Laravel app, its tests run, and the React pages are type-checked.
 
-```
+# What next
 
+- [Requirements](requirements.md) and [installation](installation-and-setup.md)
+- [Generating a resource](basic-usage/generating-a-resource.md): a walkthrough
+- [Available generators](basic-usage/available-generators.md): every command
+- [Upgrading from v1](upgrading.md)

@@ -55,6 +55,18 @@
         "orchestra/testbench": "^10.0 || ^11.0",
         "phpunit/phpunit": "^11.5.3 || ^12.5.8"
     },
+    "suggest": {
+        "javaabu/stencil": "The forms the generated code uses (^1.0)",
+        "javaabu/forms": "The Blade components of the generated pages (^2.0)",
+        "javaabu/filters": "The index filters and sorts the generated code uses (^1.0)",
+        "javaabu/bulk-actions": "The bulk actions the generated code uses (^1.0)",
+        "javaabu/permissions": "The policies and permissions the generated code uses (^3.0)",
+        "javaabu/mediapicker": "Media collections with --media (^1.0)",
+        "javaabu/translatable": "Translatable models (^3.0)",
+        "javaabu/auth": "User types with generate:auth (^3.0)",
+        "javaabu/exports": "Exports with generate:export (^2.0)",
+        "inertiajs/inertia-laravel": "Inertia React pages with --views=inertia (^2.0)"
+    },
     "autoload": {
         "psr-4": {
             "Javaabu\\Generators\\": "src/"
@@ -69,17 +81,6 @@
             "Tests\\": "build/app/tests/"
         }
     },
-    "scripts": {
-        "test": "vendor/bin/phpunit",
-        "test-coverage": "vendor/bin/phpunit --coverage-clover=clover.xml",
-        "lint": "vendor/bin/pint --test",
-        "format": "vendor/bin/pint",
-        "integration": [
-            "@php workbench/build.php",
-            "@php vendor/bin/phpunit -c workbench/phpunit.generate.xml",
-            "@php vendor/bin/phpunit -c workbench/phpunit.xml"
-        ]
-    },
     "extra": {
         "branch-alias": {
             "dev-next-gen": "2.x-dev"
@@ -91,7 +92,8 @@
         }
     },
     "config": {
-        "sort-packages": true
+        "sort-packages": true,
+        "process-timeout": 0
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
@@ -144,5 +146,16 @@
             "type": "vcs",
             "url": "https://github.com/n4ff4h/translatable"
         }
-    ]
+    ],
+    "scripts": {
+        "test": "vendor/bin/phpunit",
+        "test-coverage": "vendor/bin/phpunit --coverage-clover=clover.xml",
+        "lint": "vendor/bin/pint --test",
+        "format": "vendor/bin/pint",
+        "integration": [
+            "@php workbench/build.php",
+            "@php vendor/bin/phpunit -c workbench/phpunit.generate.xml",
+            "@php vendor/bin/phpunit -c workbench/phpunit.xml"
+        ]
+    }
 }

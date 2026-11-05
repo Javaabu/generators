@@ -236,6 +236,16 @@ class GenerateCommandsTest extends TestCase
     }
 
     #[Test]
+    public function it_gives_an_admin_user_type_roles(): void
+    {
+        config()->set('generators.admin.user_model', 'App\\Models\\PublicUser');
+
+        $this->artisan('generate:auth', ['table' => 'public_users', '--type' => 'admin', '--except' => 'views,test,config,routes'])
+            ->expectsOutputToContain('use HasRoles;')
+            ->assertSuccessful();
+    }
+
+    #[Test]
     public function it_prints_a_user_type_without_create(): void
     {
         $this->artisan('generate:auth', ['table' => 'customers', '--except' => 'views,test'])

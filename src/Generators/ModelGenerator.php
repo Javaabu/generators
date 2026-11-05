@@ -38,6 +38,11 @@ class ModelGenerator extends Generator
             $traits[] = 'use ' . $imports->add('Illuminate\\Database\\Eloquent\\SoftDeletes') . ';';
         }
 
+        // the admins: their permissions come from javaabu/permissions
+        if ($resource->isUserType() && ltrim((string) $resource->area('user_model'), '\\') === $resource->modelClass()) {
+            $traits[] = 'use ' . $imports->add('Javaabu\\Permissions\\Traits\\HasRoles') . ';';
+        }
+
         if ($resource->isTranslatable()) {
             $implements[] = $imports->add('Javaabu\\Translatable\\Contracts\\JsonTranslatable');
             $traits[] = 'use ' . $imports->add('Javaabu\\Translatable\\JsonTranslatable\\IsJsonTranslatable') . ';';

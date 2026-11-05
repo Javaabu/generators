@@ -6,6 +6,6 @@
     "link": {
         "type": "generated-index",
         "slug": "/generators/_categories/basic-usage",
-        "description": "Everything you need to know to get started!"
+        "description": "Generating admin resources, their fields, relations, pages, nesting, media and user types."
     }
 }
