@@ -248,7 +248,7 @@ import { __ } from "@javaabu/i18n"
 import type { Product } from "./types"
 
 interface Props {
-  products: LaravelResourceCollection & { data: Product[] }
+  products: Omit<LaravelResourceCollection, "data"> & { data: Product[] }
   filters: FiltersData
   bulkActions: BulkActionsSchema
   createUrl: string | null

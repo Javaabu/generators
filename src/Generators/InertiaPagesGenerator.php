@@ -183,7 +183,7 @@ class InertiaPagesGenerator extends Generator
         import type { {$types_import} } from "./types"
 
         interface Props {{$parent_type}
-          {$items}: LaravelResourceCollection & { data: {$type}[] }
+          {$items}: Omit<LaravelResourceCollection, "data"> & { data: {$type}[] }
           filters: FiltersData
           bulkActions: BulkActionsSchema
           createUrl: string | null

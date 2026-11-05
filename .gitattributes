@@ -8,3 +8,6 @@
 /testbench.yaml     export-ignore
 /tests              export-ignore
 /workbench          export-ignore
+/package.json       export-ignore
+/pnpm-lock.yaml     export-ignore
+/node_modules       export-ignore

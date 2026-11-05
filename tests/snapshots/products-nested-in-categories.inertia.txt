@@ -260,7 +260,7 @@ import type { Product, Category } from "./types"
 
 interface Props {
   category: Category
-  products: LaravelResourceCollection & { data: Product[] }
+  products: Omit<LaravelResourceCollection, "data"> & { data: Product[] }
   filters: FiltersData
   bulkActions: BulkActionsSchema
   createUrl: string | null

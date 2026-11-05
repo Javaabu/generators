@@ -13,6 +13,10 @@ concurrency:
 permissions:
   contents: read
 
+env:
+  # the next-gen packages install from GitHub (VCS repositories)
+  COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{ github.token }}"}}'
+
 jobs:
   tests:
     runs-on: ubuntu-latest
@@ -169,6 +173,50 @@ jobs:
           php workbench/build.php
           vendor/bin/phpunit -c workbench/phpunit.generate.xml
           vendor/bin/phpunit -c workbench/phpunit.xml
+
+  react:
+    runs-on: ubuntu-latest
+
+    name: Generated React pages
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          extensions: mbstring, pdo, sqlite, pdo_sqlite, zip, intl, gd, exif
+          coverage: none
+
+      - name: Install Composer dependencies
+        run: composer update --prefer-dist --no-interaction
+
+      - uses: pnpm/action-setup@v4
+
+      # Keep the store out of pnpm's own node_modules/.bin, where @javaabu/forms'
+      # prepare build can't emit portable types (Javaabu/react-forms#20).
+      - name: Use a pnpm store outside node_modules
+        run: pnpm config set store-dir ~/.pnpm-store
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install npm dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate into the integration app
+        run: |
+          php workbench/build.php
+          vendor/bin/phpunit -c workbench/phpunit.generate.xml
+
+      - name: Typecheck the generated pages
+        run: pnpm typecheck:app
+
+      - name: Check the generated pages' formatting
+        run: pnpm format:app
 
   pint:
     runs-on: ubuntu-latest

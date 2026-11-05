@@ -72,7 +72,7 @@ import { __ } from "@javaabu/i18n"
 import type { Post } from "./types"
 
 interface Props {
-  posts: LaravelResourceCollection & { data: Post[] }
+  posts: Omit<LaravelResourceCollection, "data"> & { data: Post[] }
   filters: FiltersData
   bulkActions: BulkActionsSchema
   createUrl: string | null

@@ -1,0 +1,33 @@
+{
+  "name": "javaabu-generators-tooling",
+  "private": true,
+  "description": "Checks the Inertia React pages javaabu/generators writes: typechecks and formats the pages generated into the integration app (build/app).",
+  "license": "MIT",
+  "type": "module",
+  "packageManager": "pnpm@10.28.0",
+  "engines": {
+    "node": ">=20.19"
+  },
+  "scripts": {
+    "typecheck:app": "tsc -p workbench/tsconfig.json",
+    "format:app": "prettier --check --config workbench/.prettierrc.json \"build/app/resources/js/**/*.{ts,tsx}\""
+  },
+  "devDependencies": {
+    "@inertiajs/react": "^2.3.0",
+    "@javaabu/forms": "github:Javaabu/react-forms#next-gen",
+    "@javaabu/i18n": "github:Javaabu/i18n#build-on-git-install",
+    "@types/node": "^26.6.6",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "prettier": "^3.9.10",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "typescript": "~6.0.3"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@javaabu/forms",
+      "@javaabu/i18n"
+    ]
+  }
+}
