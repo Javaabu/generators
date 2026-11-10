@@ -2,31 +2,48 @@
 
 namespace Javaabu\Generators\Generators;
 
-use Faker\Generator;
-use Illuminate\Support\Str;
-use Javaabu\Generators\FieldTypes\Field;
-use Javaabu\Generators\FieldTypes\ForeignKeyField;
-use Javaabu\Generators\Generators\Concerns\GeneratesFactory;
-use Javaabu\GeneratorHelpers\StringCaser;
+use Javaabu\Generators\Support\Imports;
+use Javaabu\Generators\Support\Stub;
 
-class FactoryGenerator extends BaseGenerator
+class FactoryGenerator extends Generator
 {
-    use GeneratesFactory;
-
-    protected string $factory_stub = 'generators::factories/ModelFactory.stub';
-
-    /**
-     * Constructor
-     */
-    public function __construct(string $table, array $columns = [])
+    public function files(): array
     {
-        parent::__construct($table, $columns);
+        $resource = $this->resource;
 
-        $this->faker = app(Generator::class);
+        return [new GeneratedFile($resource->classPath($resource->factoryClass()), $this->renderFactory(), description: 'factory')];
     }
 
-    public function render(): string
+    public function renderFactory(): string
     {
-        return $this->renderFactory();
+        $resource = $this->resource;
+        $namespace = $resource->namespace('factories');
+        $imports = new Imports(['Illuminate\\Database\\Eloquent\\Factories\\Factory'], $namespace);
+
+        $model = $imports->add($resource->modelClass());
+
+        $definition = [];
+
+        foreach ($resource->fields as $column => $field) {
+            if ($resource->isUserType() && $column === 'status') {
+                $definition[] = "'status' => " . $imports->add('Javaabu\\Auth\\Enums\\UserStatuses') . '::APPROVED,';
+
+                continue;
+            }
+
+            $definition[] = "'{$column}' => {$field->getFactoryValue($imports)},";
+        }
+
+        if ($resource->isUserType() && $resource->table->hasColumn('email_verified_at')) {
+            $definition[] = "'email_verified_at' => now(),";
+        }
+
+        return Stub::make('factory/Factory.stub')->with([
+            'namespace' => $namespace,
+            'class' => class_basename($resource->factoryClass()),
+            'model' => $model,
+            'definition' => implode("\n", $definition),
+            'imports' => $imports->render(),
+        ])->render();
     }
 }

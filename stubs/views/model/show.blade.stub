@@ -1,7 +1,0 @@
-@extends('admin.{{pluralKebab}}.{{pluralKebab}}')
-
-@section('page-title', __('View {{singularTitle}}'))
-
-@section('content')
-    @include('admin.{{pluralKebab}}._details')
-@endsection

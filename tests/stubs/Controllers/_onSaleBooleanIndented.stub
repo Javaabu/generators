@@ -1,3 +1,0 @@
-            if ($request->hasAny(['on_sale', 'sync_on_sale'])) {
-                $product->on_sale = $request->input('on_sale', false);
-            }

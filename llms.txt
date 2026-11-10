@@ -1,0 +1,43 @@
+# javaabu/generators
+
+> Generates a complete, tested Laravel admin resource from a database table: model (with the relations found in the schema), factory, javaabu/permissions policy and permissions, javaabu/filters filters, javaabu/bulk-actions bulk actions, a javaabu/stencil form, controller, routes, Blade (javaabu/forms v2) or Inertia React (@javaabu/forms) pages, and feature tests that pass as generated. Also nests resources, adds javaabu/mediapicker media, makes models translatable (javaabu/translatable) and creates javaabu/auth user types. Reads MySQL, MariaDB, PostgreSQL and SQLite schemas.
+
+Paths are relative to this file. In a project, that's vendor/javaabu/generators/.
+
+## Rules
+
+- Write and run the migration first: the generated code comes from the schema (types, nullability, defaults, unique, foreign keys, soft deletes, enums). Generate the tables it refers to before it.
+- `php artisan generate:all {table}` prints the code; `--create` writes it; existing files are skipped unless `--force`. Run `php artisan permissions:sync` after generating.
+- Choose fields with `--index=`, `--form=`, `--show=` (columns, and many-to-many relations by name), or `--interactive`. Pages: `--views=blade|inertia`. Nesting: `--parent=`. Media: `--media=name[:type][:multiple]`. Skip parts with `--except=`.
+- Pivot tables aren't resources: generating the two tables gives both a many-to-many relation and a multiple select.
+- New user types use `generate:auth {table}` (javaabu/auth v3 ships the auth controllers and pages; never write them). `--migration` writes the table's migration with `UserSchema::columns()`.
+- The stencil form validates: don't add a FormRequest; change rules on the form fields. Controllers authorize with the policy (`Gate::authorize()`).
+- Name enum classes in a column comment (`enum:App\Enums\X`, MySQL/PostgreSQL) or in `config('generators.enums')` (every driver).
+- The admin area's guard, user model, routes file, prefixes, layout and namespaces are config (`generators.admin.*`, `generators.blade.*`, `generators.namespaces.*`); nothing assumes the web guard or App\Models\User.
+- Customize what's written by publishing the stubs (`--tag=generators-stubs`) or extending `GenerateCommand` and `Generator`.
+
+## Docs
+
+- [Introduction](docs/intro.md): what the generators write
+- [Requirements](docs/requirements.md): PHP, Laravel, databases, the packages the generated code uses
+- [Installation & Setup](docs/installation-and-setup.md): installing, getting the app ready (admin model, layout, Inertia, routes, permissions), publishing
+- [AI assistants](docs/ai-assistants.md): Laravel Boost and these docs
+- [Generating a resource](docs/basic-usage/generating-a-resource.md): the walkthrough, printing and writing, merged files, skipping parts, every option
+- [Available generators](docs/basic-usage/available-generators.md): every command, and what each part writes
+- [Choosing fields](docs/basic-usage/choosing-fields.md): the defaults, --index, --form, --show, --columns, the prompts
+- [Relations, filters and bulk actions](docs/basic-usage/relations.md): belongsTo, hasMany, pivot tables, the filters and bulk actions written for them
+- [Enums](docs/basic-usage/enums.md): database enums, enum classes from comments or config
+- [Blade and Inertia React](docs/basic-usage/blade-and-inertia.md): the pages, the JSON resource, the app setup
+- [Nested resources](docs/basic-usage/nested-resources.md): --parent, scoped routes, controllers, bulk actions, tests
+- [Media](docs/basic-usage/media.md): --media, attachment collections, media pickers, the media library routes
+- [User types](docs/basic-usage/user-types.md): generate:auth, the guard, the user type, auth routes, the admin pages, admins as a user type
+- [Rolling back changes](docs/basic-usage/rolling-back-changes.md): generate:rollback
+- [Configuration](docs/advanced-usage/configuration.md): every config option
+- [Customising stubs](docs/advanced-usage/customising-stubs.md): publishing, the stubs, placeholders
+- [Translatable models](docs/advanced-usage/translatable.md): javaabu/translatable, optional, the columns, the forms and tests
+- [Dhivehi and RTL](docs/advanced-usage/dhivehi-and-rtl.md): translations, RTL, Thaana, strings to review
+- [Databases and column types](docs/advanced-usage/databases-and-column-types.md): how each column type is generated, what each database keeps
+- [The generated tests](docs/advanced-usage/the-generated-tests.md): what they test, what they need, how this package tests them
+- [Extending the generators](docs/advanced-usage/extending.md): the classes, your own generators and field types
+- [Upgrading from v1](docs/upgrading.md): what changed in the generated code, commands, options and config
+- [Questions and Security](docs/questions-and-security.md): getting help and reporting security issues

@@ -1,0 +1,18 @@
+@extends('{{ layout }}')
+
+@section('title', __('{{ title }}'))
+
+@section('{{ section }}')
+    <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
+        <div>
+            {{ breadcrumbs }}
+            <h1 class="text-2xl font-semibold">{{ __('{{ title }}') }}</h1>
+        </div>
+
+        <x-forms::link-button :url="{{ showRoute }}" color="light" start-icon="eye">
+            {{ __('View') }}
+        </x-forms::link-button>
+    </div>
+
+    {{ $form }}
+@endsection

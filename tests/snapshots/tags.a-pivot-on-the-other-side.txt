@@ -1,0 +1,64 @@
+// app/Models/Tag.php
+<?php
+
+namespace App\Models;
+
+use Database\Factories\TagFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+
+class Tag extends Model
+{
+    /** @use HasFactory<TagFactory> */
+    use HasFactory;
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var list<string>
+     */
+    protected $fillable = [
+        'name',
+    ];
+
+    /**
+     * @return BelongsToMany<Product, $this>
+     */
+    public function products(): BelongsToMany
+    {
+        return $this->belongsToMany(Product::class);
+    }
+}
+
+// app/Stencil/TagForm.php
+<?php
+
+namespace App\Stencil;
+
+use Javaabu\Stencil\Components\Section;
+use Javaabu\Stencil\Fields\Select;
+use Javaabu\Stencil\Fields\TextInput;
+use Javaabu\Stencil\Form;
+
+class TagForm extends Form
+{
+    protected function definition(): array
+    {
+        return [
+            Section::make(__('Tag'))
+                ->columns(2)
+                ->schema([
+                    TextInput::make('name')
+                        ->label(__('Name'))
+                        ->required()
+                        ->maxLength(255),
+                    Select::make('products')
+                        ->label(__('Products'))
+                        ->multiple()
+                        ->relationship('products', 'name')
+                        ->searchable(),
+                ]),
+        ];
+    }
+}

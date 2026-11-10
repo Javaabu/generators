@@ -4,6 +4,4 @@ namespace Javaabu\Generators\Exceptions;
 
 use Exception;
 
-class ColumnDoesNotExistException extends Exception
-{
-}
+class ColumnDoesNotExistException extends Exception {}
