@@ -19,3 +19,4 @@ A new major for the Javaabu next-gen packages. See [docs/upgrading.md](docs/upgr
 - Dhivehi translations of the commands and of the generic phrases of the pages.
 - Removed: `generate:request`, the API generators and the per-controller auth generators.
 - Requires PHP 8.4+ and Laravel 12+.
+- Files the generators add to (service providers, config, routes) may have comments with quotes or braces, such as `// the app's own permissions`. These used to stop the command with "Unbalanced braces".

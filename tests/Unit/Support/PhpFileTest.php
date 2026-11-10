@@ -58,6 +58,47 @@ class PhpFileTest extends TestCase
     }
 
     #[Test]
+    public function it_appends_to_a_method_whose_comments_hold_quotes_and_braces(): void
+    {
+        $code = <<<'PHP'
+        <?php
+
+        class AppServiceProvider
+        {
+            public function boot(): void
+            {
+                // javaabu/cms's post types, and the app's {own} ones
+                /* a block comment's quote */
+                # a hash comment with a { brace
+                $this->registerPermissions();
+            }
+
+            /**
+             * The app's own permissions
+             */
+            protected function registerPermissions(): void
+            {
+                //
+            }
+        }
+        PHP;
+
+        $code = PhpFile::appendToMethod($code, 'boot', "Permissions::resource('products');");
+
+        $this->assertStringContainsString("        \$this->registerPermissions();\n\n        Permissions::resource('products');\n    }\n\n    /**", $code);
+    }
+
+    #[Test]
+    public function it_adds_an_array_entry_after_comments_with_quotes(): void
+    {
+        $code = "<?php\n\nreturn [\n    'guards' => [\n        // the admins' guard\n        'admin' => ['driver' => 'session'],\n    ],\n];\n";
+
+        $code = PhpFile::addArrayEntry($code, 'guards', 'customer', "'customer' => ['driver' => 'session'],");
+
+        $this->assertStringContainsString("        'admin' => ['driver' => 'session'],\n\n        'customer' => ['driver' => 'session'],\n    ],", $code);
+    }
+
+    #[Test]
     public function it_throws_when_the_method_is_missing(): void
     {
         $this->expectException(RuntimeException::class);

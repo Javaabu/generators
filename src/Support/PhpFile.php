@@ -151,6 +151,13 @@ class PhpFile
 
         for ($i = $open; $i < $length; $i++) {
             $char = $code[$i];
+            $comment_end = static::skipComment($code, $i);
+
+            if ($comment_end !== null) {
+                $i = $comment_end;
+
+                continue;
+            }
 
             if ($char === '\'' || $char === '"') {
                 $i = static::skipString($code, $i);
@@ -181,6 +188,13 @@ class PhpFile
 
         for ($i = $open; $i < $length; $i++) {
             $char = $code[$i];
+            $comment_end = static::skipComment($code, $i);
+
+            if ($comment_end !== null) {
+                $i = $comment_end;
+
+                continue;
+            }
 
             if ($char === '\'' || $char === '"') {
                 $i = static::skipString($code, $i);
@@ -202,6 +216,29 @@ class PhpFile
         }
 
         throw new RuntimeException('Unbalanced braces.');
+    }
+
+    /**
+     * Where the comment starting at $start ends, or null when no comment starts there.
+     * Comments may hold quotes and braces (`// the app's {id}`) that aren't code.
+     */
+    protected static function skipComment(string $code, int $start): ?int
+    {
+        $pair = substr($code, $start, 2);
+
+        if ($pair === '/*') {
+            $end = strpos($code, '*/', $start + 2);
+
+            return $end === false ? strlen($code) : $end + 1;
+        }
+
+        if ($pair !== '//' && ($code[$start] !== '#' || $pair === '#[')) {
+            return null;
+        }
+
+        $end = strpos($code, "\n", $start);
+
+        return $end === false ? strlen($code) : $end;
     }
 
     protected static function skipString(string $code, int $start): int
