@@ -100,51 +100,63 @@
     "repositories": [
         {
             "type": "vcs",
-            "url": "https://github.com/Javaabu/block-editor"
+            "url": "https://github.com/Javaabu/block-editor",
+            "no-api": true
         },
         {
             "type": "vcs",
-            "url": "https://github.com/Javaabu/bulk-actions"
+            "url": "https://github.com/Javaabu/bulk-actions",
+            "no-api": true
         },
         {
             "type": "vcs",
-            "url": "https://github.com/Javaabu/filters"
+            "url": "https://github.com/Javaabu/filters",
+            "no-api": true
         },
         {
             "type": "vcs",
-            "url": "https://github.com/Javaabu/forms"
+            "url": "https://github.com/Javaabu/forms",
+            "no-api": true
         },
         {
             "type": "vcs",
-            "url": "https://github.com/Javaabu/js-localization"
+            "url": "https://github.com/Javaabu/js-localization",
+            "no-api": true
         },
         {
             "type": "vcs",
-            "url": "https://github.com/Javaabu/manifest"
+            "url": "https://github.com/Javaabu/manifest",
+            "no-api": true
         },
         {
             "type": "vcs",
-            "url": "https://github.com/Javaabu/permissions"
+            "url": "https://github.com/Javaabu/permissions",
+            "no-api": true
         },
         {
             "type": "vcs",
-            "url": "https://github.com/Javaabu/stencil"
+            "url": "https://github.com/Javaabu/stencil",
+            "no-api": true
         },
         {
             "type": "vcs",
-            "url": "https://github.com/n4ff4h/auth"
+            "url": "https://github.com/n4ff4h/auth",
+            "no-api": true
         },
         {
             "type": "vcs",
-            "url": "https://github.com/n4ff4h/exports"
+            "url": "https://github.com/n4ff4h/exports",
+            "no-api": true
         },
         {
             "type": "vcs",
-            "url": "https://github.com/n4ff4h/mediapicker"
+            "url": "https://github.com/n4ff4h/mediapicker",
+            "no-api": true
         },
         {
             "type": "vcs",
-            "url": "https://github.com/n4ff4h/translatable"
+            "url": "https://github.com/n4ff4h/translatable",
+            "no-api": true
         }
     ],
     "scripts": {
