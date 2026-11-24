@@ -42,14 +42,14 @@
         "inertiajs/inertia-laravel": "^2.0",
         "javaabu/auth": "^3.0@dev",
         "javaabu/boost-javaabu-guidelines": "^1.4",
-        "javaabu/bulk-actions": "^1.0@dev",
+        "javaabu/bulk-actions": "^1.0@alpha",
         "javaabu/exports": "^2.0@dev",
-        "javaabu/filters": "^1.0@dev",
-        "javaabu/forms": "^2.0@dev",
-        "javaabu/manifest": "^1.0@dev",
+        "javaabu/filters": "^1.0@alpha",
+        "javaabu/forms": "^2.0@alpha",
+        "javaabu/manifest": "^1.0@alpha",
         "javaabu/mediapicker": "^1.0@dev",
-        "javaabu/permissions": "^3.0@dev",
-        "javaabu/stencil": "^1.0@dev",
+        "javaabu/permissions": "^3.0@alpha",
+        "javaabu/stencil": "^1.0@alpha",
         "javaabu/translatable": "^3.0@dev",
         "laravel/pint": "^1.24",
         "orchestra/testbench": "^10.0 || ^11.0",
@@ -98,46 +98,6 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/Javaabu/block-editor",
-            "no-api": true
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/Javaabu/bulk-actions",
-            "no-api": true
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/Javaabu/filters",
-            "no-api": true
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/Javaabu/forms",
-            "no-api": true
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/Javaabu/js-localization",
-            "no-api": true
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/Javaabu/manifest",
-            "no-api": true
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/Javaabu/permissions",
-            "no-api": true
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/Javaabu/stencil",
-            "no-api": true
-        },
         {
             "type": "vcs",
             "url": "https://github.com/n4ff4h/auth",

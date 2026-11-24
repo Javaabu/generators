@@ -12,11 +12,11 @@ importers:
         specifier: ^2.3.0
         version: 2.3.29(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@javaabu/forms':
-        specifier: github:Javaabu/react-forms#next-gen
-        version: https://codeload.github.com/Javaabu/react-forms/tar.gz/204e616e00c18a529902fa84f2cef168886f6061(@inertiajs/react@2.3.29(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+        specifier: ^0.1.1
+        version: 0.1.1(@inertiajs/react@2.3.29(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@javaabu/i18n':
-        specifier: github:Javaabu/i18n#build-on-git-install
-        version: https://codeload.github.com/Javaabu/i18n/tar.gz/76730212d6f0f1d87a78635ed6e005dd5713cbba(react@19.3.1)
+        specifier: ^0.1.0
+        version: 0.1.0(react@19.3.1)
       '@types/node':
         specifier: ^26.6.6
         version: 26.6.6
@@ -50,9 +50,8 @@ packages:
       react: ^16.9.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
       react-dom: ^16.9.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
-  '@javaabu/forms@https://codeload.github.com/Javaabu/react-forms/tar.gz/204e616e00c18a529902fa84f2cef168886f6061':
-    resolution: {tarball: https://codeload.github.com/Javaabu/react-forms/tar.gz/204e616e00c18a529902fa84f2cef168886f6061}
-    version: 0.0.0
+  '@javaabu/forms@0.1.1':
+    resolution: {integrity: sha512-Ug8w1l0035gtEdAUhk5ZyjTd3SvBqYpRF8x+j1M1MqdhAaHU1Bio8ILhZV6oCvU4hWcFDhd7cCKDAW3rsEPCeA==}
     engines: {node: '>=20.19'}
     peerDependencies:
       '@inertiajs/react': ^2.0.0 || ^3.0.0
@@ -68,9 +67,8 @@ packages:
       '@testing-library/react':
         optional: true
 
-  '@javaabu/i18n@https://codeload.github.com/Javaabu/i18n/tar.gz/76730212d6f0f1d87a78635ed6e005dd5713cbba':
-    resolution: {tarball: https://codeload.github.com/Javaabu/i18n/tar.gz/76730212d6f0f1d87a78635ed6e005dd5713cbba}
-    version: 0.0.0
+  '@javaabu/i18n@0.1.0':
+    resolution: {integrity: sha512-Mfar10Jt/kNQnB2xjgQeDVjg+t8NAZotohUVYnU6U36WufsKbhoqDzlI9bQaygapbXha9HaU4K4W+Uj+KPsmnw==}
     engines: {node: '>=20.19'}
     peerDependencies:
       react: ^18.0.0 || ^19.0.0
@@ -299,9 +297,9 @@ snapshots:
       - debug
       - supports-color
 
-  '@javaabu/forms@https://codeload.github.com/Javaabu/react-forms/tar.gz/204e616e00c18a529902fa84f2cef168886f6061(@inertiajs/react@2.3.29(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
+  '@javaabu/forms@0.1.1(@inertiajs/react@2.3.29(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
     dependencies:
-      '@javaabu/i18n': https://codeload.github.com/Javaabu/i18n/tar.gz/76730212d6f0f1d87a78635ed6e005dd5713cbba(react@19.3.1)
+      '@javaabu/i18n': 0.1.0(react@19.3.1)
       react: 19.3.1
       react-dom: 19.3.1(react@19.3.1)
     optionalDependencies:
@@ -309,7 +307,7 @@ snapshots:
     transitivePeerDependencies:
       - vue
 
-  '@javaabu/i18n@https://codeload.github.com/Javaabu/i18n/tar.gz/76730212d6f0f1d87a78635ed6e005dd5713cbba(react@19.3.1)':
+  '@javaabu/i18n@0.1.0(react@19.3.1)':
     optionalDependencies:
       react: 19.3.1
 

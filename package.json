@@ -14,8 +14,8 @@
   },
   "devDependencies": {
     "@inertiajs/react": "^2.3.0",
-    "@javaabu/forms": "github:Javaabu/react-forms#next-gen",
-    "@javaabu/i18n": "github:Javaabu/i18n#build-on-git-install",
+    "@javaabu/forms": "^0.1.1",
+    "@javaabu/i18n": "^0.1.0",
     "@types/node": "^26.6.6",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
