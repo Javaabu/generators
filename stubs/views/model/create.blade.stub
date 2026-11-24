@@ -1,9 +1,0 @@
-@extends('admin.{{pluralKebab}}.{{pluralKebab}}')
-
-@section('page-title', __('New {{singularTitle}}'))
-
-@section('content')
-    <x-forms::form :action="route('admin.{{pluralKebab}}.store')">
-    @include('admin.{{pluralKebab}}._form')
-    </x-forms::form>
-@endsection

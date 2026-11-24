@@ -4,6 +4,4 @@ namespace Javaabu\Generators\Exceptions;
 
 use Exception;
 
-class UnsupportedDbDriverException extends Exception
-{
-}
+class UnsupportedDbDriverException extends Exception {}

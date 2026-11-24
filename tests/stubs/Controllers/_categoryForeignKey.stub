@@ -1,3 +1,0 @@
-        if ($request->has('category')) {
-            $product->category()->associate($request->input('category'));
-        }

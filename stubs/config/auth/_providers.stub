@@ -1,4 +1,0 @@
-        '{{pluralSnake}}' => [
-            'driver' => 'eloquent',
-            'model' => App\Models\{{singularStudly}}::class,
-        ],

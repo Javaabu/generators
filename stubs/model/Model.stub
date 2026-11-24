@@ -1,0 +1,21 @@
+<?php
+
+namespace {{ namespace }};
+
+{{ imports }}
+
+class {{ class }} extends {{ base }}{{ implements }}
+{
+    {{ traits }}
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var list<string>
+     */
+    protected $fillable = [
+        {{ fillable }}
+    ];
+
+    {{ body }}
+}

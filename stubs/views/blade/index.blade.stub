@@ -1,0 +1,48 @@
+@extends('{{ layout }}')
+
+@section('title', __('{{ title }}'))
+
+@section('{{ section }}')
+    <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
+        <div>
+            {{ breadcrumbs }}
+            <h1 class="text-2xl font-semibold">{{ __('{{ title }}') }}</h1>
+        </div>
+
+        @can('create', {{ modelClass }}::class)
+            <x-forms::link-button :url="{{ createRoute }}" start-icon="plus">
+                {{ __('{{ newLabel }}') }}
+            </x-forms::link-button>
+        @endcan
+    </div>
+
+    <x-filters::bar :filters="$filters" />
+
+    <x-forms::table model="{{ plural }}">
+        <x-slot:bulk-form :action="$bulk_actions->getUrl()">
+            <x-bulk-actions::actions :actions="$bulk_actions" :paginator="${{ plural }}" />
+        </x-slot:bulk-form>
+
+        <x-slot:headers>
+            {{ headers }}
+        </x-slot:headers>
+
+        <x-slot:rows>
+            @forelse(${{ plural }} as ${{ variable }})
+                <x-forms::table.row :model="${{ variable }}" name="{{ plural }}">
+                    {{ cells }}
+                </x-forms::table.row>
+            @empty
+                <x-forms::table.empty-row :columns="{{ columns }}">
+                    {{ $filters->hasActiveFilters() ? __('No {{ pluralLower }} match these filters.') : __('No {{ pluralLower }} yet.') }}
+                </x-forms::table.empty-row>
+            @endforelse
+        </x-slot:rows>
+
+        @if(${{ plural }}->hasPages())
+            <x-slot:pagination>
+                <x-forms::pagination :paginator="${{ plural }}" />
+            </x-slot:pagination>
+        @endif
+    </x-forms::table>
+@endsection

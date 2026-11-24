@@ -3,67 +3,90 @@ title: Available generators
 sidebar_position: 2
 ---
 
-The available generators and what they generate are given below:
+Every command takes a table and [the same options](generating-a-resource.md#the-options). Without `--create`, it prints the code.
 
-```bash
-# creates database/factories/ProductFactory.php
-php artisan generate:factory products --create
+| Command | Writes |
+| --- | --- |
+| `generate:all {table}` | Everything below, except the export |
+| `generate:model {table}` | `app/Models/Product.php`: fillable fields, casts, relations, soft deletes, media collections, translations |
+| `generate:factory {table}` | `database/factories/ProductFactory.php` |
+| `generate:policy {table}` | `app/Policies/ProductPolicy.php`, a javaabu/permissions `ResourcePolicy` |
+| `generate:permissions {table}` | Adds `Permissions::resource('products', label: 'Products')` to `AppServiceProvider::boot()` |
+| `generate:filters {table}` | `app/Filters/ProductFilters.php` (javaabu/filters) |
+| `generate:bulk-actions {table}` | `app/BulkActions/ProductBulkActions.php` (javaabu/bulk-actions) |
+| `generate:form {table}` | `app/Stencil/ProductForm.php` (javaabu/stencil) |
+| `generate:controller {table}` | `app/Http/Controllers/Admin/ProductsController.php` |
+| `generate:routes {table}` | Adds the routes to `routes/admin.php` |
+| `generate:views {table}` | The Blade views, or with `--views=inertia` the React pages, their types and `app/Http/Resources/Admin/ProductResource.php` |
+| `generate:test {table}` | `tests/Feature/Admin/ProductsControllerTest.php` |
+| `generate:export {table}` | `app/Exports/ProductsExport.php` (javaabu/exports) |
+| `generate:auth {table}` | A javaabu/auth user type and the admin pages of its users: [User types](user-types.md) |
+| `generate:rollback` | Discards every uncommitted change: [Rolling back](rolling-back-changes.md) |
 
-# adds permissions to database/seeders/PermissionsSeeder.php
-php artisan generate:permissions products --create
+# What each part writes
 
-# creates app/Models/Product.php
-# adds subject type and morph map to app/Providers/AppServiceProvider.php
-php artisan generate:model products --create
+**Model.**
+- `$fillable` lists every column the form saves, foreign keys included.
+- `casts()` covers integers, decimals, booleans, dates, JSON arrays and enum classes.
+- Relations are found in the schema (see [Relations](relations.md)).
+- `SoftDeletes` when the table has `deleted_at`.
 
-# creates app/Policies/ProductPolicy.php
-php artisan generate:policy products --create
+**Factory.** A realistic value for every column. Foreign keys get a factory of the related model, unique columns unique values, and nullable columns sometimes `null`.
 
-# creates app/Http/Requests/ProductsRequest.php
-php artisan generate:request products --create
+**Policy and permissions.** The `ResourcePolicy` maps the abilities to the resource's permissions:
 
-# creates app/Exports/ProductsExport.php
-php artisan generate:export products --create
+| Ability | Permission |
+| --- | --- |
+| `viewAny`, `view` | `view_products` |
+| `create`, `update` | `edit_products` |
+| `delete` | `delete_products` |
+| `restore` | `delete_products` or `force_delete_products` |
+| `forceDelete` | `force_delete_products` |
 
-# creates app/Http/Controllers/Admin/ProductsController.php
-php artisan generate:controller products --create
+Laravel finds the policy by its name. `php artisan permissions:sync` writes the permissions.
 
-# adds routes to routes/admin.php
-php artisan generate:routes products --create
+**Filters.**
+- `search` over the text columns
+- selects for enums, foreign keys and many-to-many relations
+- yes/no filters for booleans
+- ranges for the number and date columns on the index table
+- `created_at`
+- trashed records for soft-deleting tables
+- a sort for each sortable column on the index table
 
-# creates app/Http/Controllers/Api/ProductsController.php
-# adds api routes to api.php routes file
-php artisan generate:api_controller products --create
+**Bulk actions.** Delete, plus restore and permanently delete for soft-deleting tables, each behind its permission. They run on the selected rows or on every row matching the filters.
 
-# creates tests/Feature/Controllers/Api/ProductsControllerTest.php
-php artisan generate:api_test products --create
+**Form.** One stencil field per form column, in a section. Stencil derives the validation rules from the fields: required, types, lengths, ranges, `in:` options, `unique`. So there is no FormRequest.
 
-# creates app/Http/Controllers/Api/ProductsController.php
-# adds api routes to api.php routes file
-# creates tests/Feature/Controllers/Api/ProductsControllerTest.php
-php artisan generate:api products --create {--except=<commands to skip>}
+**Controller.**
+- `index`, `create`, `store`, `show`, `edit`, `update` and `destroy`, plus `restore` and `forceDelete` for soft-deleting tables.
+- It authorizes every action with the policy.
+- `store` and `update` call `ProductForm::make()->model(...)->save()`: validation, filling, saving and syncing many-to-many relations and media.
 
-# creates tests/Feature/Controllers/Admin/ProductsControllerTest.php
-php artisan generate:test products --create
+**Routes.** In the admin group of `routes/admin.php`:
 
-# creates resources/views/admin/products/products.blade.php
-# creates resources/views/admin/products/_actions.blade.php
-# creates resources/views/admin/products/_form.blade.php
-# creates resources/views/admin/products/create.blade.php
-# creates resources/views/admin/products/edit.blade.php
-# creates resources/views/admin/products/_details.blade.php
-# creates resources/views/admin/products/show.blade.php
-# creates resources/views/admin/products/_bulk.blade.php
-# creates resources/views/admin/products/_list.blade.php
-# creates resources/views/admin/products/_table.blade.php
-# creates resources/views/admin/products/index.blade.php
-# adds links to app/Menus/AdminSidebar.php
-php artisan generate:views products --create
-
-# creates all files specified above except API controller
-# To skip a command, give comma separated list of commands
-php artisan generate:all products --create {--except=<commands to skip>}
-
-# To generate all except controllers and tests
-php artisan generate:all products --create --except=controller,test
+```php
+// Products
+Route::resource('products', ProductsController::class)->withTrashed(['show']);
+Route::patch('products/{product}/restore', [ProductsController::class, 'restore'])->withTrashed()->name('products.restore');
+Route::delete('products/{product}/force-delete', [ProductsController::class, 'forceDelete'])->withTrashed()->name('products.force-delete');
+Route::bulkActions('products', ProductBulkActions::class);
 ```
+
+**Views.** The index page has the filter bar, a sortable table with bulk actions and pagination. The create and edit pages render the form. The show page has an infolist and the edit, delete and restore buttons. See [Blade and Inertia React](blade-and-inertia.md).
+
+**Tests.** The tests cover listing, searching, every form, creating, validation, showing, updating, deleting, restoring, bulk deleting and the permission checks. See [The generated tests](../advanced-usage/the-generated-tests.md).
+
+**Export.**
+
+```php
+class ProductsExport extends ModelExport
+{
+    public function modelClass(): string
+    {
+        return Product::class;
+    }
+}
+```
+
+Return `ProductsExport::make($filters->apply(Product::query()))->download('products.xlsx')` from the index when `$request->filled('download')`, and add `export` to `<x-filters::bar>`.

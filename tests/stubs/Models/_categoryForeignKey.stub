@@ -1,7 +1,0 @@
-    /**
-     * A product belongs to a category
-     */
-    public function category(): BelongsTo
-    {
-        return $this->belongsTo(Category::class);
-    }

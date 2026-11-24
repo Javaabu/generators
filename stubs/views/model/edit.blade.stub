@@ -1,9 +1,0 @@
-@extends('admin.{{pluralKebab}}.{{pluralKebab}}')
-
-@section('page-title', __('Edit {{singularTitle}}'))
-
-@section('content')
-    <x-forms::form method="PATCH" :model="${{singularSnake}}" :action="route('admin.{{pluralKebab}}.update', ${{singularSnake}})">
-    @include('admin.{{pluralKebab}}._form')
-    </x-forms::form>
-@endsection

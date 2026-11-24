@@ -1,4 +1,0 @@
-            MenuItem::make(__('{{pluralTitle}}'))
-                ->controller(\App\Http\Controllers\Admin\{{pluralStudly}}Controller::class)
-                ->can('viewAny', \App\Models\{{singularStudly}}::class)
-                ->icon('{{icon}}'),

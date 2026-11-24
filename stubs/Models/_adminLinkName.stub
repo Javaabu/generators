@@ -1,9 +1,0 @@
-    /**
-     * Get the name for the admin link
-     *
-     * @return string
-     */
-    public function getAdminLinkNameAttribute(): string
-    {
-        return $this->{{attribute}};
-    }

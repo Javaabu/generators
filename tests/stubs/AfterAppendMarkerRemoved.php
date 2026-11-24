@@ -1,6 +1,0 @@
-<?php
-
-$plural = [
-    'category',
-    'product',
-];

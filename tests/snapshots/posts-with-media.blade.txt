@@ -1,0 +1,286 @@
+// app/Models/Post.php
+<?php
+
+namespace App\Models;
+
+use Database\Factories\PostFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Javaabu\Mediapicker\Concerns\InteractsWithAttachments;
+use Javaabu\Mediapicker\Contracts\HasAttachments;
+use Javaabu\Mediapicker\Support\FileTypes;
+use Spatie\MediaLibrary\MediaCollections\File;
+
+class Post extends Model implements HasAttachments
+{
+    /** @use HasFactory<PostFactory> */
+    use HasFactory;
+
+    use InteractsWithAttachments;
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var list<string>
+     */
+    protected $fillable = [
+        'title',
+        'published_at',
+        'excerpt',
+        'content',
+        'medium_content',
+        'tiny_content',
+    ];
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'published_at' => 'datetime',
+        ];
+    }
+
+    /**
+     * The media collections, picked from the media library.
+     */
+    public function registerAttachmentCollections(): void
+    {
+        $this->addAttachmentCollection('featured_image')
+            ->singleFile()
+            ->acceptsFile(fn (File $file) => FileTypes::isAllowed($file->mimeType, 'image'));
+
+        $this->addAttachmentCollection('gallery')
+            ->acceptsFile(fn (File $file) => FileTypes::isAllowed($file->mimeType, 'image'));
+
+        $this->addAttachmentCollection('attachments')
+            ->acceptsFile(fn (File $file) => FileTypes::isAllowed($file->mimeType, 'document'));
+    }
+}
+
+// app/Stencil/PostForm.php
+<?php
+
+namespace App\Stencil;
+
+use Javaabu\Mediapicker\Stencil\MediaPickerField;
+use Javaabu\Stencil\Components\Section;
+use Javaabu\Stencil\Fields\DateTimePicker;
+use Javaabu\Stencil\Fields\Textarea;
+use Javaabu\Stencil\Fields\TextInput;
+use Javaabu\Stencil\Form;
+
+class PostForm extends Form
+{
+    protected function definition(): array
+    {
+        return [
+            Section::make(__('Post'))
+                ->columns(2)
+                ->schema([
+                    TextInput::make('title')
+                        ->label(__('Title'))
+                        ->required()
+                        ->maxLength(255),
+                    DateTimePicker::make('published_at')->label(__('Published at')),
+                    Textarea::make('excerpt')
+                        ->label(__('Excerpt'))
+                        ->required()
+                        ->rows(4)
+                        ->maxLength(65535)
+                        ->columnSpanFull(),
+                    Textarea::make('content')
+                        ->label(__('Content'))
+                        ->rows(4)
+                        ->maxLength(65535)
+                        ->columnSpanFull(),
+                    Textarea::make('medium_content')
+                        ->label(__('Medium content'))
+                        ->rows(4)
+                        ->maxLength(65535)
+                        ->columnSpanFull(),
+                    Textarea::make('tiny_content')
+                        ->label(__('Tiny content'))
+                        ->rows(4)
+                        ->maxLength(65535)
+                        ->columnSpanFull(),
+                ]),
+            Section::make(__('Media'))
+                ->schema([
+                    MediaPickerField::make('featured_image')
+                        ->label(__('Featured image'))
+                        ->mediaType('image'),
+                    MediaPickerField::make('gallery')
+                        ->label(__('Gallery'))
+                        ->mediaType('image')
+                        ->multiple(),
+                    MediaPickerField::make('attachments')
+                        ->label(__('Attachments'))
+                        ->mediaType('document')
+                        ->multiple(),
+                ]),
+        ];
+    }
+}
+
+// resources/views/admin/posts/index.blade.php
+@extends('layouts.admin')
+
+@section('title', __('Posts'))
+
+@section('content')
+    <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
+        <div>
+            <h1 class="text-2xl font-semibold">{{ __('Posts') }}</h1>
+        </div>
+
+        @can('create', \App\Models\Post::class)
+            <x-forms::link-button :url="route('admin.posts.create')" start-icon="plus">
+                {{ __('New post') }}
+            </x-forms::link-button>
+        @endcan
+    </div>
+
+    <x-filters::bar :filters="$filters" />
+
+    <x-forms::table model="posts">
+        <x-slot:bulk-form :action="$bulk_actions->getUrl()">
+            <x-bulk-actions::actions :actions="$bulk_actions" :paginator="$posts" />
+        </x-slot:bulk-form>
+
+        <x-slot:headers>
+            <x-filters::heading :filters="$filters" sort="title" :label="__('Title')" />
+            <x-filters::heading :filters="$filters" sort="published_at" :label="__('Published at')" />
+        </x-slot:headers>
+
+        <x-slot:rows>
+            @forelse($posts as $post)
+                <x-forms::table.row :model="$post" name="posts">
+                    <x-forms::table.cell :label="__('Title')">
+                        @can('view', $post)
+                            <a href="{{ route('admin.posts.show', $post) }}" class="font-medium hover:underline">{{ $post->title }}</a>
+                        @else
+                            {{ $post->title }}
+                        @endcan
+                    </x-forms::table.cell>
+                    <x-forms::table.cell name="published_at" :label="__('Published at')" />
+                </x-forms::table.row>
+            @empty
+                <x-forms::table.empty-row :columns="3">
+                    {{ $filters->hasActiveFilters() ? __('No posts match these filters.') : __('No posts yet.') }}
+                </x-forms::table.empty-row>
+            @endforelse
+        </x-slot:rows>
+
+        @if($posts->hasPages())
+            <x-slot:pagination>
+                <x-forms::pagination :paginator="$posts" />
+            </x-slot:pagination>
+        @endif
+    </x-forms::table>
+@endsection
+
+// resources/views/admin/posts/create.blade.php
+@extends('layouts.admin')
+
+@section('title', __('New post'))
+
+@section('content')
+    <div class="mb-6">
+        <nav class="mb-1 flex gap-2 text-sm text-muted-foreground" aria-label="{{ __('Breadcrumb') }}">
+            <a href="{{ route('admin.posts.index') }}" class="hover:underline">{{ __('Posts') }}</a>
+        </nav>
+        <h1 class="text-2xl font-semibold">{{ __('New post') }}</h1>
+    </div>
+
+    {{ $form }}
+@endsection
+
+// resources/views/admin/posts/edit.blade.php
+@extends('layouts.admin')
+
+@section('title', __('Edit post'))
+
+@section('content')
+    <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
+        <div>
+            <nav class="mb-1 flex gap-2 text-sm text-muted-foreground" aria-label="{{ __('Breadcrumb') }}">
+                <a href="{{ route('admin.posts.index') }}" class="hover:underline">{{ __('Posts') }}</a>
+            </nav>
+            <h1 class="text-2xl font-semibold">{{ __('Edit post') }}</h1>
+        </div>
+
+        <x-forms::link-button :url="route('admin.posts.show', $post)" color="light" start-icon="eye">
+            {{ __('View') }}
+        </x-forms::link-button>
+    </div>
+
+    {{ $form }}
+@endsection
+
+// resources/views/admin/posts/show.blade.php
+@extends('layouts.admin')
+
+@section('title', $post->title)
+
+@section('content')
+    <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
+        <div>
+            <nav class="mb-1 flex gap-2 text-sm text-muted-foreground" aria-label="{{ __('Breadcrumb') }}">
+                <a href="{{ route('admin.posts.index') }}" class="hover:underline">{{ __('Posts') }}</a>
+            </nav>
+            <h1 class="text-2xl font-semibold">{{ $post->title }}</h1>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+            @can('update', $post)
+                <x-forms::link-button :url="route('admin.posts.edit', $post)" start-icon="pencil">
+                    {{ __('Edit') }}
+                </x-forms::link-button>
+            @endcan
+
+            @can('delete', $post)
+                <form method="POST" action="{{ route('admin.posts.destroy', $post) }}" onsubmit="return confirm(@js(__('Delete this post?')))">
+                    @csrf
+                    @method('DELETE')
+
+                    <x-forms::submit color="danger" start-icon="trash-2">
+                        {{ __('Delete') }}
+                    </x-forms::submit>
+                </form>
+            @endcan
+        </div>
+    </div>
+
+    <x-forms::infolist :title="__('Post')" :model="$post">
+        <x-forms::text-entry name="title" :label="__('Title')" />
+        <x-forms::text-entry name="published_at" :label="__('Published at')" />
+        <x-forms::text-entry name="excerpt" :label="__('Excerpt')" multiline />
+        <x-forms::text-entry name="content" :label="__('Content')" multiline />
+        <x-forms::text-entry name="medium_content" :label="__('Medium content')" multiline />
+        <x-forms::text-entry name="tiny_content" :label="__('Tiny content')" multiline />
+    </x-forms::infolist>
+
+    <x-forms::card :title="__('Featured image')" class="mt-6">
+        <x-mediapicker::image :model="$post" collection="featured_image" />
+    </x-forms::card>
+
+    <x-forms::card :title="__('Gallery')" class="mt-6">
+        <div class="grid grid-cols-2 gap-4 md:grid-cols-4">
+            @foreach($post->getAttachments('gallery') as $attachment)
+                <x-mediapicker::image :attachment="$attachment" />
+            @endforeach
+        </div>
+    </x-forms::card>
+
+    <x-forms::card :title="__('Attachments')" class="mt-6">
+        <ul class="list-disc ps-6">
+            @foreach($post->getAttachmentMedia('attachments') as $media)
+                <li><a href="{{ $media->getUrl() }}" class="hover:underline">{{ $media->name }}</a></li>
+            @endforeach
+        </ul>
+    </x-forms::card>
+@endsection

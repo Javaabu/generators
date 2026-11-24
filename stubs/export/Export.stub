@@ -1,0 +1,13 @@
+<?php
+
+namespace {{ namespace }};
+
+{{ imports }}
+
+class {{ class }} extends ModelExport
+{
+    public function modelClass(): string
+    {
+        return {{ model }}::class;
+    }
+}

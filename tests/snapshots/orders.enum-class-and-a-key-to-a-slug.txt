@@ -1,0 +1,382 @@
+// app/Models/Order.php
+<?php
+
+namespace App\Models;
+
+use Database\Factories\OrderFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Javaabu\Generators\Tests\Fixtures\Enums\OrderStatuses;
+
+class Order extends Model
+{
+    /** @use HasFactory<OrderFactory> */
+    use HasFactory;
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var list<string>
+     */
+    protected $fillable = [
+        'order_no',
+        'category_id',
+        'product_slug',
+        'status',
+    ];
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'status' => OrderStatuses::class,
+        ];
+    }
+
+    /**
+     * @return BelongsTo<Product, $this>
+     */
+    public function product(): BelongsTo
+    {
+        return $this->belongsTo(Product::class, 'product_slug', 'slug');
+    }
+
+    /**
+     * @return BelongsTo<Category, $this>
+     */
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+    /**
+     * @return HasMany<Payment, $this>
+     */
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class);
+    }
+}
+
+// database/factories/OrderFactory.php
+<?php
+
+namespace Database\Factories;
+
+use App\Models\Category;
+use App\Models\Order;
+use App\Models\Product;
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Javaabu\Generators\Tests\Fixtures\Enums\OrderStatuses;
+
+/**
+ * @extends Factory<Order>
+ */
+class OrderFactory extends Factory
+{
+    /**
+     * The name of the factory's corresponding model.
+     *
+     * @var class-string<Order>
+     */
+    protected $model = Order::class;
+
+    /**
+     * Define the model's default state.
+     *
+     * @return array<string, mixed>
+     */
+    public function definition(): array
+    {
+        return [
+            'order_no' => fake()->text(50),
+            'category_id' => Category::factory(),
+            'product_slug' => fn () => Product::factory()->create()->slug,
+            'status' => fake()->randomElement(OrderStatuses::cases()),
+        ];
+    }
+}
+
+// app/Stencil/OrderForm.php
+<?php
+
+namespace App\Stencil;
+
+use Javaabu\Generators\Tests\Fixtures\Enums\OrderStatuses;
+use Javaabu\Stencil\Components\Section;
+use Javaabu\Stencil\Fields\Select;
+use Javaabu\Stencil\Fields\TextInput;
+use Javaabu\Stencil\Form;
+
+class OrderForm extends Form
+{
+    protected function definition(): array
+    {
+        return [
+            Section::make(__('Order'))
+                ->columns(2)
+                ->schema([
+                    TextInput::make('order_no')
+                        ->label(__('Order no'))
+                        ->required()
+                        ->maxLength(255),
+                    Select::make('category_id')
+                        ->label(__('Category'))
+                        ->required()
+                        ->relationship('category', 'name')
+                        ->searchable(),
+                    Select::make('product_slug')
+                        ->label(__('Product'))
+                        ->required()
+                        ->relationship('product', 'name')
+                        ->searchable(),
+                    Select::make('status')
+                        ->label(__('Status'))
+                        ->required()
+                        ->options(OrderStatuses::class),
+                ]),
+        ];
+    }
+}
+
+// tests/Feature/Admin/OrdersControllerTest.php
+<?php
+
+namespace Tests\Feature\Admin;
+
+use App\Models\Category;
+use App\Models\Order;
+use App\Models\Product;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Javaabu\Generators\Tests\Fixtures\Enums\OrderStatuses;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\TestCase;
+
+class OrdersControllerTest extends TestCase
+{
+    use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->artisan('permissions:sync');
+    }
+
+    #[Test]
+    public function it_lists_the_orders(): void
+    {
+        $order = Order::factory()->create();
+
+        $this->actingAsAdmin('view_orders');
+
+        $this->get(route('admin.orders.index'))
+            ->assertOk()
+            ->assertSee($order->order_no);
+    }
+
+    #[Test]
+    public function it_does_not_list_the_orders_without_permission(): void
+    {
+        $this->actingAsAdmin();
+
+        $this->get(route('admin.orders.index'))
+            ->assertForbidden();
+    }
+
+    #[Test]
+    public function it_searches_the_orders(): void
+    {
+        $order = Order::factory()->create(['order_no' => 'ރަސްމީ ދުވަސް']);
+        $other = Order::factory()->create(['order_no' => 'Something else']);
+
+        $this->actingAsAdmin('view_orders');
+
+        $this->get(route('admin.orders.index', ['search' => 'ރަސްމީ']))
+            ->assertOk()
+            ->assertSee('ރަސްމީ ދުވަސް')
+            ->assertDontSee('Something else');
+    }
+
+    #[Test]
+    public function it_shows_the_new_order_form(): void
+    {
+        $this->actingAsAdmin('edit_orders');
+
+        $this->get(route('admin.orders.create'))
+            ->assertOk()
+            ->assertSee(__('New order'));
+    }
+
+    #[Test]
+    public function it_creates_a_order(): void
+    {
+        $category = Category::factory()->create();
+        $other_category = Category::factory()->create();
+        $product = Product::factory()->create();
+        $other_product = Product::factory()->create();
+
+        $this->actingAsAdmin('edit_orders');
+
+        $this->post(route('admin.orders.store'), [
+            'order_no' => 'ރަސްމީ',
+            'category_id' => $category->id,
+            'product_slug' => $product->slug,
+            'status' => OrderStatuses::Pending->value,
+        ])
+            ->assertRedirect()
+            ->assertSessionHasNoErrors();
+
+        $this->assertDatabaseHas('orders', [
+            'order_no' => 'ރަސްމީ',
+            'category_id' => $category->id,
+            'product_slug' => $product->slug,
+            'status' => OrderStatuses::Pending->value,
+        ]);
+    }
+
+    #[Test]
+    public function it_validates_new_orders(): void
+    {
+        $this->actingAsAdmin('edit_orders');
+
+        $this->post(route('admin.orders.store'), [
+            'order_no' => [],
+            'category_id' => -1,
+            'product_slug' => 'ބަދަލު',
+            'status' => 'ބަދަލު',
+        ])
+            ->assertSessionHasErrors(['order_no', 'category_id', 'product_slug', 'status']);
+
+        $this->assertDatabaseCount('orders', 0);
+    }
+
+    #[Test]
+    public function it_does_not_create_orders_without_permission(): void
+    {
+        $this->actingAsAdmin('view_orders');
+
+        $this->post(route('admin.orders.store'), [])
+            ->assertForbidden();
+
+        $this->assertDatabaseCount('orders', 0);
+    }
+
+    #[Test]
+    public function it_shows_a_order(): void
+    {
+        $order = Order::factory()->create();
+
+        $this->actingAsAdmin('view_orders');
+
+        $this->get(route('admin.orders.show', $order))
+            ->assertOk()
+            ->assertSee($order->order_no);
+    }
+
+    #[Test]
+    public function it_shows_the_edit_order_form(): void
+    {
+        $order = Order::factory()->create();
+
+        $this->actingAsAdmin('edit_orders');
+
+        $this->get(route('admin.orders.edit', $order))
+            ->assertOk()
+            ->assertSee(__('Edit order'));
+    }
+
+    #[Test]
+    public function it_updates_a_order(): void
+    {
+        $category = Category::factory()->create();
+        $other_category = Category::factory()->create();
+        $product = Product::factory()->create();
+        $other_product = Product::factory()->create();
+
+        $order = Order::factory()->create();
+
+        $this->actingAsAdmin('edit_orders');
+
+        $this->patch(route('admin.orders.update', $order), [
+            'order_no' => 'ދިވެހި',
+            'category_id' => $other_category->id,
+            'product_slug' => $other_product->slug,
+            'status' => OrderStatuses::Paid->value,
+        ])
+            ->assertRedirect()
+            ->assertSessionHasNoErrors();
+
+        $this->assertDatabaseHas('orders', [
+            'id' => $order->id,
+            'order_no' => 'ދިވެހި',
+            'category_id' => $other_category->id,
+            'product_slug' => $other_product->slug,
+            'status' => OrderStatuses::Paid->value,
+        ]);
+    }
+
+    #[Test]
+    public function it_does_not_update_orders_without_permission(): void
+    {
+        $order = Order::factory()->create();
+
+        $this->actingAsAdmin('view_orders');
+
+        $this->patch(route('admin.orders.update', $order), [])
+            ->assertForbidden();
+    }
+
+    #[Test]
+    public function it_deletes_a_order(): void
+    {
+        $order = Order::factory()->create();
+
+        $this->actingAsAdmin('delete_orders');
+
+        $this->delete(route('admin.orders.destroy', $order))
+            ->assertRedirect(route('admin.orders.index'));
+
+        $this->assertModelMissing($order);
+    }
+
+    #[Test]
+    public function it_deletes_orders_in_bulk(): void
+    {
+        $orders = Order::factory()->count(2)->create();
+
+        $this->actingAsAdmin('view_orders', 'delete_orders');
+
+        $this->postJson(route('admin.orders.bulk'), [
+            'action' => 'delete',
+            'orders' => $orders->pluck('id')->all(),
+        ])
+            ->assertOk()
+            ->assertJson(['succeeded' => 2]);
+
+        $orders->each(fn (Order $record) => $this->assertModelMissing($record));
+    }
+
+    /**
+     * Log in as a user of the admin area with these permissions.
+     */
+    protected function actingAsAdmin(string ...$permissions): User
+    {
+        $user = User::factory()->create();
+
+        if ($permissions) {
+            $user->givePermissionTo($permissions);
+        }
+
+        $this->actingAs($user);
+
+        return $user;
+    }
+}

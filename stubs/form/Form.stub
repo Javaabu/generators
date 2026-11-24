@@ -1,0 +1,15 @@
+<?php
+
+namespace {{ namespace }};
+
+{{ imports }}
+
+class {{ class }} extends Form
+{
+    protected function definition(): array
+    {
+        return [
+            {{ schema }}
+        ];
+    }
+}

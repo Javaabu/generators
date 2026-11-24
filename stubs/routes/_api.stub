@@ -1,5 +1,0 @@
-        /**
-         * {{pluralTitle}}
-         */
-        Route::get('{{pluralKebab}}', [{{pluralStudly}}Controller::class, 'index'])->name('{{pluralKebab}}.index');
-        Route::get('{{pluralKebab}}/{id}', [{{pluralStudly}}Controller::class, 'show'])->name('{{pluralKebab}}.show');

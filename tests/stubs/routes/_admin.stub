@@ -1,5 +1,0 @@
-    /**
-     * Categories
-     */
-    Route::match(['PUT', 'PATCH'], 'categories', [CategoriesController::class, 'bulk'])->name('categories.bulk');
-    Route::resource('categories', CategoriesController::class);

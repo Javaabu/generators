@@ -1,0 +1,20 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+
+/*
+|--------------------------------------------------------------------------
+| Admin routes
+|--------------------------------------------------------------------------
+|
+| javaabu/generators adds resource routes above the marker comment. This
+| file is loaded from routes/web.php.
+|
+*/
+
+Route::middleware({{ middleware }})
+    ->prefix('{{ prefix }}')
+    ->name('{{ name }}')
+    ->group(function () {
+        // generators: routes
+    });

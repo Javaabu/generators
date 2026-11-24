@@ -1,9 +1,0 @@
-        /**
-         * Products permissions
-         */
-        'products' => [
-            'view_products' => 'View products',
-            'edit_products' => 'Edit products',
-            'delete_products' => 'Delete products',
-            'force_delete_products' => 'Permanently delete products',
-        ],

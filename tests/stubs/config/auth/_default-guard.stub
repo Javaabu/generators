@@ -1,1 +1,0 @@
-'guard' => env('AUTH_GUARD', 'web_customer'),

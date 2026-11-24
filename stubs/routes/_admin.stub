@@ -1,5 +1,0 @@
-    /**
-     * {{pluralTitle}}
-     */
-    Route::match(['PUT', 'PATCH'], '{{pluralKebab}}', [{{pluralStudly}}Controller::class, 'bulk'])->name('{{pluralKebab}}.bulk');
-    Route::resource('{{pluralKebab}}', {{pluralStudly}}Controller::class);

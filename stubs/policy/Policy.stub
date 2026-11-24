@@ -1,0 +1,17 @@
+<?php
+
+namespace {{ namespace }};
+
+{{ imports }}
+
+/**
+ * Authorizes {{pluralLower}} with the {{ permissions }} permissions.
+ */
+class {{ class }} extends ResourcePolicy
+{
+    /**
+     * The resource part of the permission names.
+     */
+    protected string $resource = '{{ resource }}';
+    {{ guard }}
+}

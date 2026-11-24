@@ -1,5 +1,5 @@
 {
     "name": "Generators",
-    "description": "Laravel generators on steroids",
-    "version": "1"
+    "description": "Generate a complete, tested Laravel admin resource from a database table, built on the Javaabu next-gen packages",
+    "version": "2"
 }

@@ -1,8 +1,0 @@
-    /**
-     * Products
-     */
-    Route::match(['PUT', 'PATCH'], 'products', [ProductsController::class, 'bulk'])->name('products.bulk');
-    Route::get('products/trash', [ProductsController::class, 'trash'])->name('products.trash');
-    Route::post('products/{product}/restore', [ProductsController::class, 'restore'])->name('products.restore')->withTrashed();
-    Route::delete('products/{product}/force-delete', [ProductsController::class, 'forceDelete'])->name('products.force-delete')->withTrashed();
-    Route::resource('products', ProductsController::class);

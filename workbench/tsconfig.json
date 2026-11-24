@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "types": ["node"],
+    "paths": {
+      "@javaabu/stencil": ["../vendor/javaabu/stencil/resources/js"],
+      "@javaabu/stencil/*": ["../vendor/javaabu/stencil/resources/js/*"],
+      "@javaabu/filters": ["../vendor/javaabu/filters/resources/js"],
+      "@javaabu/filters/*": ["../vendor/javaabu/filters/resources/js/*"],
+      "@javaabu/bulk-actions": ["../vendor/javaabu/bulk-actions/resources/js"],
+      "@javaabu/bulk-actions/*": ["../vendor/javaabu/bulk-actions/resources/js/*"],
+      "@javaabu/mediapicker": ["./types/mediapicker.d.ts"]
+    }
+  },
+  "include": ["../build/app/resources/js/pages", "./types"]
+}

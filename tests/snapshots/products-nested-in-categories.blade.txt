@@ -1,0 +1,670 @@
+// app/Http/Controllers/Admin/ProductsController.php
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\BulkActions\ProductBulkActions;
+use App\Filters\ProductFilters;
+use App\Http\Controllers\Controller;
+use App\Models\Category;
+use App\Models\Product;
+use App\Stencil\ProductForm;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
+
+class ProductsController extends Controller
+{
+    /**
+     * List the products.
+     */
+    public function index(Request $request, Category $category): View
+    {
+        Gate::authorize('viewAny', Product::class);
+
+        $filters = ProductFilters::make();
+
+        $products = $filters->apply(Product::query()->whereBelongsTo($category, 'category'))
+            ->paginate($request->integer('per_page', 20))
+            ->withQueryString();
+
+        return view('admin.products.index', [
+            'category' => $category,
+            'products' => $products,
+            'filters' => $filters,
+            'bulk_actions' => ProductBulkActions::make()->paginator($products),
+        ]);
+    }
+
+    /**
+     * Show the form for a new product.
+     */
+    public function create(Category $category): View
+    {
+        Gate::authorize('create', Product::class);
+
+        return view('admin.products.create', [
+            'category' => $category,
+            'form' => ProductForm::make()->model(Product::class)->action(route('admin.categories.products.store', $category)),
+        ]);
+    }
+
+    /**
+     * Save a new product.
+     */
+    public function store(Category $category): RedirectResponse
+    {
+        Gate::authorize('create', Product::class);
+
+        $product = ProductForm::make()->model((new Product)->category()->associate($category))->save();
+
+        return redirect(route('admin.categories.products.show', [$category, $product]))
+            ->with('status', __('Product created.'));
+    }
+
+    /**
+     * Show a product.
+     */
+    public function show(Category $category, Product $product): View
+    {
+        Gate::authorize('view', $product);
+
+        $product->load(['tags']);
+
+        return view('admin.products.show', [
+            'category' => $category,
+            'product' => $product,
+        ]);
+    }
+
+    /**
+     * Show the form for editing a product.
+     */
+    public function edit(Category $category, Product $product): View
+    {
+        Gate::authorize('update', $product);
+
+        return view('admin.products.edit', [
+            'category' => $category,
+            'product' => $product,
+            'form' => ProductForm::make()->model($product)->action(route('admin.categories.products.update', [$category, $product])),
+        ]);
+    }
+
+    /**
+     * Save the changes to a product.
+     */
+    public function update(Category $category, Product $product): RedirectResponse
+    {
+        Gate::authorize('update', $product);
+
+        ProductForm::make()->model($product)->save();
+
+        return redirect(route('admin.categories.products.show', [$category, $product]))
+            ->with('status', __('Product updated.'));
+    }
+
+    /**
+     * Delete a product.
+     */
+    public function destroy(Category $category, Product $product): RedirectResponse
+    {
+        Gate::authorize('delete', $product);
+
+        $product->delete();
+
+        return redirect(route('admin.categories.products.index', $category))
+            ->with('status', __('Product deleted.'));
+    }
+
+    /**
+     * Restore a deleted product.
+     */
+    public function restore(Category $category, Product $product): RedirectResponse
+    {
+        Gate::authorize('restore', $product);
+
+        $product->restore();
+
+        return redirect(route('admin.categories.products.show', [$category, $product]))
+            ->with('status', __('Product restored.'));
+    }
+
+    /**
+     * Permanently delete a product.
+     */
+    public function forceDelete(Category $category, Product $product): RedirectResponse
+    {
+        Gate::authorize('forceDelete', $product);
+
+        $product->forceDelete();
+
+        return redirect(route('admin.categories.products.index', $category))
+            ->with('status', __('Product permanently deleted.'));
+    }
+}
+
+// app/BulkActions/ProductBulkActions.php
+<?php
+
+namespace App\BulkActions;
+
+use App\Filters\ProductFilters;
+use App\Models\Category;
+use App\Models\Product;
+use Javaabu\BulkActions\Actions\DeleteAction;
+use Javaabu\BulkActions\Actions\ForceDeleteAction;
+use Javaabu\BulkActions\Actions\RestoreAction;
+use Javaabu\BulkActions\BulkActions;
+
+class ProductBulkActions extends BulkActions
+{
+    protected ?string $model = Product::class;
+
+    protected function setUp(): void
+    {
+        $this->filters(ProductFilters::class);
+
+        // only the products of the category in the URL
+        $this->query(fn () => Product::query()->whereBelongsTo($this->category(), 'category'));
+        $this->url(fn () => route('admin.categories.products.bulk', $this->category()));
+    }
+
+    protected function actions(): array
+    {
+        return [
+            DeleteAction::make()->can('delete_products'),
+            RestoreAction::make()->can('delete_products'),
+            ForceDeleteAction::make()->can('force_delete_products'),
+        ];
+    }
+
+    /**
+     * The category in the URL.
+     */
+    protected function category(): Category
+    {
+        $category = request()->route('category');
+
+        if ($category instanceof Category) {
+            return $category;
+        }
+
+        return Category::query()->where('id', $category)->firstOrFail();
+    }
+}
+
+// routes/admin.php
+// Products
+Route::resource('categories.products', ProductsController::class)->scoped()->withTrashed(['show']);
+Route::patch('categories/{category}/products/{product}/restore', [ProductsController::class, 'restore'])->scopeBindings()->withTrashed()->name('categories.products.restore');
+Route::delete('categories/{category}/products/{product}/force-delete', [ProductsController::class, 'forceDelete'])->scopeBindings()->withTrashed()->name('categories.products.force-delete');
+Route::bulkActions('categories/{category}/products', ProductBulkActions::class, ['name' => 'categories.products.bulk']);
+// routes/web.php
+require __DIR__ . '/admin.php';
+// resources/views/admin/products/index.blade.php
+@extends('layouts.admin')
+
+@section('title', __('Products'))
+
+@section('content')
+    <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
+        <div>
+            <nav class="mb-1 flex gap-2 text-sm text-muted-foreground" aria-label="{{ __('Breadcrumb') }}">
+                <span>{{ $category->name }}</span>
+            </nav>
+            <h1 class="text-2xl font-semibold">{{ __('Products') }}</h1>
+        </div>
+
+        @can('create', \App\Models\Product::class)
+            <x-forms::link-button :url="route('admin.categories.products.create', $category)" start-icon="plus">
+                {{ __('New product') }}
+            </x-forms::link-button>
+        @endcan
+    </div>
+
+    <x-filters::bar :filters="$filters" />
+
+    <x-forms::table model="products">
+        <x-slot:bulk-form :action="$bulk_actions->getUrl()">
+            <x-bulk-actions::actions :actions="$bulk_actions" :paginator="$products" />
+        </x-slot:bulk-form>
+
+        <x-slot:headers>
+            <x-filters::heading :filters="$filters" sort="name" :label="__('Name')" />
+            <x-filters::heading :filters="$filters" sort="price" :label="__('Price')" />
+        </x-slot:headers>
+
+        <x-slot:rows>
+            @forelse($products as $product)
+                <x-forms::table.row :model="$product" name="products">
+                    <x-forms::table.cell :label="__('Name')">
+                        @can('view', $product)
+                            <a href="{{ route('admin.categories.products.show', [$category, $product]) }}" class="font-medium hover:underline">{{ $product->name }}</a>
+                        @else
+                            {{ $product->name }}
+                        @endcan
+                    </x-forms::table.cell>
+                    <x-forms::table.cell name="price" :label="__('Price')" />
+                </x-forms::table.row>
+            @empty
+                <x-forms::table.empty-row :columns="3">
+                    {{ $filters->hasActiveFilters() ? __('No products match these filters.') : __('No products yet.') }}
+                </x-forms::table.empty-row>
+            @endforelse
+        </x-slot:rows>
+
+        @if($products->hasPages())
+            <x-slot:pagination>
+                <x-forms::pagination :paginator="$products" />
+            </x-slot:pagination>
+        @endif
+    </x-forms::table>
+@endsection
+
+// resources/views/admin/products/create.blade.php
+@extends('layouts.admin')
+
+@section('title', __('New product'))
+
+@section('content')
+    <div class="mb-6">
+        <nav class="mb-1 flex gap-2 text-sm text-muted-foreground" aria-label="{{ __('Breadcrumb') }}">
+            <span>{{ $category->name }}</span>
+            <span aria-hidden="true">/</span>
+            <a href="{{ route('admin.categories.products.index', $category) }}" class="hover:underline">{{ __('Products') }}</a>
+        </nav>
+        <h1 class="text-2xl font-semibold">{{ __('New product') }}</h1>
+    </div>
+
+    {{ $form }}
+@endsection
+
+// resources/views/admin/products/edit.blade.php
+@extends('layouts.admin')
+
+@section('title', __('Edit product'))
+
+@section('content')
+    <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
+        <div>
+            <nav class="mb-1 flex gap-2 text-sm text-muted-foreground" aria-label="{{ __('Breadcrumb') }}">
+                <span>{{ $category->name }}</span>
+                <span aria-hidden="true">/</span>
+                <a href="{{ route('admin.categories.products.index', $category) }}" class="hover:underline">{{ __('Products') }}</a>
+            </nav>
+            <h1 class="text-2xl font-semibold">{{ __('Edit product') }}</h1>
+        </div>
+
+        <x-forms::link-button :url="route('admin.categories.products.show', [$category, $product])" color="light" start-icon="eye">
+            {{ __('View') }}
+        </x-forms::link-button>
+    </div>
+
+    {{ $form }}
+@endsection
+
+// resources/views/admin/products/show.blade.php
+@extends('layouts.admin')
+
+@section('title', $product->name)
+
+@section('content')
+    <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
+        <div>
+            <nav class="mb-1 flex gap-2 text-sm text-muted-foreground" aria-label="{{ __('Breadcrumb') }}">
+                <span>{{ $category->name }}</span>
+                <span aria-hidden="true">/</span>
+                <a href="{{ route('admin.categories.products.index', $category) }}" class="hover:underline">{{ __('Products') }}</a>
+            </nav>
+            <h1 class="text-2xl font-semibold">{{ $product->name }}</h1>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+            @if($product->trashed())
+                @can('restore', $product)
+                    <form method="POST" action="{{ route('admin.categories.products.restore', [$category, $product]) }}">
+                        @csrf
+                        @method('PATCH')
+
+                        <x-forms::submit color="success">
+                            {{ __('Restore') }}
+                        </x-forms::submit>
+                    </form>
+                @endcan
+
+                @can('forceDelete', $product)
+                    <form method="POST" action="{{ route('admin.categories.products.force-delete', [$category, $product]) }}" onsubmit="return confirm(@js(__('Permanently delete this product? This cannot be undone.')))">
+                        @csrf
+                        @method('DELETE')
+
+                        <x-forms::submit color="danger" start-icon="trash-2">
+                            {{ __('Delete permanently') }}
+                        </x-forms::submit>
+                    </form>
+                @endcan
+            @else
+                @can('update', $product)
+                    <x-forms::link-button :url="route('admin.categories.products.edit', [$category, $product])" start-icon="pencil">
+                        {{ __('Edit') }}
+                    </x-forms::link-button>
+                @endcan
+
+                @can('delete', $product)
+                    <form method="POST" action="{{ route('admin.categories.products.destroy', [$category, $product]) }}" onsubmit="return confirm(@js(__('Delete this product?')))">
+                        @csrf
+                        @method('DELETE')
+
+                        <x-forms::submit color="danger" start-icon="trash-2">
+                            {{ __('Delete') }}
+                        </x-forms::submit>
+                    </form>
+                @endcan
+            @endif
+        </div>
+    </div>
+
+    @if($product->trashed())
+        <x-forms::alert type="warning" class="mb-6">
+            {{ __('This product is deleted.') }}
+        </x-forms::alert>
+    @endif
+
+    <x-forms::infolist :title="__('Product')" :model="$product">
+        <x-forms::text-entry name="name" :label="__('Name')" />
+        <x-forms::text-entry name="address" :label="__('Address')" />
+        <x-forms::text-entry name="slug" :label="__('Slug')" />
+        <x-forms::text-entry name="description" :label="__('Description')" multiline />
+        <x-forms::text-entry name="price" :label="__('Price')" />
+        <x-forms::text-entry name="stock" :label="__('Stock')" />
+        <x-forms::boolean-entry name="on_sale" :label="__('On sale')" />
+        <x-forms::text-entry name="features" :label="__('Features')" multiline />
+        <x-forms::text-entry name="published_at" :label="__('Published at')" />
+        <x-forms::text-entry name="expire_at" :label="__('Expire at')" />
+        <x-forms::text-entry name="released_on" :label="__('Released on')" />
+        <x-forms::text-entry name="sale_time" :label="__('Sale time')" />
+        <x-forms::text-entry name="status" :label="__('Status')" />
+        <x-forms::text-entry :label="__('Category')" :value="$product->category?->name" />
+        <x-forms::text-entry name="manufactured_year" :label="__('Manufactured year')" />
+        <x-forms::text-entry :label="__('Tags')" :value="$product->tags->pluck('name')->implode(', ')" />
+    </x-forms::infolist>
+@endsection
+
+// tests/Feature/Admin/ProductsControllerTest.php
+<?php
+
+namespace Tests\Feature\Admin;
+
+use App\Models\Category;
+use App\Models\Product;
+use App\Models\Tag;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\TestCase;
+
+class ProductsControllerTest extends TestCase
+{
+    use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->artisan('permissions:sync');
+    }
+
+    #[Test]
+    public function it_lists_the_products(): void
+    {
+        $category = Category::factory()->create();
+        $product = Product::factory()->for($category, 'category')->create();
+
+        $this->actingAsAdmin('view_products');
+
+        $this->get(route('admin.categories.products.index', $category))
+            ->assertOk()
+            ->assertSee($product->name);
+    }
+
+    #[Test]
+    public function it_does_not_list_the_products_without_permission(): void
+    {
+        $category = Category::factory()->create();
+        $this->actingAsAdmin();
+
+        $this->get(route('admin.categories.products.index', $category))
+            ->assertForbidden();
+    }
+
+    #[Test]
+    public function it_searches_the_products(): void
+    {
+        $category = Category::factory()->create();
+        $product = Product::factory()->for($category, 'category')->create(['name' => 'ރަސްމީ ދުވަސް']);
+        $other = Product::factory()->for($category, 'category')->create(['name' => 'Something else']);
+
+        $this->actingAsAdmin('view_products');
+
+        $this->get(route('admin.categories.products.index', [$category, 'search' => 'ރަސްމީ']))
+            ->assertOk()
+            ->assertSee('ރަސްމީ ދުވަސް')
+            ->assertDontSee('Something else');
+    }
+
+    #[Test]
+    public function it_shows_the_new_product_form(): void
+    {
+        $category = Category::factory()->create();
+        $this->actingAsAdmin('edit_products');
+
+        $this->get(route('admin.categories.products.create', $category))
+            ->assertOk()
+            ->assertSee(__('New product'));
+    }
+
+    #[Test]
+    public function it_creates_a_product(): void
+    {
+        $category = Category::factory()->create();
+        $tags = Tag::factory()->count(2)->create();
+
+        $this->actingAsAdmin('edit_products');
+
+        $this->post(route('admin.categories.products.store', $category), [
+            'name' => 'ރަސްމީ',
+            'price' => 10.5,
+            'status' => 'draft',
+            'tags' => $tags->pluck('id')->all(),
+        ])
+            ->assertRedirect()
+            ->assertSessionHasNoErrors();
+
+        $this->assertDatabaseHas('products', [
+            'category_id' => $category->id,
+            'name' => 'ރަސްމީ',
+            'price' => 10.5,
+            'status' => 'draft',
+        ]);
+
+        $product = Product::query()->latest('id')->first();
+
+        $this->assertEquals($tags->pluck('id')->all(), $product->tags()->pluck('tags.id')->sort()->values()->all());
+    }
+
+    #[Test]
+    public function it_validates_new_products(): void
+    {
+        $category = Category::factory()->create();
+        $this->actingAsAdmin('edit_products');
+
+        $this->post(route('admin.categories.products.store', $category), [
+            'name' => [],
+            'price' => 'ބަދަލު',
+            'status' => 'ބަދަލު',
+        ])
+            ->assertSessionHasErrors(['name', 'price', 'status']);
+
+        $this->assertDatabaseCount('products', 0);
+    }
+
+    #[Test]
+    public function it_does_not_create_products_without_permission(): void
+    {
+        $category = Category::factory()->create();
+        $this->actingAsAdmin('view_products');
+
+        $this->post(route('admin.categories.products.store', $category), [])
+            ->assertForbidden();
+
+        $this->assertDatabaseCount('products', 0);
+    }
+
+    #[Test]
+    public function it_shows_a_product(): void
+    {
+        $category = Category::factory()->create();
+        $product = Product::factory()->for($category, 'category')->create();
+
+        $this->actingAsAdmin('view_products');
+
+        $this->get(route('admin.categories.products.show', [$category, $product]))
+            ->assertOk()
+            ->assertSee($product->name);
+    }
+
+    #[Test]
+    public function it_shows_the_edit_product_form(): void
+    {
+        $category = Category::factory()->create();
+        $product = Product::factory()->for($category, 'category')->create();
+
+        $this->actingAsAdmin('edit_products');
+
+        $this->get(route('admin.categories.products.edit', [$category, $product]))
+            ->assertOk()
+            ->assertSee(__('Edit product'));
+    }
+
+    #[Test]
+    public function it_updates_a_product(): void
+    {
+        $category = Category::factory()->create();
+        $tags = Tag::factory()->count(2)->create();
+
+        $product = Product::factory()->for($category, 'category')->create();
+
+        $this->actingAsAdmin('edit_products');
+
+        $this->patch(route('admin.categories.products.update', [$category, $product]), [
+            'name' => 'ދިވެހި',
+            'price' => 20.25,
+            'status' => 'published',
+            'tags' => [$tags->first()->id],
+        ])
+            ->assertRedirect()
+            ->assertSessionHasNoErrors();
+
+        $this->assertDatabaseHas('products', [
+            'id' => $product->id,
+            'name' => 'ދިވެހި',
+            'price' => 20.25,
+            'status' => 'published',
+        ]);
+
+        $product->refresh();
+
+        $this->assertEquals([$tags->first()->id], $product->tags()->pluck('tags.id')->sort()->values()->all());
+    }
+
+    #[Test]
+    public function it_does_not_update_products_without_permission(): void
+    {
+        $category = Category::factory()->create();
+        $product = Product::factory()->for($category, 'category')->create();
+
+        $this->actingAsAdmin('view_products');
+
+        $this->patch(route('admin.categories.products.update', [$category, $product]), [])
+            ->assertForbidden();
+    }
+
+    #[Test]
+    public function it_deletes_a_product(): void
+    {
+        $category = Category::factory()->create();
+        $product = Product::factory()->for($category, 'category')->create();
+
+        $this->actingAsAdmin('delete_products');
+
+        $this->delete(route('admin.categories.products.destroy', [$category, $product]))
+            ->assertRedirect(route('admin.categories.products.index', $category));
+
+        $this->assertSoftDeleted($product);
+    }
+
+    #[Test]
+    public function it_restores_a_deleted_product(): void
+    {
+        $category = Category::factory()->create();
+        $product = Product::factory()->for($category, 'category')->create();
+        $product->delete();
+
+        $this->actingAsAdmin('delete_products');
+
+        $this->patch(route('admin.categories.products.restore', [$category, $product]))
+            ->assertRedirect();
+
+        $this->assertNotSoftDeleted($product);
+    }
+
+    #[Test]
+    public function it_permanently_deletes_a_product(): void
+    {
+        $category = Category::factory()->create();
+        $product = Product::factory()->for($category, 'category')->create();
+        $product->delete();
+
+        $this->actingAsAdmin('force_delete_products');
+
+        $this->delete(route('admin.categories.products.force-delete', [$category, $product]))
+            ->assertRedirect(route('admin.categories.products.index', $category));
+
+        $this->assertModelMissing($product);
+    }
+
+    #[Test]
+    public function it_deletes_products_in_bulk(): void
+    {
+        $category = Category::factory()->create();
+        $products = Product::factory()->for($category, 'category')->count(2)->create();
+
+        $this->actingAsAdmin('view_products', 'delete_products');
+
+        $this->postJson(route('admin.categories.products.bulk', $category), [
+            'action' => 'delete',
+            'products' => $products->pluck('id')->all(),
+        ])
+            ->assertOk()
+            ->assertJson(['succeeded' => 2]);
+
+        $products->each(fn (Product $record) => $this->assertSoftDeleted($record));
+    }
+
+    /**
+     * Log in as a user of the admin area with these permissions.
+     */
+    protected function actingAsAdmin(string ...$permissions): User
+    {
+        $user = User::factory()->create();
+
+        if ($permissions) {
+            $user->givePermissionTo($permissions);
+        }
+
+        $this->actingAs($user);
+
+        return $user;
+    }
+}

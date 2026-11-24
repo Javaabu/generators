@@ -2,17 +2,37 @@
 
 namespace Javaabu\Generators\Generators;
 
-use Javaabu\Generators\Generators\Concerns\GeneratesPolicy;
+use Javaabu\Generators\Support\Imports;
+use Javaabu\Generators\Support\Stub;
 
-class PolicyGenerator extends BaseGenerator
+class PolicyGenerator extends Generator
 {
-    use GeneratesPolicy;
-
-    /**
-     * Render the policy
-     */
-    public function render(): string
+    public function files(): array
     {
-        return $this->renderPolicy();
+        $resource = $this->resource;
+
+        return [new GeneratedFile($resource->classPath($resource->policyClass()), $this->renderPolicy(), description: 'policy')];
+    }
+
+    public function renderPolicy(): string
+    {
+        $resource = $this->resource;
+        $namespace = $resource->namespace('policies');
+        $imports = new Imports(['Javaabu\\Permissions\\Policies\\ResourcePolicy'], $namespace);
+
+        $actions = ['view', 'edit', 'delete', 'force_delete'];
+
+        $guard = $resource->guard()
+            ? "\n/**\n * Check the permissions of this guard.\n */\nprotected ?string \$guard = '{$resource->guard()}';"
+            : '';
+
+        return Stub::make('policy/Policy.stub')->names($resource->table())->with([
+            'namespace' => $namespace,
+            'class' => class_basename($resource->policyClass()),
+            'resource' => $resource->permissionResource(),
+            'permissions' => implode(', ', array_map(fn (string $action) => $resource->permission($action), $actions)),
+            'guard' => $guard,
+            'imports' => $imports->render(),
+        ])->render();
     }
 }
